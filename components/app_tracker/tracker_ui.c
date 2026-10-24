@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /*
- * ARYX tracker controller.
+ * OP-Ay1 tracker controller.
  *
  * Pages: WAVES | PATTERN | PLAYBACK | MIX | SEQUENCER.
  * MIX shows the master section on top and four channel slots below; a drag

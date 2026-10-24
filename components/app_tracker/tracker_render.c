@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /*
- * Canvas renderer for the ARYX tracker. Both pages are rasterised only when
+ * Canvas renderer for the OP-Ay1 tracker. Both pages are rasterised only when
  * they become visible, so playback never competes with a full-frame redraw.
  */
 
@@ -155,7 +155,7 @@ static void draw_top_bar(uint16_t *frame, const tracker_status_t *status,
     char time_buffer[9];
     fill_rect(frame, 0, 0, TRACKER_FRAME_W, TOP_H, C_PANEL);
     /* Keep the header inside the rounded-corner safe area. */
-    text(frame, 30, 10, 2, C_TEXT, "ARYX");
+    text(frame, 30, 10, 2, C_TEXT, "OP-Ay1");
     text(frame, 82, 15, 1, C_ACCENT, "S3M");
 
     snprintf(buffer, sizeof(buffer), "PAT %02X/%02X", status->pattern,

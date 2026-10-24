@@ -13,5 +13,5 @@ list(APPEND EXTRA_COMPONENT_DIRS
     "${MOSAICO_UTILS_ROOT}/mosaico-tools/components/esp_mosaico_gsp_bundle"
     "${MOSAICO_UTILS_ROOT}/mosaico-tools/components/esp_mosaico_gsp_iris")
 include("${MOSAICO_UTILS_ROOT}/esp-mosaico-vibe-mode/cmake/mosaico_idf_project.cmake")
-project(aryx VERSION 1.0.0)
+project(OP-Ay1 VERSION 1.0.0)
 include("${MOSAICO_UTILS_ROOT}/mosaico-tools/cmake/system_update.cmake")

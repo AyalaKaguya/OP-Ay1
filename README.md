@@ -1,8 +1,8 @@
-# ARYX
+# OP-Ay1
 
-An ESP-Mosaico tracker player. The 20 KB `main/assets/aryx.s3m` module is decoded
-by a portable C engine and rendered into 48 kHz stereo by the board audio path;
-the whole UI is one generated GSP scene driven by `app_tracker`.
+An ESP-Mosaico tracker player. The 20 KB built-in `main/assets/aryx.s3m` module is
+decoded by a portable C engine and rendered into 48 kHz stereo by the board audio
+path; the whole UI is one generated GSP scene driven by `app_tracker`.
 
 ## Pages
 
@@ -32,25 +32,24 @@ the whole UI is one generated GSP scene driven by `app_tracker`.
 ## Structure
 
 - `main`: composition root only (Recovery support, engine, audio, display, GSP).
-- `components/tracker_engine`: portable S3M decoder, sequencer and mixer; no
-  ESP-IDF dependency except the task lock (see its README).
+- `components/tracker_engine`: portable S3M decoder, sequencer and mixer.
 - `components/app_audio`: DSP task, chunk ring and I2S writer.
 - `components/app_tracker`: GSP scene controller, meters, mix page and pads.
 - `components/app_display`: BSP-to-GSP display setup.
 - `components/app_tracker/ui`: authored scene (`tracker.json`) and packed bundle.
-- `main/assets/aryx.s3m`: embedded song (12 patterns, 12 channels).
+- `main/assets/aryx.s3m`: built-in song (12 patterns, 12 channels).
 
 ## Build and install
 
 From the workspace root, with `IDF_PATH` and `IDF_TOOLS_PATH` set:
 
 ```sh
-python mosaico.py iris system-update --project projects/aryx
+python mosaico.py iris system-update --project projects/OP-Ay1
 ```
 
-The workspace launcher builds, packs the scene into the firmware image and
-installs through ESP-Iris/Recovery. `python mosaico.py project sim` is available
-for scene-only previews.
+`system-update` builds the project, packs the GSP scene into the application and
+installs the ESP-Iris system-update bundle through Recovery. Code-only iterations
+can use `iris app-update` while the partition table is unchanged.
 
 ## Runtime notes
 

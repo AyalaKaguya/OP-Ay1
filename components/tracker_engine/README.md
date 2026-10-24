@@ -1,6 +1,6 @@
 # tracker_engine: portable S3M sequencer
 
-`tracker_engine` is the audio-domain model for ARYX. It is portable C with no
+`tracker_engine` is the audio-domain model for OP-Ay1. It is portable C with no
 GSP, FreeRTOS, codec, or BSP dependencies. The public header is a stable facade
 used by `app_tracker` and `app_audio`.
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/* ARYX composition root: boot Recovery support, build the portable tracker
+/* OP-Ay1 composition root: boot Recovery support, build the portable tracker
  * engine, start audio and display, then hand the GSP scene to app_tracker. */
 
 #include <stddef.h>
@@ -18,7 +18,7 @@
 #include "tracker_engine.h"
 #include "ui_bundle.h"
 
-static const char *TAG = "aryx";
+static const char *TAG = "OP-Ay1";
 
 extern const uint8_t aryx_s3m_start[] asm("_binary_aryx_s3m_start");
 extern const uint8_t aryx_s3m_end[] asm("_binary_aryx_s3m_end");
@@ -71,5 +71,5 @@ void app_main(void)
 
     ESP_ERROR_CHECK(app_tracker_start(application.ui, application.engine,
                                       &application.controller));
-    ESP_LOGI(TAG, "ARYX tracker ready: %u bytes S3M", (unsigned)module_size);
+    ESP_LOGI(TAG, "OP-Ay1 tracker ready: %u bytes S3M", (unsigned)module_size);
 }
