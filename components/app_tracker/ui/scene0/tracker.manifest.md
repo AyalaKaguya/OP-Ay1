@@ -3,32 +3,32 @@
 - source: `projects\aryx\components\app_tracker\ui\tracker.json`
 - gspc version: 0.6.1
 - profile: host_rgb565 (rgb565, resource_alignment=64, id=0x6942ba48)
-- content_id: 0x7d87b945
+- content_id: 0x2530f7ba
 - screen: 480x480 scene_id=0
 
 ## Outputs
 
-- gsb: `tracker.gsb` (28008 bytes)
+- gsb: `tracker.gsb` (28108 bytes)
 
 ## Tables
 
-- commands: 272
+- commands: 273
 - state slots: 143
 - binds: 136 (public: 107)
 - actions: 103
 - hits: 92
 - visibility groups: 97
 - resource refs: 13
-- glyph run pool: 1098 bytes
+- glyph run pool: 1154 bytes
 - text defaults pool: 192 bytes
-- tile index: 8x8 grid of 64x64px, 16780 refs, avg 262.2 cmds/tile
+- tile index: 8x8 grid of 64x64px, 16844 refs, avg 263.2 cmds/tile
 - templates: 0
 
 ## Scene resource budget
 
-- reachable resource blobs: 594624 bytes
+- reachable resource blobs: 595776 bytes
 - image payloads: 414720 bytes
-- font blobs: 179776 bytes
+- font blobs: 180928 bytes
 
 - Resource blobs include their own headers but exclude scene GSB, bundle tables/alignment and firmware code; shared blobs must not be summed across scenes.
 - Initial static decode bytes are an estimate, not measured resident or peak RAM. Exceeding the cache budget can cause eviction, not necessarily allocation failure.
@@ -57,6 +57,7 @@ Registered images are addressable by this scene, including hidden controls and t
 
 ## Fonts
 
+- resource_id 0x6bdd6edc: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @22px
 - resource_id 0x9ac39459: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans.ttf` @11px
 - resource_id 0xa6a13226: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @12px
 - resource_id 0x4cc5746: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @26px
@@ -68,7 +69,6 @@ Registered images are addressable by this scene, including hidden controls and t
 - resource_id 0x1380dd93: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans.ttf` @12px
 - resource_id 0xbdfe52fa: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @20px
 - resource_id 0xa53e62de: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans.ttf` @8px
-- resource_id 0x6a04987f: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @22px
 
 ## Binds
 

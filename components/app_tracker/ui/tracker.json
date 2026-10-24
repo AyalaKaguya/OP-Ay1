@@ -82,8 +82,21 @@
     {
       "type": "label",
       "parent_name": "page_playback",
+      "x": 30,
+      "y": 10,
+      "w": 300,
+      "h": 28,
+      "text": "PLAYBACK",
+      "font_size": 22,
+      "fg_color": "#F2F2F0",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans-Bold.ttf"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_playback",
       "x": 250,
-      "y": 24,
+      "y": 46,
       "w": 200,
       "h": 18,
       "text": "ORD 00  PAT 00  ROW 00",

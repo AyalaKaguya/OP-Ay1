@@ -108,7 +108,7 @@ struct app_tracker {
     uint16_t *waves_frame;
     int page;
     int pad_playing;
-    int pad_pending;
+    int pad_next;
     int pad_stop;
     bool pad_blink;
     int volume;
@@ -284,6 +284,21 @@ static bool pad_blink_on(app_tracker_t *state, const tracker_status_t *status)
     return ((status->frames / half_beat) & 1u) != 0;
 }
 
+/** Pattern the order list plays after the current one, or -1 at the end. */
+static int next_order_pattern(app_tracker_t *state,
+                              const tracker_status_t *status)
+{
+    const int patterns = tracker_engine_patterns(state->engine);
+    const int orders = tracker_engine_orders(state->engine);
+    for (int index = status->order_index + 1; index < orders; ++index) {
+        const int pattern = tracker_engine_pattern_at(state->engine, index);
+        if (pattern >= 0 && pattern < patterns) {
+            return pattern;
+        }
+    }
+    return -1;
+}
+
 static void refresh_pads(app_tracker_t *state, bool force)
 {
     tracker_status_t status;
@@ -293,34 +308,45 @@ static void refresh_pads(app_tracker_t *state, bool force)
     const int pending = tracker_engine_pending_pattern(state->engine);
     const bool stop_pending = tracker_engine_pattern_stop_pending(state->engine);
     /* Pad mode highlights the launched pad; while the order list plays, the pad
-     * of the current order's pattern is shown instead (follows the song). */
+     * of the current order's pattern is shown instead (follows the song). The
+     * upcoming pattern blinks in the same way as a user-queued switch. */
     int shown_playing = -1;
+    int shown_next = -1;
     if (status.playing) {
-        shown_playing = launched >= 0 ? launched : status.pattern;
+        if (launched >= 0) {
+            shown_playing = launched;
+            shown_next = pending;
+        } else {
+            shown_playing = status.pattern;
+            shown_next = next_order_pattern(state, &status);
+        }
+        if (shown_next == shown_playing) {
+            shown_next = -1;
+        }
     }
     const bool blink = pad_blink_on(state, &status);
     if (!force && shown_playing == state->pad_playing &&
-        pending == state->pad_pending && (int)stop_pending == state->pad_stop &&
+        shown_next == state->pad_next && (int)stop_pending == state->pad_stop &&
         blink == state->pad_blink) {
         return;
     }
     state->pad_playing = shown_playing;
-    state->pad_pending = pending;
+    state->pad_next = shown_next;
     state->pad_stop = (int)stop_pending;
     state->pad_blink = blink;
     for (int pad = 0; pad < 16; ++pad) {
         const bool available = pad < patterns;
         const bool is_playing = available && pad == shown_playing;
-        const bool is_pending = available && !is_playing && pad == pending;
+        const bool is_next = available && !is_playing && pad == shown_next;
         const bool play_lit = is_playing && (!stop_pending || blink);
         const bool dark_playing = is_playing && stop_pending && !blink;
-        const bool next_lit = is_pending && blink;
-        const bool dark_pending = is_pending && !blink;
+        const bool next_lit = is_next && blink;
+        const bool dark_next = is_next && !blink;
         (void)esp_gsp_set_visible(state->ui, k_pad_dim[pad], !available);
         (void)esp_gsp_set_visible(
             state->ui, k_pad_off[pad],
-            available && ((!is_playing && !is_pending) || dark_playing ||
-                          dark_pending));
+            available && ((!is_playing && !is_next) || dark_playing ||
+                          dark_next));
         (void)esp_gsp_set_visible(state->ui, k_pad_play[pad], play_lit);
         (void)esp_gsp_set_visible(state->ui, k_pad_next[pad], next_lit);
     }
@@ -1080,7 +1106,7 @@ esp_err_t app_tracker_start(esp_gsp_handle_t ui, tracker_engine_t *engine,
         state->mix_channels = TRACKER_MIX_STRIPS;
     }
     state->pad_playing = -1;
-    state->pad_pending = -1;
+    state->pad_next = -1;
 
     esp_gsp_err_t error = esp_gsp_on_event(ui, on_event, state);
     if (error == ESP_GSP_OK) {

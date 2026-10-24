@@ -1,8 +1,17 @@
 {
   "calibration": null,
-  "content_id": "0x7d87b945",
+  "content_id": "0x2530f7ba",
   "decision_quality": "conservative_uncalibrated",
   "fonts": [
+    {
+      "asset_id": "0x6bdd6edc",
+      "charset": " ?ABCDEKLNPRSTY",
+      "encoded_bytes": 5056,
+      "glyph_count": 15,
+      "link": "embedded",
+      "size_px": 22,
+      "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans-Bold.ttf"
+    },
     {
       "asset_id": "0x9ac39459",
       "charset": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
@@ -101,15 +110,6 @@
       "link": "embedded",
       "size_px": 8,
       "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans.ttf"
-    },
-    {
-      "asset_id": "0x6a04987f",
-      "charset": " ?ADENPRST",
-      "encoded_bytes": 3904,
-      "glyph_count": 10,
-      "link": "embedded",
-      "size_px": 22,
-      "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans-Bold.ttf"
     }
   ],
   "gspc_version": "0.6.1",
@@ -152,7 +152,7 @@
     "text_slots": 14
   },
   "resource_budget": {
-    "font_blob_bytes": 179776,
+    "font_blob_bytes": 180928,
     "image_cache_budget_bytes": 0,
     "image_payload_bytes": 414720,
     "initial_static_set_exceeds_cache_budget": null,
@@ -161,7 +161,7 @@
       "Initial static decode bytes are an estimate, not measured resident or peak RAM. Exceeding the cache budget can cause eviction, not necessarily allocation failure.",
       "Different variants may be required for size, format or animation policy. Review authored uses before removing them or moving work to runtime."
     ],
-    "resource_blob_bytes": 594624,
+    "resource_blob_bytes": 595776,
     "scope": "scene_reachable_resources",
     "source_variants": []
   },

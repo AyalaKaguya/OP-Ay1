@@ -614,7 +614,7 @@
           "name": "speed_20_cb"
         }
       ],
-      "content_id": "0x7d87b945",
+      "content_id": "0x2530f7ba",
       "objects": [
         {
           "bounds": {
@@ -4928,8 +4928,8 @@
           "bounds": {
             "x1": 1210,
             "x2": 1410,
-            "y1": 24,
-            "y2": 42
+            "y1": 46,
+            "y2": 64
           },
           "bounds_source": "compiled",
           "component_key": 1466157906,
