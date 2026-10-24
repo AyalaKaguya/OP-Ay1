@@ -45,322 +45,585 @@
         },
         {
           "bind_id": 39,
-          "name": "order_list"
+          "name": "pad0_dim"
         },
         {
           "bind_id": 40,
-          "name": "pat_value"
+          "name": "pad0_next"
         },
         {
           "bind_id": 41,
-          "name": "pb_pos"
+          "name": "pad0_off"
         },
         {
           "bind_id": 42,
-          "name": "pb_speed_value"
+          "name": "pad0_play"
         },
         {
           "bind_id": 43,
-          "name": "pp_pause_text"
+          "name": "pad10_dim"
         },
         {
           "bind_id": 44,
-          "name": "pp_play_text"
+          "name": "pad10_next"
         },
         {
           "bind_id": 45,
-          "name": "seq_pos"
+          "name": "pad10_off"
         },
         {
           "bind_id": 46,
-          "name": "slot0_db"
+          "name": "pad10_play"
         },
         {
           "bind_id": 47,
-          "name": "slot0_name"
+          "name": "pad11_dim"
         },
         {
           "bind_id": 48,
-          "name": "slot1_db"
+          "name": "pad11_next"
         },
         {
           "bind_id": 49,
-          "name": "slot1_name"
+          "name": "pad11_off"
         },
         {
           "bind_id": 50,
-          "name": "slot2_db"
+          "name": "pad11_play"
         },
         {
           "bind_id": 51,
-          "name": "slot2_name"
+          "name": "pad12_dim"
         },
         {
           "bind_id": 52,
-          "name": "slot3_db"
+          "name": "pad12_next"
         },
         {
           "bind_id": 53,
-          "name": "slot3_name"
+          "name": "pad12_off"
         },
         {
           "bind_id": 54,
-          "name": "smn0"
+          "name": "pad12_play"
         },
         {
           "bind_id": 55,
-          "name": "smn1"
+          "name": "pad13_dim"
         },
         {
           "bind_id": 56,
-          "name": "smn2"
+          "name": "pad13_next"
         },
         {
           "bind_id": 57,
-          "name": "smn3"
+          "name": "pad13_off"
         },
         {
           "bind_id": 58,
-          "name": "smo0"
+          "name": "pad13_play"
         },
         {
           "bind_id": 59,
-          "name": "smo1"
+          "name": "pad14_dim"
         },
         {
           "bind_id": 60,
-          "name": "smo2"
+          "name": "pad14_next"
         },
         {
           "bind_id": 61,
-          "name": "smo3"
+          "name": "pad14_off"
         },
         {
           "bind_id": 62,
-          "name": "speed_05_sel"
+          "name": "pad14_play"
         },
         {
           "bind_id": 63,
-          "name": "speed_10_sel"
+          "name": "pad15_dim"
         },
         {
           "bind_id": 64,
-          "name": "speed_15_sel"
+          "name": "pad15_next"
         },
         {
           "bind_id": 65,
-          "name": "speed_20_sel"
+          "name": "pad15_off"
         },
         {
           "bind_id": 66,
-          "name": "ssn0"
+          "name": "pad15_play"
         },
         {
           "bind_id": 67,
-          "name": "ssn1"
+          "name": "pad1_dim"
         },
         {
           "bind_id": 68,
-          "name": "ssn2"
+          "name": "pad1_next"
         },
         {
           "bind_id": 69,
-          "name": "ssn3"
+          "name": "pad1_off"
         },
         {
           "bind_id": 70,
-          "name": "sso0"
+          "name": "pad1_play"
         },
         {
           "bind_id": 71,
-          "name": "sso1"
+          "name": "pad2_dim"
         },
         {
           "bind_id": 72,
-          "name": "sso2"
+          "name": "pad2_next"
         },
         {
           "bind_id": 73,
-          "name": "sso3"
+          "name": "pad2_off"
         },
         {
           "bind_id": 74,
-          "name": "step_value"
+          "name": "pad2_play"
         },
         {
           "bind_id": 75,
+          "name": "pad3_dim"
+        },
+        {
+          "bind_id": 76,
+          "name": "pad3_next"
+        },
+        {
+          "bind_id": 77,
+          "name": "pad3_off"
+        },
+        {
+          "bind_id": 78,
+          "name": "pad3_play"
+        },
+        {
+          "bind_id": 79,
+          "name": "pad4_dim"
+        },
+        {
+          "bind_id": 80,
+          "name": "pad4_next"
+        },
+        {
+          "bind_id": 81,
+          "name": "pad4_off"
+        },
+        {
+          "bind_id": 82,
+          "name": "pad4_play"
+        },
+        {
+          "bind_id": 83,
+          "name": "pad5_dim"
+        },
+        {
+          "bind_id": 84,
+          "name": "pad5_next"
+        },
+        {
+          "bind_id": 85,
+          "name": "pad5_off"
+        },
+        {
+          "bind_id": 86,
+          "name": "pad5_play"
+        },
+        {
+          "bind_id": 87,
+          "name": "pad6_dim"
+        },
+        {
+          "bind_id": 88,
+          "name": "pad6_next"
+        },
+        {
+          "bind_id": 89,
+          "name": "pad6_off"
+        },
+        {
+          "bind_id": 90,
+          "name": "pad6_play"
+        },
+        {
+          "bind_id": 91,
+          "name": "pad7_dim"
+        },
+        {
+          "bind_id": 92,
+          "name": "pad7_next"
+        },
+        {
+          "bind_id": 93,
+          "name": "pad7_off"
+        },
+        {
+          "bind_id": 94,
+          "name": "pad7_play"
+        },
+        {
+          "bind_id": 95,
+          "name": "pad8_dim"
+        },
+        {
+          "bind_id": 96,
+          "name": "pad8_next"
+        },
+        {
+          "bind_id": 97,
+          "name": "pad8_off"
+        },
+        {
+          "bind_id": 98,
+          "name": "pad8_play"
+        },
+        {
+          "bind_id": 99,
+          "name": "pad9_dim"
+        },
+        {
+          "bind_id": 100,
+          "name": "pad9_next"
+        },
+        {
+          "bind_id": 101,
+          "name": "pad9_off"
+        },
+        {
+          "bind_id": 102,
+          "name": "pad9_play"
+        },
+        {
+          "bind_id": 103,
+          "name": "pad_next"
+        },
+        {
+          "bind_id": 104,
+          "name": "pad_play"
+        },
+        {
+          "bind_id": 105,
+          "name": "pb_pos"
+        },
+        {
+          "bind_id": 106,
+          "name": "pb_speed_value"
+        },
+        {
+          "bind_id": 107,
+          "name": "pp_pause_text"
+        },
+        {
+          "bind_id": 108,
+          "name": "pp_play_text"
+        },
+        {
+          "bind_id": 109,
+          "name": "slot0_db"
+        },
+        {
+          "bind_id": 110,
+          "name": "slot0_name"
+        },
+        {
+          "bind_id": 111,
+          "name": "slot1_db"
+        },
+        {
+          "bind_id": 112,
+          "name": "slot1_name"
+        },
+        {
+          "bind_id": 113,
+          "name": "slot2_db"
+        },
+        {
+          "bind_id": 114,
+          "name": "slot2_name"
+        },
+        {
+          "bind_id": 115,
+          "name": "slot3_db"
+        },
+        {
+          "bind_id": 116,
+          "name": "slot3_name"
+        },
+        {
+          "bind_id": 117,
+          "name": "smn0"
+        },
+        {
+          "bind_id": 118,
+          "name": "smn1"
+        },
+        {
+          "bind_id": 119,
+          "name": "smn2"
+        },
+        {
+          "bind_id": 120,
+          "name": "smn3"
+        },
+        {
+          "bind_id": 121,
+          "name": "smo0"
+        },
+        {
+          "bind_id": 122,
+          "name": "smo1"
+        },
+        {
+          "bind_id": 123,
+          "name": "smo2"
+        },
+        {
+          "bind_id": 124,
+          "name": "smo3"
+        },
+        {
+          "bind_id": 125,
+          "name": "speed_05_sel"
+        },
+        {
+          "bind_id": 126,
+          "name": "speed_10_sel"
+        },
+        {
+          "bind_id": 127,
+          "name": "speed_15_sel"
+        },
+        {
+          "bind_id": 128,
+          "name": "speed_20_sel"
+        },
+        {
+          "bind_id": 129,
+          "name": "ssn0"
+        },
+        {
+          "bind_id": 130,
+          "name": "ssn1"
+        },
+        {
+          "bind_id": 131,
+          "name": "ssn2"
+        },
+        {
+          "bind_id": 132,
+          "name": "ssn3"
+        },
+        {
+          "bind_id": 133,
+          "name": "sso0"
+        },
+        {
+          "bind_id": 134,
+          "name": "sso1"
+        },
+        {
+          "bind_id": 135,
+          "name": "sso2"
+        },
+        {
+          "bind_id": 136,
+          "name": "sso3"
+        },
+        {
+          "bind_id": 137,
           "name": "waves_canvas"
         }
       ],
       "callbacks": [
         {
           "action_id": 0,
-          "helper": "gsp_tracker_event_is_apply_pattern_cb",
-          "name": "apply_pattern_cb"
-        },
-        {
-          "action_id": 1,
           "helper": "gsp_tracker_event_is_master_fader_cb",
           "name": "master_fader_cb"
         },
         {
-          "action_id": 2,
+          "action_id": 1,
           "helper": "gsp_tracker_event_is_nav_cb",
           "name": "nav_cb"
         },
         {
+          "action_id": 2,
+          "helper": "gsp_tracker_event_is_pad0_cb",
+          "name": "pad0_cb"
+        },
+        {
           "action_id": 3,
-          "helper": "gsp_tracker_event_is_order_pause_cb",
-          "name": "order_pause_cb"
+          "helper": "gsp_tracker_event_is_pad10_cb",
+          "name": "pad10_cb"
         },
         {
           "action_id": 4,
-          "helper": "gsp_tracker_event_is_order_play_cb",
-          "name": "order_play_cb"
+          "helper": "gsp_tracker_event_is_pad11_cb",
+          "name": "pad11_cb"
         },
         {
           "action_id": 5,
-          "helper": "gsp_tracker_event_is_order_restart_cb",
-          "name": "order_restart_cb"
+          "helper": "gsp_tracker_event_is_pad12_cb",
+          "name": "pad12_cb"
         },
         {
           "action_id": 6,
-          "helper": "gsp_tracker_event_is_pat_next_cb",
-          "name": "pat_next_cb"
+          "helper": "gsp_tracker_event_is_pad13_cb",
+          "name": "pad13_cb"
         },
         {
           "action_id": 7,
-          "helper": "gsp_tracker_event_is_pat_prev_cb",
-          "name": "pat_prev_cb"
+          "helper": "gsp_tracker_event_is_pad14_cb",
+          "name": "pad14_cb"
         },
         {
           "action_id": 8,
+          "helper": "gsp_tracker_event_is_pad15_cb",
+          "name": "pad15_cb"
+        },
+        {
+          "action_id": 9,
+          "helper": "gsp_tracker_event_is_pad1_cb",
+          "name": "pad1_cb"
+        },
+        {
+          "action_id": 10,
+          "helper": "gsp_tracker_event_is_pad2_cb",
+          "name": "pad2_cb"
+        },
+        {
+          "action_id": 11,
+          "helper": "gsp_tracker_event_is_pad3_cb",
+          "name": "pad3_cb"
+        },
+        {
+          "action_id": 12,
+          "helper": "gsp_tracker_event_is_pad4_cb",
+          "name": "pad4_cb"
+        },
+        {
+          "action_id": 13,
+          "helper": "gsp_tracker_event_is_pad5_cb",
+          "name": "pad5_cb"
+        },
+        {
+          "action_id": 14,
+          "helper": "gsp_tracker_event_is_pad6_cb",
+          "name": "pad6_cb"
+        },
+        {
+          "action_id": 15,
+          "helper": "gsp_tracker_event_is_pad7_cb",
+          "name": "pad7_cb"
+        },
+        {
+          "action_id": 16,
+          "helper": "gsp_tracker_event_is_pad8_cb",
+          "name": "pad8_cb"
+        },
+        {
+          "action_id": 17,
+          "helper": "gsp_tracker_event_is_pad9_cb",
+          "name": "pad9_cb"
+        },
+        {
+          "action_id": 18,
           "helper": "gsp_tracker_event_is_pp_cb",
           "name": "pp_cb"
         },
         {
-          "action_id": 9,
+          "action_id": 19,
           "helper": "gsp_tracker_event_is_rec_cb",
           "name": "rec_cb"
         },
         {
-          "action_id": 10,
+          "action_id": 20,
           "helper": "gsp_tracker_event_is_slot_fader0_cb",
           "name": "slot_fader0_cb"
         },
         {
-          "action_id": 11,
+          "action_id": 21,
           "helper": "gsp_tracker_event_is_slot_fader1_cb",
           "name": "slot_fader1_cb"
         },
         {
-          "action_id": 12,
+          "action_id": 22,
           "helper": "gsp_tracker_event_is_slot_fader2_cb",
           "name": "slot_fader2_cb"
         },
         {
-          "action_id": 13,
+          "action_id": 23,
           "helper": "gsp_tracker_event_is_slot_fader3_cb",
           "name": "slot_fader3_cb"
         },
         {
-          "action_id": 14,
+          "action_id": 24,
           "helper": "gsp_tracker_event_is_slot_mute0_cb",
           "name": "slot_mute0_cb"
         },
         {
-          "action_id": 15,
+          "action_id": 25,
           "helper": "gsp_tracker_event_is_slot_mute1_cb",
           "name": "slot_mute1_cb"
         },
         {
-          "action_id": 16,
+          "action_id": 26,
           "helper": "gsp_tracker_event_is_slot_mute2_cb",
           "name": "slot_mute2_cb"
         },
         {
-          "action_id": 17,
+          "action_id": 27,
           "helper": "gsp_tracker_event_is_slot_mute3_cb",
           "name": "slot_mute3_cb"
         },
         {
-          "action_id": 18,
+          "action_id": 28,
           "helper": "gsp_tracker_event_is_slot_solo0_cb",
           "name": "slot_solo0_cb"
         },
         {
-          "action_id": 19,
+          "action_id": 29,
           "helper": "gsp_tracker_event_is_slot_solo1_cb",
           "name": "slot_solo1_cb"
         },
         {
-          "action_id": 20,
+          "action_id": 30,
           "helper": "gsp_tracker_event_is_slot_solo2_cb",
           "name": "slot_solo2_cb"
         },
         {
-          "action_id": 21,
+          "action_id": 31,
           "helper": "gsp_tracker_event_is_slot_solo3_cb",
           "name": "slot_solo3_cb"
         },
         {
-          "action_id": 22,
+          "action_id": 32,
           "helper": "gsp_tracker_event_is_speed_05_cb",
           "name": "speed_05_cb"
         },
         {
-          "action_id": 23,
+          "action_id": 33,
           "helper": "gsp_tracker_event_is_speed_10_cb",
           "name": "speed_10_cb"
         },
         {
-          "action_id": 24,
+          "action_id": 34,
           "helper": "gsp_tracker_event_is_speed_15_cb",
           "name": "speed_15_cb"
         },
         {
-          "action_id": 25,
+          "action_id": 35,
           "helper": "gsp_tracker_event_is_speed_20_cb",
           "name": "speed_20_cb"
-        },
-        {
-          "action_id": 26,
-          "helper": "gsp_tracker_event_is_step_next_cb",
-          "name": "step_next_cb"
-        },
-        {
-          "action_id": 27,
-          "helper": "gsp_tracker_event_is_step_prev_cb",
-          "name": "step_prev_cb"
         }
       ],
-      "content_id": "0xe53ede9d",
+      "content_id": "0xa90b1070",
       "objects": [
-        {
-          "bounds": {
-            "x1": 2116,
-            "x2": 2248,
-            "y1": 186,
-            "y2": 234
-          },
-          "bounds_source": "compiled",
-          "component_key": 3395875548,
-          "helpers": [
-            "gsp_tracker_apply_btn_get_info"
-          ],
-          "name": "apply_btn",
-          "operations": [
-            {
-              "method": "inspect_object"
-            },
-            {
-              "bounds_source": "compiled",
-              "method": "tap_object"
-            }
-          ],
-          "properties": [],
-          "type": "button"
-        },
         {
           "bounds": {
             "x1": 1470,
@@ -1756,19 +2019,2771 @@
         },
         {
           "bounds": {
-            "x1": 1950,
-            "x2": 2370,
-            "y1": 250,
-            "y2": 360
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 76,
+            "y2": 156
           },
           "bounds_source": "compiled",
-          "component_key": 3011828000,
+          "component_key": 87799307,
           "helpers": [
-            "gsp_tracker_order_list_get_info",
-            "gsp_tracker_order_list_get_text",
-            "gsp_tracker_order_list_set_text"
+            "gsp_tracker_pad0_dim_get_info",
+            "gsp_tracker_pad0_dim_get_visible",
+            "gsp_tracker_pad0_dim_set_visible"
           ],
-          "name": "order_list",
+          "name": "pad0_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 39,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 922929146,
+          "helpers": [
+            "gsp_tracker_pad0_next_get_info",
+            "gsp_tracker_pad0_next_get_visible",
+            "gsp_tracker_pad0_next_set_visible"
+          ],
+          "name": "pad0_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 40,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 524619008,
+          "helpers": [
+            "gsp_tracker_pad0_off_get_info",
+            "gsp_tracker_pad0_off_get_visible",
+            "gsp_tracker_pad0_off_set_visible"
+          ],
+          "name": "pad0_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 41,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 4127434265,
+          "helpers": [
+            "gsp_tracker_pad0_play_get_info",
+            "gsp_tracker_pad0_play_get_visible",
+            "gsp_tracker_pad0_play_set_visible"
+          ],
+          "name": "pad0_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 42,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 3940965250,
+          "helpers": [
+            "gsp_tracker_pad10_dim_get_info",
+            "gsp_tracker_pad10_dim_get_visible",
+            "gsp_tracker_pad10_dim_set_visible"
+          ],
+          "name": "pad10_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 43,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 1880847533,
+          "helpers": [
+            "gsp_tracker_pad10_next_get_info",
+            "gsp_tracker_pad10_next_get_visible",
+            "gsp_tracker_pad10_next_set_visible"
+          ],
+          "name": "pad10_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 44,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 1885788857,
+          "helpers": [
+            "gsp_tracker_pad10_off_get_info",
+            "gsp_tracker_pad10_off_get_visible",
+            "gsp_tracker_pad10_off_set_visible"
+          ],
+          "name": "pad10_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 45,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 3361084446,
+          "helpers": [
+            "gsp_tracker_pad10_play_get_info",
+            "gsp_tracker_pad10_play_get_visible",
+            "gsp_tracker_pad10_play_set_visible"
+          ],
+          "name": "pad10_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 46,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 2770684833,
+          "helpers": [
+            "gsp_tracker_pad11_dim_get_info",
+            "gsp_tracker_pad11_dim_get_visible",
+            "gsp_tracker_pad11_dim_set_visible"
+          ],
+          "name": "pad11_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 47,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 1338069888,
+          "helpers": [
+            "gsp_tracker_pad11_next_get_info",
+            "gsp_tracker_pad11_next_get_visible",
+            "gsp_tracker_pad11_next_set_visible"
+          ],
+          "name": "pad11_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 48,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 2682038050,
+          "helpers": [
+            "gsp_tracker_pad11_off_get_info",
+            "gsp_tracker_pad11_off_get_visible",
+            "gsp_tracker_pad11_off_set_visible"
+          ],
+          "name": "pad11_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 49,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 1673753339,
+          "helpers": [
+            "gsp_tracker_pad11_play_get_info",
+            "gsp_tracker_pad11_play_get_visible",
+            "gsp_tracker_pad11_play_set_visible"
+          ],
+          "name": "pad11_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 50,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 2826261956,
+          "helpers": [
+            "gsp_tracker_pad12_dim_get_info",
+            "gsp_tracker_pad12_dim_get_visible",
+            "gsp_tracker_pad12_dim_set_visible"
+          ],
+          "name": "pad12_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 51,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 616570911,
+          "helpers": [
+            "gsp_tracker_pad12_next_get_info",
+            "gsp_tracker_pad12_next_get_visible",
+            "gsp_tracker_pad12_next_set_visible"
+          ],
+          "name": "pad12_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 52,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 2644495359,
+          "helpers": [
+            "gsp_tracker_pad12_off_get_info",
+            "gsp_tracker_pad12_off_get_visible",
+            "gsp_tracker_pad12_off_set_visible"
+          ],
+          "name": "pad12_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 53,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 3256402444,
+          "helpers": [
+            "gsp_tracker_pad12_play_get_info",
+            "gsp_tracker_pad12_play_get_visible",
+            "gsp_tracker_pad12_play_set_visible"
+          ],
+          "name": "pad12_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 54,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 2522350787,
+          "helpers": [
+            "gsp_tracker_pad13_dim_get_info",
+            "gsp_tracker_pad13_dim_get_visible",
+            "gsp_tracker_pad13_dim_set_visible"
+          ],
+          "name": "pad13_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 55,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 1144343970,
+          "helpers": [
+            "gsp_tracker_pad13_next_get_info",
+            "gsp_tracker_pad13_next_get_visible",
+            "gsp_tracker_pad13_next_set_visible"
+          ],
+          "name": "pad13_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 56,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 4072465864,
+          "helpers": [
+            "gsp_tracker_pad13_off_get_info",
+            "gsp_tracker_pad13_off_get_visible",
+            "gsp_tracker_pad13_off_set_visible"
+          ],
+          "name": "pad13_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 57,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 262687425,
+          "helpers": [
+            "gsp_tracker_pad13_play_get_info",
+            "gsp_tracker_pad13_play_get_visible",
+            "gsp_tracker_pad13_play_set_visible"
+          ],
+          "name": "pad13_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 58,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 1976890854,
+          "helpers": [
+            "gsp_tracker_pad14_dim_get_info",
+            "gsp_tracker_pad14_dim_get_visible",
+            "gsp_tracker_pad14_dim_set_visible"
+          ],
+          "name": "pad14_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 59,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 262421729,
+          "helpers": [
+            "gsp_tracker_pad14_next_get_info",
+            "gsp_tracker_pad14_next_get_visible",
+            "gsp_tracker_pad14_next_set_visible"
+          ],
+          "name": "pad14_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 60,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 955185301,
+          "helpers": [
+            "gsp_tracker_pad14_off_get_info",
+            "gsp_tracker_pad14_off_get_visible",
+            "gsp_tracker_pad14_off_set_visible"
+          ],
+          "name": "pad14_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 61,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 1834993938,
+          "helpers": [
+            "gsp_tracker_pad14_play_get_info",
+            "gsp_tracker_pad14_play_get_visible",
+            "gsp_tracker_pad14_play_set_visible"
+          ],
+          "name": "pad14_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 62,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 759810853,
+          "helpers": [
+            "gsp_tracker_pad15_dim_get_info",
+            "gsp_tracker_pad15_dim_get_visible",
+            "gsp_tracker_pad15_dim_set_visible"
+          ],
+          "name": "pad15_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 63,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 832939460,
+          "helpers": [
+            "gsp_tracker_pad15_next_get_info",
+            "gsp_tracker_pad15_next_get_visible",
+            "gsp_tracker_pad15_next_set_visible"
+          ],
+          "name": "pad15_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 64,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 938326046,
+          "helpers": [
+            "gsp_tracker_pad15_off_get_info",
+            "gsp_tracker_pad15_off_get_visible",
+            "gsp_tracker_pad15_off_set_visible"
+          ],
+          "name": "pad15_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 65,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 352,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 1842386319,
+          "helpers": [
+            "gsp_tracker_pad15_play_get_info",
+            "gsp_tracker_pad15_play_get_visible",
+            "gsp_tracker_pad15_play_set_visible"
+          ],
+          "name": "pad15_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 66,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 3047392780,
+          "helpers": [
+            "gsp_tracker_pad1_dim_get_info",
+            "gsp_tracker_pad1_dim_get_visible",
+            "gsp_tracker_pad1_dim_set_visible"
+          ],
+          "name": "pad1_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 67,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 1680181783,
+          "helpers": [
+            "gsp_tracker_pad1_next_get_info",
+            "gsp_tracker_pad1_next_get_visible",
+            "gsp_tracker_pad1_next_set_visible"
+          ],
+          "name": "pad1_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 68,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 3978818391,
+          "helpers": [
+            "gsp_tracker_pad1_off_get_info",
+            "gsp_tracker_pad1_off_get_visible",
+            "gsp_tracker_pad1_off_set_visible"
+          ],
+          "name": "pad1_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 69,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 3122843460,
+          "helpers": [
+            "gsp_tracker_pad1_play_get_info",
+            "gsp_tracker_pad1_play_get_visible",
+            "gsp_tracker_pad1_play_set_visible"
+          ],
+          "name": "pad1_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 70,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 872913993,
+          "helpers": [
+            "gsp_tracker_pad2_dim_get_info",
+            "gsp_tracker_pad2_dim_get_visible",
+            "gsp_tracker_pad2_dim_set_visible"
+          ],
+          "name": "pad2_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 71,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 1116655064,
+          "helpers": [
+            "gsp_tracker_pad2_next_get_info",
+            "gsp_tracker_pad2_next_get_visible",
+            "gsp_tracker_pad2_next_set_visible"
+          ],
+          "name": "pad2_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 72,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 207958810,
+          "helpers": [
+            "gsp_tracker_pad2_off_get_info",
+            "gsp_tracker_pad2_off_get_visible",
+            "gsp_tracker_pad2_off_set_visible"
+          ],
+          "name": "pad2_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 73,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 1243532883,
+          "helpers": [
+            "gsp_tracker_pad2_play_get_info",
+            "gsp_tracker_pad2_play_get_visible",
+            "gsp_tracker_pad2_play_set_visible"
+          ],
+          "name": "pad2_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 74,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 1517442794,
+          "helpers": [
+            "gsp_tracker_pad3_dim_get_info",
+            "gsp_tracker_pad3_dim_get_visible",
+            "gsp_tracker_pad3_dim_set_visible"
+          ],
+          "name": "pad3_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 75,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 4114560773,
+          "helpers": [
+            "gsp_tracker_pad3_next_get_info",
+            "gsp_tracker_pad3_next_get_visible",
+            "gsp_tracker_pad3_next_set_visible"
+          ],
+          "name": "pad3_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 76,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 1122788177,
+          "helpers": [
+            "gsp_tracker_pad3_off_get_info",
+            "gsp_tracker_pad3_off_get_visible",
+            "gsp_tracker_pad3_off_set_visible"
+          ],
+          "name": "pad3_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 77,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 76,
+            "y2": 156
+          },
+          "bounds_source": "compiled",
+          "component_key": 776293878,
+          "helpers": [
+            "gsp_tracker_pad3_play_get_info",
+            "gsp_tracker_pad3_play_get_visible",
+            "gsp_tracker_pad3_play_set_visible"
+          ],
+          "name": "pad3_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 78,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 2155921615,
+          "helpers": [
+            "gsp_tracker_pad4_dim_get_info",
+            "gsp_tracker_pad4_dim_get_visible",
+            "gsp_tracker_pad4_dim_set_visible"
+          ],
+          "name": "pad4_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 79,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 2522224094,
+          "helpers": [
+            "gsp_tracker_pad4_next_get_info",
+            "gsp_tracker_pad4_next_get_visible",
+            "gsp_tracker_pad4_next_set_visible"
+          ],
+          "name": "pad4_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 80,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 2868196940,
+          "helpers": [
+            "gsp_tracker_pad4_off_get_info",
+            "gsp_tracker_pad4_off_get_visible",
+            "gsp_tracker_pad4_off_set_visible"
+          ],
+          "name": "pad4_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 81,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 809852045,
+          "helpers": [
+            "gsp_tracker_pad4_play_get_info",
+            "gsp_tracker_pad4_play_get_visible",
+            "gsp_tracker_pad4_play_set_visible"
+          ],
+          "name": "pad4_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 82,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 2426038816,
+          "helpers": [
+            "gsp_tracker_pad5_dim_get_info",
+            "gsp_tracker_pad5_dim_get_visible",
+            "gsp_tracker_pad5_dim_set_visible"
+          ],
+          "name": "pad5_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 83,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 2985375115,
+          "helpers": [
+            "gsp_tracker_pad5_next_get_info",
+            "gsp_tracker_pad5_next_get_visible",
+            "gsp_tracker_pad5_next_set_visible"
+          ],
+          "name": "pad5_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 84,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 2245448979,
+          "helpers": [
+            "gsp_tracker_pad5_off_get_info",
+            "gsp_tracker_pad5_off_get_visible",
+            "gsp_tracker_pad5_off_set_visible"
+          ],
+          "name": "pad5_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 85,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 1328311048,
+          "helpers": [
+            "gsp_tracker_pad5_play_get_info",
+            "gsp_tracker_pad5_play_get_visible",
+            "gsp_tracker_pad5_play_set_visible"
+          ],
+          "name": "pad5_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 86,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 146477325,
+          "helpers": [
+            "gsp_tracker_pad6_dim_get_info",
+            "gsp_tracker_pad6_dim_get_visible",
+            "gsp_tracker_pad6_dim_set_visible"
+          ],
+          "name": "pad6_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 87,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 2881138876,
+          "helpers": [
+            "gsp_tracker_pad6_next_get_info",
+            "gsp_tracker_pad6_next_get_visible",
+            "gsp_tracker_pad6_next_set_visible"
+          ],
+          "name": "pad6_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 88,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 3511887318,
+          "helpers": [
+            "gsp_tracker_pad6_off_get_info",
+            "gsp_tracker_pad6_off_get_visible",
+            "gsp_tracker_pad6_off_set_visible"
+          ],
+          "name": "pad6_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 89,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2162,
+            "x2": 2262,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 2523940423,
+          "helpers": [
+            "gsp_tracker_pad6_play_get_info",
+            "gsp_tracker_pad6_play_get_visible",
+            "gsp_tracker_pad6_play_set_visible"
+          ],
+          "name": "pad6_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 90,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 1741215214,
+          "helpers": [
+            "gsp_tracker_pad7_dim_get_info",
+            "gsp_tracker_pad7_dim_get_visible",
+            "gsp_tracker_pad7_dim_set_visible"
+          ],
+          "name": "pad7_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 91,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 3718677241,
+          "helpers": [
+            "gsp_tracker_pad7_next_get_info",
+            "gsp_tracker_pad7_next_get_visible",
+            "gsp_tracker_pad7_next_set_visible"
+          ],
+          "name": "pad7_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 92,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 1342720813,
+          "helpers": [
+            "gsp_tracker_pad7_off_get_info",
+            "gsp_tracker_pad7_off_get_visible",
+            "gsp_tracker_pad7_off_set_visible"
+          ],
+          "name": "pad7_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 93,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2274,
+            "x2": 2374,
+            "y1": 168,
+            "y2": 248
+          },
+          "bounds_source": "compiled",
+          "component_key": 1701434954,
+          "helpers": [
+            "gsp_tracker_pad7_play_get_info",
+            "gsp_tracker_pad7_play_get_visible",
+            "gsp_tracker_pad7_play_set_visible"
+          ],
+          "name": "pad7_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 94,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 1561708323,
+          "helpers": [
+            "gsp_tracker_pad8_dim_get_info",
+            "gsp_tracker_pad8_dim_get_visible",
+            "gsp_tracker_pad8_dim_set_visible"
+          ],
+          "name": "pad8_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 95,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 3236867970,
+          "helpers": [
+            "gsp_tracker_pad8_next_get_info",
+            "gsp_tracker_pad8_next_get_visible",
+            "gsp_tracker_pad8_next_set_visible"
+          ],
+          "name": "pad8_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 96,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 3111823400,
+          "helpers": [
+            "gsp_tracker_pad8_off_get_info",
+            "gsp_tracker_pad8_off_get_visible",
+            "gsp_tracker_pad8_off_set_visible"
+          ],
+          "name": "pad8_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 97,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1938,
+            "x2": 2038,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 2355211425,
+          "helpers": [
+            "gsp_tracker_pad8_play_get_info",
+            "gsp_tracker_pad8_play_get_visible",
+            "gsp_tracker_pad8_play_set_visible"
+          ],
+          "name": "pad8_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 98,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 2236784804,
+          "helpers": [
+            "gsp_tracker_pad9_dim_get_info",
+            "gsp_tracker_pad9_dim_get_visible",
+            "gsp_tracker_pad9_dim_set_visible"
+          ],
+          "name": "pad9_dim",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 99,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 4112343935,
+          "helpers": [
+            "gsp_tracker_pad9_next_get_info",
+            "gsp_tracker_pad9_next_get_visible",
+            "gsp_tracker_pad9_next_set_visible"
+          ],
+          "name": "pad9_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 100,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 2054915039,
+          "helpers": [
+            "gsp_tracker_pad9_off_get_info",
+            "gsp_tracker_pad9_off_get_visible",
+            "gsp_tracker_pad9_off_set_visible"
+          ],
+          "name": "pad9_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 101,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2050,
+            "x2": 2150,
+            "y1": 260,
+            "y2": 340
+          },
+          "bounds_source": "compiled",
+          "component_key": 2840088940,
+          "helpers": [
+            "gsp_tracker_pad9_play_get_info",
+            "gsp_tracker_pad9_play_get_visible",
+            "gsp_tracker_pad9_play_set_visible"
+          ],
+          "name": "pad9_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 102,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2200,
+            "x2": 2370,
+            "y1": 46,
+            "y2": 64
+          },
+          "bounds_source": "compiled",
+          "component_key": 4130230926,
+          "helpers": [
+            "gsp_tracker_pad_next_get_info",
+            "gsp_tracker_pad_next_get_text",
+            "gsp_tracker_pad_next_set_text"
+          ],
+          "name": "pad_next",
           "operations": [
             {
               "method": "inspect_object"
@@ -1787,7 +4802,7 @@
           ],
           "properties": [
             {
-              "bind_id": 39,
+              "bind_id": 103,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -1799,42 +4814,19 @@
         },
         {
           "bounds": {
-            "x1": 2096,
-            "x2": 2232,
-            "y1": 396,
-            "y2": 448
-          },
-          "bounds_source": "compiled",
-          "component_key": 3394634138,
-          "helpers": [
-            "gsp_tracker_order_pause_get_info"
-          ],
-          "name": "order_pause",
-          "operations": [
-            {
-              "method": "inspect_object"
-            },
-            {
-              "bounds_source": "compiled",
-              "method": "tap_object"
-            }
-          ],
-          "properties": [],
-          "type": "button"
-        },
-        {
-          "bounds": {
             "x1": 1950,
-            "x2": 2086,
-            "y1": 396,
-            "y2": 448
+            "x2": 2170,
+            "y1": 46,
+            "y2": 64
           },
           "bounds_source": "compiled",
-          "component_key": 391859578,
+          "component_key": 3579194941,
           "helpers": [
-            "gsp_tracker_order_play_get_info"
+            "gsp_tracker_pad_play_get_info",
+            "gsp_tracker_pad_play_get_text",
+            "gsp_tracker_pad_play_set_text"
           ],
-          "name": "order_play",
+          "name": "pad_play",
           "operations": [
             {
               "method": "inspect_object"
@@ -1842,35 +4834,26 @@
             {
               "bounds_source": "compiled",
               "method": "tap_object"
-            }
-          ],
-          "properties": [],
-          "type": "button"
-        },
-        {
-          "bounds": {
-            "x1": 2242,
-            "x2": 2370,
-            "y1": 396,
-            "y2": 448
-          },
-          "bounds_source": "compiled",
-          "component_key": 2802534483,
-          "helpers": [
-            "gsp_tracker_order_restart_get_info"
-          ],
-          "name": "order_restart",
-          "operations": [
-            {
-              "method": "inspect_object"
             },
             {
-              "bounds_source": "compiled",
-              "method": "tap_object"
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
             }
           ],
-          "properties": [],
-          "type": "button"
+          "properties": [
+            {
+              "bind_id": 104,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
         },
         {
           "bounds": {
@@ -2037,99 +5020,6 @@
         },
         {
           "bounds": {
-            "x1": 2034,
-            "x2": 2108,
-            "y1": 186,
-            "y2": 234
-          },
-          "bounds_source": "compiled",
-          "component_key": 548323006,
-          "helpers": [
-            "gsp_tracker_pat_next_get_info"
-          ],
-          "name": "pat_next",
-          "operations": [
-            {
-              "method": "inspect_object"
-            },
-            {
-              "bounds_source": "compiled",
-              "method": "tap_object"
-            }
-          ],
-          "properties": [],
-          "type": "button"
-        },
-        {
-          "bounds": {
-            "x1": 1950,
-            "x2": 2024,
-            "y1": 186,
-            "y2": 234
-          },
-          "bounds_source": "compiled",
-          "component_key": 4233166522,
-          "helpers": [
-            "gsp_tracker_pat_prev_get_info"
-          ],
-          "name": "pat_prev",
-          "operations": [
-            {
-              "method": "inspect_object"
-            },
-            {
-              "bounds_source": "compiled",
-              "method": "tap_object"
-            }
-          ],
-          "properties": [],
-          "type": "button"
-        },
-        {
-          "bounds": {
-            "x1": 2230,
-            "x2": 2370,
-            "y1": 148,
-            "y2": 186
-          },
-          "bounds_source": "compiled",
-          "component_key": 3677506452,
-          "helpers": [
-            "gsp_tracker_pat_value_get_info",
-            "gsp_tracker_pat_value_get_text",
-            "gsp_tracker_pat_value_set_text"
-          ],
-          "name": "pat_value",
-          "operations": [
-            {
-              "method": "inspect_object"
-            },
-            {
-              "bounds_source": "compiled",
-              "method": "tap_object"
-            },
-            {
-              "max": 4294967295,
-              "method": "set_property",
-              "min": 0,
-              "property": "text",
-              "value_kind": "text"
-            }
-          ],
-          "properties": [
-            {
-              "bind_id": 40,
-              "key": "text",
-              "max": 4294967295,
-              "min": 0,
-              "property_key": 3185987134,
-              "value_kind": "text"
-            }
-          ],
-          "type": "label"
-        },
-        {
-          "bounds": {
             "x1": 1210,
             "x2": 1410,
             "y1": 24,
@@ -2161,7 +5051,7 @@
           ],
           "properties": [
             {
-              "bind_id": 41,
+              "bind_id": 105,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -2204,7 +5094,7 @@
           ],
           "properties": [
             {
-              "bind_id": 42,
+              "bind_id": 106,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -2272,7 +5162,7 @@
           ],
           "properties": [
             {
-              "bind_id": 43,
+              "bind_id": 107,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -2315,7 +5205,7 @@
           ],
           "properties": [
             {
-              "bind_id": 44,
+              "bind_id": 108,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -2367,49 +5257,6 @@
             }
           ],
           "type": "button"
-        },
-        {
-          "bounds": {
-            "x1": 1950,
-            "x2": 2370,
-            "y1": 366,
-            "y2": 384
-          },
-          "bounds_source": "compiled",
-          "component_key": 287514189,
-          "helpers": [
-            "gsp_tracker_seq_pos_get_info",
-            "gsp_tracker_seq_pos_get_text",
-            "gsp_tracker_seq_pos_set_text"
-          ],
-          "name": "seq_pos",
-          "operations": [
-            {
-              "method": "inspect_object"
-            },
-            {
-              "bounds_source": "compiled",
-              "method": "tap_object"
-            },
-            {
-              "max": 4294967295,
-              "method": "set_property",
-              "min": 0,
-              "property": "text",
-              "value_kind": "text"
-            }
-          ],
-          "properties": [
-            {
-              "bind_id": 45,
-              "key": "text",
-              "max": 4294967295,
-              "min": 0,
-              "property_key": 3185987134,
-              "value_kind": "text"
-            }
-          ],
-          "type": "label"
         },
         {
           "bounds": {
@@ -2693,7 +5540,7 @@
           ],
           "properties": [
             {
-              "bind_id": 46,
+              "bind_id": 109,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -2736,7 +5583,7 @@
           ],
           "properties": [
             {
-              "bind_id": 47,
+              "bind_id": 110,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -2856,7 +5703,7 @@
           ],
           "properties": [
             {
-              "bind_id": 48,
+              "bind_id": 111,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -2899,7 +5746,7 @@
           ],
           "properties": [
             {
-              "bind_id": 49,
+              "bind_id": 112,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -3019,7 +5866,7 @@
           ],
           "properties": [
             {
-              "bind_id": 50,
+              "bind_id": 113,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -3062,7 +5909,7 @@
           ],
           "properties": [
             {
-              "bind_id": 51,
+              "bind_id": 114,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -3182,7 +6029,7 @@
           ],
           "properties": [
             {
-              "bind_id": 52,
+              "bind_id": 115,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -3225,7 +6072,7 @@
           ],
           "properties": [
             {
-              "bind_id": 53,
+              "bind_id": 116,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -3268,7 +6115,7 @@
           ],
           "properties": [
             {
-              "bind_id": 54,
+              "bind_id": 117,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3311,7 +6158,7 @@
           ],
           "properties": [
             {
-              "bind_id": 55,
+              "bind_id": 118,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3354,7 +6201,7 @@
           ],
           "properties": [
             {
-              "bind_id": 56,
+              "bind_id": 119,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3397,7 +6244,7 @@
           ],
           "properties": [
             {
-              "bind_id": 57,
+              "bind_id": 120,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3440,7 +6287,7 @@
           ],
           "properties": [
             {
-              "bind_id": 58,
+              "bind_id": 121,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3483,7 +6330,7 @@
           ],
           "properties": [
             {
-              "bind_id": 59,
+              "bind_id": 122,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3526,7 +6373,7 @@
           ],
           "properties": [
             {
-              "bind_id": 60,
+              "bind_id": 123,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3569,7 +6416,7 @@
           ],
           "properties": [
             {
-              "bind_id": 61,
+              "bind_id": 124,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3637,7 +6484,7 @@
           ],
           "properties": [
             {
-              "bind_id": 62,
+              "bind_id": 125,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3705,7 +6552,7 @@
           ],
           "properties": [
             {
-              "bind_id": 63,
+              "bind_id": 126,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3773,7 +6620,7 @@
           ],
           "properties": [
             {
-              "bind_id": 64,
+              "bind_id": 127,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3841,7 +6688,7 @@
           ],
           "properties": [
             {
-              "bind_id": 65,
+              "bind_id": 128,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3884,7 +6731,7 @@
           ],
           "properties": [
             {
-              "bind_id": 66,
+              "bind_id": 129,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3927,7 +6774,7 @@
           ],
           "properties": [
             {
-              "bind_id": 67,
+              "bind_id": 130,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3970,7 +6817,7 @@
           ],
           "properties": [
             {
-              "bind_id": 68,
+              "bind_id": 131,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -4013,7 +6860,7 @@
           ],
           "properties": [
             {
-              "bind_id": 69,
+              "bind_id": 132,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -4056,7 +6903,7 @@
           ],
           "properties": [
             {
-              "bind_id": 70,
+              "bind_id": 133,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -4099,7 +6946,7 @@
           ],
           "properties": [
             {
-              "bind_id": 71,
+              "bind_id": 134,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -4142,7 +6989,7 @@
           ],
           "properties": [
             {
-              "bind_id": 72,
+              "bind_id": 135,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -4185,7 +7032,7 @@
           ],
           "properties": [
             {
-              "bind_id": 73,
+              "bind_id": 136,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -4194,99 +7041,6 @@
             }
           ],
           "type": "button"
-        },
-        {
-          "bounds": {
-            "x1": 2034,
-            "x2": 2108,
-            "y1": 94,
-            "y2": 142
-          },
-          "bounds_source": "compiled",
-          "component_key": 3163156801,
-          "helpers": [
-            "gsp_tracker_step_next_get_info"
-          ],
-          "name": "step_next",
-          "operations": [
-            {
-              "method": "inspect_object"
-            },
-            {
-              "bounds_source": "compiled",
-              "method": "tap_object"
-            }
-          ],
-          "properties": [],
-          "type": "button"
-        },
-        {
-          "bounds": {
-            "x1": 1950,
-            "x2": 2024,
-            "y1": 94,
-            "y2": 142
-          },
-          "bounds_source": "compiled",
-          "component_key": 2831593421,
-          "helpers": [
-            "gsp_tracker_step_prev_get_info"
-          ],
-          "name": "step_prev",
-          "operations": [
-            {
-              "method": "inspect_object"
-            },
-            {
-              "bounds_source": "compiled",
-              "method": "tap_object"
-            }
-          ],
-          "properties": [],
-          "type": "button"
-        },
-        {
-          "bounds": {
-            "x1": 2230,
-            "x2": 2370,
-            "y1": 56,
-            "y2": 94
-          },
-          "bounds_source": "compiled",
-          "component_key": 3990936353,
-          "helpers": [
-            "gsp_tracker_step_value_get_info",
-            "gsp_tracker_step_value_get_text",
-            "gsp_tracker_step_value_set_text"
-          ],
-          "name": "step_value",
-          "operations": [
-            {
-              "method": "inspect_object"
-            },
-            {
-              "bounds_source": "compiled",
-              "method": "tap_object"
-            },
-            {
-              "max": 4294967295,
-              "method": "set_property",
-              "min": 0,
-              "property": "text",
-              "value_kind": "text"
-            }
-          ],
-          "properties": [
-            {
-              "bind_id": 74,
-              "key": "text",
-              "max": 4294967295,
-              "min": 0,
-              "property_key": 3185987134,
-              "value_kind": "text"
-            }
-          ],
-          "type": "label"
         },
         {
           "bounds": {
@@ -4321,7 +7075,7 @@
           ],
           "properties": [
             {
-              "bind_id": 75,
+              "bind_id": 137,
               "key": "resource",
               "max": 4294967295,
               "min": 0,

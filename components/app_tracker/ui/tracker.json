@@ -1560,10 +1560,10 @@
       "type": "label",
       "parent_name": "page_order",
       "x": 30,
-      "y": 20,
+      "y": 10,
       "w": 300,
-      "h": 30,
-      "text": "SEQUENCER",
+      "h": 28,
+      "text": "PATTERN PADS",
       "font_size": 22,
       "fg_color": "#F2F2F0",
       "text_align": "left",
@@ -1572,302 +1572,1634 @@
     {
       "type": "label",
       "parent_name": "page_order",
+      "x": 30,
+      "y": 46,
+      "w": 220,
+      "h": 18,
+      "text": "PLAY --",
+      "font_size": 11,
+      "fg_color": "#8A8F98",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans.ttf",
+      "name": "pad_play",
+      "bind": "pad_play",
+      "bind_target": "text"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_order",
       "x": 280,
-      "y": 26,
+      "y": 46,
       "w": 170,
       "h": 18,
-      "text": "16 PATTERNS",
+      "text": "NEXT --",
       "font_size": 11,
-      "fg_color": "#8A8F98",
-      "text_align": "right",
-      "font": "fonts/DejaVuSans.ttf"
-    },
-    {
-      "type": "label",
-      "parent_name": "page_order",
-      "x": 30,
-      "y": 68,
-      "w": 200,
-      "h": 18,
-      "text": "ORDER STEP",
-      "font_size": 12,
-      "fg_color": "#8A8F98",
-      "text_align": "left",
-      "font": "fonts/DejaVuSans.ttf"
-    },
-    {
-      "type": "label",
-      "parent_name": "page_order",
-      "x": 310,
-      "y": 56,
-      "w": 140,
-      "h": 38,
-      "text": "12 / 44",
-      "font_size": 24,
-      "fg_color": "#FF4C01",
-      "text_align": "right",
-      "font": "fonts/DejaVuSans-Bold.ttf",
-      "name": "step_value",
-      "bind": "step_value",
-      "bind_target": "text"
-    },
-    {
-      "type": "button",
-      "parent_name": "page_order",
-      "name": "step_prev",
-      "x": 30,
-      "y": 94,
-      "w": 74,
-      "h": 48,
-      "text": "<",
-      "font_size": 20,
-      "fg_color": "#F2F2F0",
-      "bg_color": "#1B1E24",
-      "radius": 8,
-      "font": "fonts/DejaVuSans-Bold.ttf",
-      "callback": "step_prev_cb",
-      "events": [
-        {
-          "event": "click",
-          "action": "call",
-          "arg": 0
-        }
-      ]
-    },
-    {
-      "type": "button",
-      "parent_name": "page_order",
-      "name": "step_next",
-      "x": 114,
-      "y": 94,
-      "w": 74,
-      "h": 48,
-      "text": ">",
-      "font_size": 20,
-      "fg_color": "#F2F2F0",
-      "bg_color": "#1B1E24",
-      "radius": 8,
-      "font": "fonts/DejaVuSans-Bold.ttf",
-      "callback": "step_next_cb",
-      "events": [
-        {
-          "event": "click",
-          "action": "call",
-          "arg": 0
-        }
-      ]
-    },
-    {
-      "type": "label",
-      "parent_name": "page_order",
-      "x": 30,
-      "y": 160,
-      "w": 200,
-      "h": 18,
-      "text": "PATTERN",
-      "font_size": 12,
-      "fg_color": "#8A8F98",
-      "text_align": "left",
-      "font": "fonts/DejaVuSans.ttf"
-    },
-    {
-      "type": "label",
-      "parent_name": "page_order",
-      "x": 310,
-      "y": 148,
-      "w": 140,
-      "h": 38,
-      "text": "0C",
-      "font_size": 24,
       "fg_color": "#37D0FF",
       "text_align": "right",
-      "font": "fonts/DejaVuSans-Bold.ttf",
-      "name": "pat_value",
-      "bind": "pat_value",
-      "bind_target": "text"
-    },
-    {
-      "type": "button",
-      "parent_name": "page_order",
-      "name": "pat_prev",
-      "x": 30,
-      "y": 186,
-      "w": 74,
-      "h": 48,
-      "text": "<",
-      "font_size": 20,
-      "fg_color": "#F2F2F0",
-      "bg_color": "#1B1E24",
-      "radius": 8,
-      "font": "fonts/DejaVuSans-Bold.ttf",
-      "callback": "pat_prev_cb",
-      "events": [
-        {
-          "event": "click",
-          "action": "call",
-          "arg": 0
-        }
-      ]
-    },
-    {
-      "type": "button",
-      "parent_name": "page_order",
-      "name": "pat_next",
-      "x": 114,
-      "y": 186,
-      "w": 74,
-      "h": 48,
-      "text": ">",
-      "font_size": 20,
-      "fg_color": "#F2F2F0",
-      "bg_color": "#1B1E24",
-      "radius": 8,
-      "font": "fonts/DejaVuSans-Bold.ttf",
-      "callback": "pat_next_cb",
-      "events": [
-        {
-          "event": "click",
-          "action": "call",
-          "arg": 0
-        }
-      ]
-    },
-    {
-      "type": "button",
-      "parent_name": "page_order",
-      "name": "apply_btn",
-      "x": 196,
-      "y": 186,
-      "w": 132,
-      "h": 48,
-      "text": "APPLY",
-      "font_size": 15,
-      "fg_color": "#0B0C0E",
-      "bg_color": "#FF4C01",
-      "radius": 8,
-      "font": "fonts/DejaVuSans-Bold.ttf",
-      "callback": "apply_pattern_cb",
-      "events": [
-        {
-          "event": "click",
-          "action": "call",
-          "arg": 0
-        }
-      ]
-    },
-    {
-      "type": "label",
-      "parent_name": "page_order",
-      "x": 30,
-      "y": 250,
-      "w": 420,
-      "h": 110,
-      "text": "",
-      "font_size": 12,
-      "fg_color": "#F2F2F0",
-      "text_align": "left",
       "font": "fonts/DejaVuSans.ttf",
-      "name": "order_list",
-      "bind": "order_list",
-      "bind_target": "text"
-    },
-    {
-      "type": "label",
-      "parent_name": "page_order",
-      "x": 30,
-      "y": 366,
-      "w": 420,
-      "h": 18,
-      "text": "ORD 12  PAT 0C  ROW 27",
-      "font_size": 11,
-      "fg_color": "#8A8F98",
-      "text_align": "left",
-      "font": "fonts/DejaVuSans.ttf",
-      "name": "seq_pos",
-      "bind": "seq_pos",
+      "name": "pad_next",
+      "bind": "pad_next",
       "bind_target": "text"
     },
     {
       "type": "button",
       "parent_name": "page_order",
-      "name": "order_play",
-      "x": 30,
-      "y": 396,
-      "w": 136,
-      "h": 52,
-      "text": "PLAY",
-      "font_size": 15,
-      "fg_color": "#0B0C0E",
-      "bg_color": "#FF4C01",
-      "radius": 8,
-      "font": "fonts/DejaVuSans-Bold.ttf",
-      "callback": "order_play_cb",
-      "events": [
-        {
-          "event": "click",
-          "action": "call",
-          "arg": 0
-        }
-      ]
-    },
-    {
-      "type": "button",
-      "parent_name": "page_order",
-      "name": "order_pause",
-      "x": 176,
-      "y": 396,
-      "w": 136,
-      "h": 52,
-      "text": "PAUSE",
-      "font_size": 15,
-      "fg_color": "#F2F2F0",
-      "bg_color": "#1B1E24",
-      "radius": 8,
-      "font": "fonts/DejaVuSans-Bold.ttf",
-      "callback": "order_pause_cb",
-      "events": [
-        {
-          "event": "click",
-          "action": "call",
-          "arg": 0
-        }
-      ]
-    },
-    {
-      "type": "button",
-      "parent_name": "page_order",
-      "name": "order_restart",
-      "x": 322,
-      "y": 396,
-      "w": 128,
-      "h": 52,
-      "text": "RESTART",
-      "font_size": 15,
-      "fg_color": "#F2F2F0",
-      "bg_color": "#1B1E24",
-      "radius": 8,
-      "font": "fonts/DejaVuSans-Bold.ttf",
-      "callback": "order_restart_cb",
-      "events": [
-        {
-          "event": "click",
-          "action": "call",
-          "arg": 0
-        }
-      ]
-    },
-    {
-      "type": "label",
-      "parent_name": "page_order",
-      "x": 30,
-      "y": 454,
-      "w": 420,
-      "h": 14,
-      "text": "TAP < > TO EDIT ORDER \u00b7 APPLY WRITES PATTERN",
-      "font_size": 10,
+      "name": "pad0_dim",
+      "x": 18,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "00",
+      "font_size": 26,
       "fg_color": "#4A5058",
-      "text_align": "left",
-      "font": "fonts/DejaVuSans.ttf"
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad0_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad0_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad0_off",
+      "x": 18,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "00",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad0_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad0_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad0_play",
+      "x": 18,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "00",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad0_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad0_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad0_next",
+      "x": 18,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "00",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad0_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad0_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad1_dim",
+      "x": 130,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "01",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad1_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad1_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad1_off",
+      "x": 130,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "01",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad1_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad1_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad1_play",
+      "x": 130,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "01",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad1_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad1_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad1_next",
+      "x": 130,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "01",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad1_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad1_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad2_dim",
+      "x": 242,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "02",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad2_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad2_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad2_off",
+      "x": 242,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "02",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad2_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad2_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad2_play",
+      "x": 242,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "02",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad2_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad2_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad2_next",
+      "x": 242,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "02",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad2_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad2_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad3_dim",
+      "x": 354,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "03",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad3_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad3_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad3_off",
+      "x": 354,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "03",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad3_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad3_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad3_play",
+      "x": 354,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "03",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad3_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad3_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad3_next",
+      "x": 354,
+      "y": 76,
+      "w": 100,
+      "h": 80,
+      "text": "03",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad3_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad3_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad4_dim",
+      "x": 18,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "04",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad4_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad4_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad4_off",
+      "x": 18,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "04",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad4_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad4_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad4_play",
+      "x": 18,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "04",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad4_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad4_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad4_next",
+      "x": 18,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "04",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad4_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad4_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad5_dim",
+      "x": 130,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "05",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad5_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad5_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad5_off",
+      "x": 130,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "05",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad5_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad5_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad5_play",
+      "x": 130,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "05",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad5_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad5_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad5_next",
+      "x": 130,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "05",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad5_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad5_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad6_dim",
+      "x": 242,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "06",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad6_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad6_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad6_off",
+      "x": 242,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "06",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad6_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad6_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad6_play",
+      "x": 242,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "06",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad6_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad6_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad6_next",
+      "x": 242,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "06",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad6_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad6_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad7_dim",
+      "x": 354,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "07",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad7_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad7_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad7_off",
+      "x": 354,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "07",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad7_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad7_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad7_play",
+      "x": 354,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "07",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad7_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad7_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad7_next",
+      "x": 354,
+      "y": 168,
+      "w": 100,
+      "h": 80,
+      "text": "07",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad7_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad7_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad8_dim",
+      "x": 18,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "08",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad8_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad8_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad8_off",
+      "x": 18,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "08",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad8_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad8_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad8_play",
+      "x": 18,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "08",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad8_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad8_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad8_next",
+      "x": 18,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "08",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad8_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad8_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad9_dim",
+      "x": 130,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "09",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad9_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad9_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad9_off",
+      "x": 130,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "09",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad9_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad9_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad9_play",
+      "x": 130,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "09",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad9_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad9_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad9_next",
+      "x": 130,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "09",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad9_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad9_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad10_dim",
+      "x": 242,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "0A",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad10_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad10_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad10_off",
+      "x": 242,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "0A",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad10_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad10_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad10_play",
+      "x": 242,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "0A",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad10_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad10_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad10_next",
+      "x": 242,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "0A",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad10_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad10_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad11_dim",
+      "x": 354,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "0B",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad11_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad11_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad11_off",
+      "x": 354,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "0B",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad11_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad11_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad11_play",
+      "x": 354,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "0B",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad11_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad11_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad11_next",
+      "x": 354,
+      "y": 260,
+      "w": 100,
+      "h": 80,
+      "text": "0B",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad11_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad11_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad12_dim",
+      "x": 18,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0C",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad12_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad12_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad12_off",
+      "x": 18,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0C",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad12_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad12_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad12_play",
+      "x": 18,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0C",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad12_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad12_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad12_next",
+      "x": 18,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0C",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad12_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad12_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad13_dim",
+      "x": 130,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0D",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad13_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad13_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad13_off",
+      "x": 130,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0D",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad13_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad13_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad13_play",
+      "x": 130,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0D",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad13_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad13_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad13_next",
+      "x": 130,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0D",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad13_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad13_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad14_dim",
+      "x": 242,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0E",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad14_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad14_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad14_off",
+      "x": 242,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0E",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad14_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad14_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad14_play",
+      "x": 242,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0E",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad14_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad14_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad14_next",
+      "x": 242,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0E",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad14_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad14_next",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad15_dim",
+      "x": 354,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0F",
+      "font_size": 26,
+      "fg_color": "#4A5058",
+      "bg_color": "#14161A",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad15_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad15_dim",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad15_off",
+      "x": 354,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0F",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad15_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad15_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad15_play",
+      "x": 354,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0F",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad15_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad15_play",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pad15_next",
+      "x": 354,
+      "y": 352,
+      "w": 100,
+      "h": 80,
+      "text": "0F",
+      "font_size": 26,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pad15_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "pad15_next",
+      "bind_target": "visible"
     },
     {
       "type": "container",

@@ -107,10 +107,8 @@ struct app_tracker {
     uint16_t *grid_frame;
     uint16_t *waves_frame;
     int page;
-    int selected_step;
-    int selected_pattern;
-    int shown_step;
-    int shown_pattern;
+    int pad_playing;
+    int pad_pending;
     int volume;
     int mix_scroll;
     int mix_channels;
@@ -135,15 +133,7 @@ static void update_labels(app_tracker_t *state, bool force);
 static void refresh_mix(app_tracker_t *state);
 static void update_transport(app_tracker_t *state);
 static void update_master_meter(app_tracker_t *state);
-
-static int normalized_pattern(app_tracker_t *state, int pattern)
-{
-    const int patterns = tracker_engine_patterns(state->engine);
-    if (pattern < 0 || pattern >= patterns) {
-        return 0;
-    }
-    return pattern;
-}
+static void refresh_pads(app_tracker_t *state, bool force);
 
 static void update_dots(app_tracker_t *state)
 {
@@ -154,38 +144,9 @@ static void update_dots(app_tracker_t *state)
     gsp_tracker_dot_on_4_set_visible(state->ui, state->page == 4);
 }
 
-static void update_order_list(app_tracker_t *state)
-{
-    char text[512];
-    size_t used = 0;
-    const int orders = tracker_engine_orders(state->engine);
-    const int patterns = tracker_engine_patterns(state->engine);
-    text[0] = '\0';
-    for (int offset = -3; offset <= 3; ++offset) {
-        const int step = state->selected_step + offset;
-        if (step < 0 || step >= orders) {
-            continue;
-        }
-        const int pattern = tracker_engine_pattern_at(state->engine, step);
-        const char marker = step == state->selected_step ? '>' : ' ';
-        const int written =
-            (pattern >= 0 && pattern < patterns)
-                ? snprintf(text + used, sizeof(text) - used,
-                           "%c%02X  PATTERN %02X\n", marker, step, pattern)
-                : snprintf(text + used, sizeof(text) - used,
-                           "%c%02X  PATTERN --\n", marker, step);
-        if (written <= 0 || used + (size_t)written >= sizeof(text)) {
-            break;
-        }
-        used += (size_t)written;
-    }
-    gsp_tracker_order_list_set_text(state->ui, text);
-    state->shown_step = state->selected_step;
-    state->shown_pattern = state->selected_pattern;
-}
-
 static void update_labels(app_tracker_t *state, bool force)
 {
+    (void)force;
     tracker_status_t status;
     tracker_engine_get_status(state->engine, &status);
     char buffer[40];
@@ -203,20 +164,9 @@ static void update_labels(app_tracker_t *state, bool force)
     snprintf(buffer, sizeof(buffer), "ORD %02X  PAT %02X  ROW %02X",
              status.order_index, status.pattern, status.row);
     gsp_tracker_pb_pos_set_text(state->ui, buffer);
-    gsp_tracker_seq_pos_set_text(state->ui, buffer);
 
     snprintf(buffer, sizeof(buffer), "%d", state->volume);
     gsp_tracker_master_value_set_text(state->ui, buffer);
-
-    if (force || state->shown_step != state->selected_step ||
-        state->shown_pattern != state->selected_pattern) {
-        update_order_list(state);
-    }
-    snprintf(buffer, sizeof(buffer), "%02X / %02X", state->selected_step,
-             status.orders > 0 ? status.orders : 0);
-    gsp_tracker_step_value_set_text(state->ui, buffer);
-    snprintf(buffer, sizeof(buffer), "%02X", state->selected_pattern);
-    gsp_tracker_pat_value_set_text(state->ui, buffer);
 }
 
 /* Meter zones in dBFS: the bar spans -48..0, green ends at -12 and yellow at
@@ -260,6 +210,115 @@ static void update_transport(app_tracker_t *state)
     gsp_tracker_pp_play_text_set_text(state->ui, playing ? "" : ">");
     gsp_tracker_pp_pause_text_set_text(state->ui, playing ? "II" : "");
     gsp_tracker_nav_icon_set_text(state->ui, playing ? "[]" : "|<");
+}
+
+/* --- Pattern pads ---------------------------------------------------------
+ * A 4x4 clip launcher on the last page: the first launch takes over at once and
+ * loops that pattern, later taps are queued by the engine and start at the next
+ * pattern boundary. Tapping the playing pad stops it. */
+static const uint16_t k_pad_off[16] = {
+    GSP_TRACKER_BIND_PAD0_OFF,  GSP_TRACKER_BIND_PAD1_OFF,  GSP_TRACKER_BIND_PAD2_OFF,
+    GSP_TRACKER_BIND_PAD3_OFF,  GSP_TRACKER_BIND_PAD4_OFF,  GSP_TRACKER_BIND_PAD5_OFF,
+    GSP_TRACKER_BIND_PAD6_OFF,  GSP_TRACKER_BIND_PAD7_OFF,  GSP_TRACKER_BIND_PAD8_OFF,
+    GSP_TRACKER_BIND_PAD9_OFF,  GSP_TRACKER_BIND_PAD10_OFF, GSP_TRACKER_BIND_PAD11_OFF,
+    GSP_TRACKER_BIND_PAD12_OFF, GSP_TRACKER_BIND_PAD13_OFF, GSP_TRACKER_BIND_PAD14_OFF,
+    GSP_TRACKER_BIND_PAD15_OFF,
+};
+static const uint16_t k_pad_play[16] = {
+    GSP_TRACKER_BIND_PAD0_PLAY,  GSP_TRACKER_BIND_PAD1_PLAY,  GSP_TRACKER_BIND_PAD2_PLAY,
+    GSP_TRACKER_BIND_PAD3_PLAY,  GSP_TRACKER_BIND_PAD4_PLAY,  GSP_TRACKER_BIND_PAD5_PLAY,
+    GSP_TRACKER_BIND_PAD6_PLAY,  GSP_TRACKER_BIND_PAD7_PLAY,  GSP_TRACKER_BIND_PAD8_PLAY,
+    GSP_TRACKER_BIND_PAD9_PLAY,  GSP_TRACKER_BIND_PAD10_PLAY, GSP_TRACKER_BIND_PAD11_PLAY,
+    GSP_TRACKER_BIND_PAD12_PLAY, GSP_TRACKER_BIND_PAD13_PLAY, GSP_TRACKER_BIND_PAD14_PLAY,
+    GSP_TRACKER_BIND_PAD15_PLAY,
+};
+static const uint16_t k_pad_next[16] = {
+    GSP_TRACKER_BIND_PAD0_NEXT,  GSP_TRACKER_BIND_PAD1_NEXT,  GSP_TRACKER_BIND_PAD2_NEXT,
+    GSP_TRACKER_BIND_PAD3_NEXT,  GSP_TRACKER_BIND_PAD4_NEXT,  GSP_TRACKER_BIND_PAD5_NEXT,
+    GSP_TRACKER_BIND_PAD6_NEXT,  GSP_TRACKER_BIND_PAD7_NEXT,  GSP_TRACKER_BIND_PAD8_NEXT,
+    GSP_TRACKER_BIND_PAD9_NEXT,  GSP_TRACKER_BIND_PAD10_NEXT, GSP_TRACKER_BIND_PAD11_NEXT,
+    GSP_TRACKER_BIND_PAD12_NEXT, GSP_TRACKER_BIND_PAD13_NEXT, GSP_TRACKER_BIND_PAD14_NEXT,
+    GSP_TRACKER_BIND_PAD15_NEXT,
+};
+static const uint16_t k_pad_dim[16] = {
+    GSP_TRACKER_BIND_PAD0_DIM,  GSP_TRACKER_BIND_PAD1_DIM,
+    GSP_TRACKER_BIND_PAD2_DIM,  GSP_TRACKER_BIND_PAD3_DIM,
+    GSP_TRACKER_BIND_PAD4_DIM,  GSP_TRACKER_BIND_PAD5_DIM,
+    GSP_TRACKER_BIND_PAD6_DIM,  GSP_TRACKER_BIND_PAD7_DIM,
+    GSP_TRACKER_BIND_PAD8_DIM,  GSP_TRACKER_BIND_PAD9_DIM,
+    GSP_TRACKER_BIND_PAD10_DIM, GSP_TRACKER_BIND_PAD11_DIM,
+    GSP_TRACKER_BIND_PAD12_DIM, GSP_TRACKER_BIND_PAD13_DIM,
+    GSP_TRACKER_BIND_PAD14_DIM, GSP_TRACKER_BIND_PAD15_DIM,
+};
+typedef bool (*event_match_fn)(const esp_gsp_event_t *event);
+static const event_match_fn k_pad_event[16] = {
+    gsp_tracker_event_is_pad0_cb,  gsp_tracker_event_is_pad1_cb,
+    gsp_tracker_event_is_pad2_cb,  gsp_tracker_event_is_pad3_cb,
+    gsp_tracker_event_is_pad4_cb,  gsp_tracker_event_is_pad5_cb,
+    gsp_tracker_event_is_pad6_cb,  gsp_tracker_event_is_pad7_cb,
+    gsp_tracker_event_is_pad8_cb,  gsp_tracker_event_is_pad9_cb,
+    gsp_tracker_event_is_pad10_cb, gsp_tracker_event_is_pad11_cb,
+    gsp_tracker_event_is_pad12_cb, gsp_tracker_event_is_pad13_cb,
+    gsp_tracker_event_is_pad14_cb, gsp_tracker_event_is_pad15_cb,
+};
+
+static void refresh_pads(app_tracker_t *state, bool force)
+{
+    const int patterns = tracker_engine_patterns(state->engine);
+    const bool playing = tracker_engine_is_playing(state->engine);
+    const int launched = tracker_engine_launched_pattern(state->engine);
+    const int pending = tracker_engine_pending_pattern(state->engine);
+    const int shown_playing = playing ? launched : -1;
+    if (!force && shown_playing == state->pad_playing &&
+        pending == state->pad_pending) {
+        return;
+    }
+    state->pad_playing = shown_playing;
+    state->pad_pending = pending;
+    for (int pad = 0; pad < 16; ++pad) {
+        const bool available = pad < patterns;
+        const bool is_playing = available && pad == shown_playing;
+        const bool is_pending = available && !is_playing && pad == pending;
+        (void)esp_gsp_set_visible(state->ui, k_pad_dim[pad], !available);
+        (void)esp_gsp_set_visible(state->ui, k_pad_off[pad],
+                                  available && !is_playing && !is_pending);
+        (void)esp_gsp_set_visible(state->ui, k_pad_play[pad], is_playing);
+        (void)esp_gsp_set_visible(state->ui, k_pad_next[pad], is_pending);
+    }
+    char text[24];
+    if (shown_playing >= 0) {
+        snprintf(text, sizeof(text), "PLAY %02X", shown_playing);
+    } else {
+        snprintf(text, sizeof(text), "PLAY --");
+    }
+    (void)esp_gsp_set_text(state->ui, GSP_TRACKER_BIND_PAD_PLAY, text);
+    if (pending >= 0) {
+        snprintf(text, sizeof(text), "NEXT %02X", pending);
+    } else {
+        snprintf(text, sizeof(text), "NEXT --");
+    }
+    (void)esp_gsp_set_text(state->ui, GSP_TRACKER_BIND_PAD_NEXT, text);
+}
+
+static void launch_pad(app_tracker_t *state, int pad)
+{
+    const int patterns = tracker_engine_patterns(state->engine);
+    if (pad < 0 || pad >= patterns) {
+        return;
+    }
+    const bool playing = tracker_engine_is_playing(state->engine);
+    const int launched = tracker_engine_launched_pattern(state->engine);
+    if (playing && launched == pad) {
+        tracker_engine_pause(state->engine);
+    } else {
+        tracker_engine_launch_pattern(state->engine, pad);
+        if (!playing) {
+            tracker_engine_play(state->engine);
+        }
+    }
+    update_labels(state, true);
+    update_transport(state);
+    refresh_pads(state, true);
 }
 
 static void update_master_meter(app_tracker_t *state)
@@ -681,6 +740,10 @@ static void ui_tick(esp_gsp_handle_t ui, void *context)
     if (state->tick_count % LABEL_REFRESH_TICKS == 0) {
         update_labels(state, false);
         update_transport(state);
+        if (state->page == PAGE_ORDER) {
+            /* Picks up a queued pad once the engine crosses the boundary. */
+            refresh_pads(state, false);
+        }
     }
     const bool playing = tracker_engine_is_playing(state->engine);
     if (playing != state->last_playing) {
@@ -758,6 +821,8 @@ static void on_component_event(esp_gsp_handle_t ui,
     update_transport(state);
     if (page == PAGE_MIX) {
         refresh_mix(state);
+    } else if (page == PAGE_ORDER) {
+        refresh_pads(state, true);
     }
 }
 
@@ -772,6 +837,7 @@ static void ai_short_press(void *handle, void *data)
     }
     update_labels(state, true);
     update_transport(state);
+    refresh_pads(state, true);
 }
 
 static void ai_long_press(void *handle, void *data)
@@ -782,6 +848,7 @@ static void ai_long_press(void *handle, void *data)
     tracker_engine_restart(state->engine);
     update_labels(state, true);
     update_transport(state);
+    refresh_pads(state, true);
 }
 
 static void on_event(esp_gsp_handle_t ui, const esp_gsp_event_t *event, void *context)
@@ -793,10 +860,13 @@ static void on_event(esp_gsp_handle_t ui, const esp_gsp_event_t *event, void *co
         if (tracker_engine_is_playing(state->engine)) {
             tracker_engine_pause(state->engine);
         } else {
+            /* The PLAYBACK page plays the song; leave the pad pattern loop. */
+            tracker_engine_stop_pattern_launch(state->engine);
             tracker_engine_play(state->engine);
         }
         update_labels(state, true);
         update_transport(state);
+        refresh_pads(state, true);
         return;
     }
     if (gsp_tracker_event_is_nav_cb(event)) {
@@ -804,6 +874,7 @@ static void on_event(esp_gsp_handle_t ui, const esp_gsp_event_t *event, void *co
         tracker_engine_restart(state->engine);
         update_labels(state, true);
         update_transport(state);
+        refresh_pads(state, true);
         return;
     }
     if (gsp_tracker_event_is_master_fader_cb(event)) {
@@ -923,57 +994,11 @@ static void on_event(esp_gsp_handle_t ui, const esp_gsp_event_t *event, void *co
         update_labels(state, false);
         return;
     }
-    if (gsp_tracker_event_is_order_play_cb(event)) {
-        tracker_engine_play(state->engine);
-        update_labels(state, true);
-        update_transport(state);
-        return;
-    }
-    if (gsp_tracker_event_is_order_pause_cb(event)) {
-        tracker_engine_pause(state->engine);
-        update_labels(state, true);
-        update_transport(state);
-        return;
-    }
-    if (gsp_tracker_event_is_order_restart_cb(event)) {
-        tracker_engine_restart(state->engine);
-        update_labels(state, true);
-        update_transport(state);
-        return;
-    }
-    if (gsp_tracker_event_is_step_prev_cb(event) ||
-        gsp_tracker_event_is_step_next_cb(event)) {
-        const int orders = tracker_engine_orders(state->engine);
-        if (orders > 0) {
-            const int delta = gsp_tracker_event_is_step_next_cb(event) ? 1 : -1;
-            state->selected_step =
-                (state->selected_step + delta + orders) % orders;
-            state->selected_pattern = normalized_pattern(
-                state, tracker_engine_pattern_at(state->engine,
-                                                 state->selected_step));
-            update_labels(state, true);
+    for (int pad = 0; pad < 16; ++pad) {
+        if (k_pad_event[pad](event)) {
+            launch_pad(state, pad);
+            return;
         }
-        return;
-    }
-    if (gsp_tracker_event_is_pat_prev_cb(event) ||
-        gsp_tracker_event_is_pat_next_cb(event)) {
-        const int patterns = tracker_engine_patterns(state->engine);
-        if (patterns > 0) {
-            const int delta = gsp_tracker_event_is_pat_next_cb(event) ? 1 : -1;
-            state->selected_pattern =
-                (normalized_pattern(state, state->selected_pattern) + delta +
-                 patterns) %
-                patterns;
-            update_labels(state, true);
-        }
-        return;
-    }
-    if (gsp_tracker_event_is_apply_pattern_cb(event)) {
-        tracker_engine_set_pattern_at(state->engine, state->selected_step,
-                                      state->selected_pattern);
-        tracker_engine_restart(state->engine);
-        update_labels(state, true);
-        return;
     }
 }
 
@@ -1014,9 +1039,8 @@ esp_err_t app_tracker_start(esp_gsp_handle_t ui, tracker_engine_t *engine,
     if (state->mix_channels > TRACKER_MIX_STRIPS) {
         state->mix_channels = TRACKER_MIX_STRIPS;
     }
-    state->selected_step = status.order_index;
-    state->selected_pattern = normalized_pattern(
-        state, tracker_engine_pattern_at(engine, status.order_index));
+    state->pad_playing = -1;
+    state->pad_pending = -1;
 
     esp_gsp_err_t error = esp_gsp_on_event(ui, on_event, state);
     if (error == ESP_GSP_OK) {
@@ -1052,6 +1076,7 @@ esp_err_t app_tracker_start(esp_gsp_handle_t ui, tracker_engine_t *engine,
         state->slot_channel[slot] = -1;
     }
     refresh_mix(state);
+    refresh_pads(state, true);
 
     state->timer = esp_gsp_timer_create(ui, UI_TICK_MS, ui_tick, state);
     if (state->timer == NULL) {
@@ -1124,6 +1149,8 @@ void app_tracker_set_page(app_tracker_t *handle, int page)
     update_transport(handle);
     if (page == PAGE_MIX) {
         refresh_mix(handle);
+    } else if (page == PAGE_ORDER) {
+        refresh_pads(handle, true);
     }
 }
 

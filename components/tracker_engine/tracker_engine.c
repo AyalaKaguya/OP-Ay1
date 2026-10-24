@@ -108,7 +108,9 @@ static void publish_status(tracker_engine_t *engine)
     tracker_status_t snapshot;
     memset(&snapshot, 0, sizeof(snapshot));
     snapshot.order_index = engine->order_index;
-    snapshot.pattern = engine->module.orders[engine->order_index];
+    snapshot.pattern = engine->launch_pattern >= 0
+                           ? engine->launch_pattern
+                           : engine->module.orders[engine->order_index];
     snapshot.row = engine->row;
     snapshot.row_count = TRACKER_PATTERN_ROWS;
     snapshot.patterns = engine->module.pattern_count;
@@ -183,10 +185,20 @@ static void advance_order_locked(tracker_engine_t *engine)
 static void next_row_locked(tracker_engine_t *engine)
 {
     ++engine->row;
-    if (engine->row >= TRACKER_PATTERN_ROWS) {
-        engine->row = 0;
-        advance_order_locked(engine);
+    if (engine->row < TRACKER_PATTERN_ROWS) {
+        return;
     }
+    engine->row = 0;
+    if (engine->launch_pattern >= 0) {
+        /* Pattern-pad mode: loop this pattern and apply a queued launch at the
+         * pattern boundary (bar aligned) instead of walking the order list. */
+        if (engine->pending_pattern >= 0) {
+            engine->launch_pattern = engine->pending_pattern;
+            engine->pending_pattern = -1;
+        }
+        return;
+    }
+    advance_order_locked(engine);
 }
 
 static void apply_event(tracker_engine_t *engine, tracker_voice_t *voice,
@@ -311,7 +323,10 @@ static void start_tick_locked(tracker_engine_t *engine)
             voice->portamento_speed = 0;
         }
 
-        const uint8_t pattern = engine->module.orders[engine->order_index];
+        const uint8_t pattern =
+            engine->launch_pattern >= 0
+                ? (uint8_t)engine->launch_pattern
+                : engine->module.orders[engine->order_index];
         for (int channel = 0; channel < engine->module.channel_count;
              ++channel) {
             const tracker_cell_data_t *cell =
@@ -387,6 +402,8 @@ tracker_engine_t *tracker_engine_create(const uint8_t *s3m, size_t size)
     engine->tempo = engine->module.initial_tempo;
     engine->speed_multiplier = 1.0f;
     engine->loop = true;
+    engine->launch_pattern = -1;
+    engine->pending_pattern = -1;
     engine->order_index = first_playable_order(engine);
     publish_status(engine);
     return engine;
@@ -432,6 +449,8 @@ void tracker_engine_restart(tracker_engine_t *engine)
         return;
     }
     engine_lock(engine);
+    engine->launch_pattern = -1;
+    engine->pending_pattern = -1;
     engine->order_index = first_playable_order(engine);
     engine->row = 0;
     engine->tick = 0;
@@ -440,6 +459,66 @@ void tracker_engine_restart(tracker_engine_t *engine)
     tracker_mixer_reset(&engine->mixer, &engine->module);
     publish_status(engine);
     engine_unlock(engine);
+}
+
+void tracker_engine_launch_pattern(tracker_engine_t *engine, int pattern)
+{
+    if (engine == NULL || pattern < 0 ||
+        pattern >= engine->module.pattern_count) {
+        return;
+    }
+    engine_lock(engine);
+    if (engine->launch_pattern < 0) {
+        /* The first pad takes over right away from the pattern's first row. */
+        engine->launch_pattern = pattern;
+        engine->pending_pattern = -1;
+        engine->row = 0;
+        engine->tick = 0;
+        engine->tick_frames_left = 0;
+    } else if (pattern == engine->launch_pattern) {
+        engine->pending_pattern = -1;
+    } else {
+        engine->pending_pattern = pattern;
+    }
+    publish_status(engine);
+    engine_unlock(engine);
+}
+
+void tracker_engine_stop_pattern_launch(tracker_engine_t *engine)
+{
+    if (engine == NULL) {
+        return;
+    }
+    engine_lock(engine);
+    engine->launch_pattern = -1;
+    engine->pending_pattern = -1;
+    engine->row = 0;
+    engine->tick = 0;
+    engine->tick_frames_left = 0;
+    publish_status(engine);
+    engine_unlock(engine);
+}
+
+int tracker_engine_launched_pattern(tracker_engine_t *engine)
+{
+    if (engine == NULL) {
+        return -1;
+    }
+    engine_lock(engine);
+    const int pattern = engine->launch_pattern;
+    engine_unlock(engine);
+    return pattern;
+}
+
+int tracker_engine_pending_pattern(tracker_engine_t *engine)
+{
+    if (engine == NULL) {
+        return -1;
+    }
+    engine_lock(engine);
+    const int pattern = engine->pending_pattern;
+    engine_unlock(engine);
+    return pattern;
 }
 
 void tracker_engine_set_loop(tracker_engine_t *engine, bool loop)
@@ -614,6 +693,10 @@ int tracker_engine_song_rows(tracker_engine_t *engine)
         return -1;
     }
     engine_lock(engine);
+    if (engine->launch_pattern >= 0) {
+        engine_unlock(engine);
+        return TRACKER_PATTERN_ROWS;
+    }
     int total = 0;
     for (int index = 0; index < engine->module.order_count; ++index) {
         if (engine->module.orders[index] < engine->module.pattern_count) {
@@ -630,6 +713,11 @@ int tracker_engine_current_song_row(tracker_engine_t *engine)
         return -1;
     }
     engine_lock(engine);
+    if (engine->launch_pattern >= 0) {
+        const int row = engine->row;
+        engine_unlock(engine);
+        return row;
+    }
     int base = 0;
     for (int index = 0; index < engine->order_index; ++index) {
         if (engine->module.orders[index] < engine->module.pattern_count) {
@@ -648,6 +736,19 @@ bool tracker_engine_song_row_at(tracker_engine_t *engine, int song_row,
         return false;
     }
     engine_lock(engine);
+    if (engine->launch_pattern >= 0) {
+        const bool ok = song_row < TRACKER_PATTERN_ROWS;
+        if (ok) {
+            if (pattern != NULL) {
+                *pattern = engine->launch_pattern;
+            }
+            if (row != NULL) {
+                *row = song_row;
+            }
+        }
+        engine_unlock(engine);
+        return ok;
+    }
     bool found = false;
     for (int index = 0; index < engine->module.order_count; ++index) {
         const uint8_t candidate = engine->module.orders[index];

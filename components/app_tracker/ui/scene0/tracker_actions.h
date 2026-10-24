@@ -5,48 +5,66 @@
 
 #pragma once
 
-#define GSP_ACT_ID_APPLY_PATTERN_CB 0
-#define GSP_ACT_ID_MASTER_FADER_CB 1
-#define GSP_ACT_ID_NAV_CB 2
-#define GSP_ACT_ID_ORDER_PAUSE_CB 3
-#define GSP_ACT_ID_ORDER_PLAY_CB 4
-#define GSP_ACT_ID_ORDER_RESTART_CB 5
-#define GSP_ACT_ID_PAT_NEXT_CB 6
-#define GSP_ACT_ID_PAT_PREV_CB 7
-#define GSP_ACT_ID_PP_CB 8
-#define GSP_ACT_ID_REC_CB 9
-#define GSP_ACT_ID_SLOT_FADER0_CB 10
-#define GSP_ACT_ID_SLOT_FADER1_CB 11
-#define GSP_ACT_ID_SLOT_FADER2_CB 12
-#define GSP_ACT_ID_SLOT_FADER3_CB 13
-#define GSP_ACT_ID_SLOT_MUTE0_CB 14
-#define GSP_ACT_ID_SLOT_MUTE1_CB 15
-#define GSP_ACT_ID_SLOT_MUTE2_CB 16
-#define GSP_ACT_ID_SLOT_MUTE3_CB 17
-#define GSP_ACT_ID_SLOT_SOLO0_CB 18
-#define GSP_ACT_ID_SLOT_SOLO1_CB 19
-#define GSP_ACT_ID_SLOT_SOLO2_CB 20
-#define GSP_ACT_ID_SLOT_SOLO3_CB 21
-#define GSP_ACT_ID_SPEED_05_CB 22
-#define GSP_ACT_ID_SPEED_10_CB 23
-#define GSP_ACT_ID_SPEED_15_CB 24
-#define GSP_ACT_ID_SPEED_20_CB 25
-#define GSP_ACT_ID_STEP_NEXT_CB 26
-#define GSP_ACT_ID_STEP_PREV_CB 27
+#define GSP_ACT_ID_MASTER_FADER_CB 0
+#define GSP_ACT_ID_NAV_CB 1
+#define GSP_ACT_ID_PAD0_CB 2
+#define GSP_ACT_ID_PAD10_CB 3
+#define GSP_ACT_ID_PAD11_CB 4
+#define GSP_ACT_ID_PAD12_CB 5
+#define GSP_ACT_ID_PAD13_CB 6
+#define GSP_ACT_ID_PAD14_CB 7
+#define GSP_ACT_ID_PAD15_CB 8
+#define GSP_ACT_ID_PAD1_CB 9
+#define GSP_ACT_ID_PAD2_CB 10
+#define GSP_ACT_ID_PAD3_CB 11
+#define GSP_ACT_ID_PAD4_CB 12
+#define GSP_ACT_ID_PAD5_CB 13
+#define GSP_ACT_ID_PAD6_CB 14
+#define GSP_ACT_ID_PAD7_CB 15
+#define GSP_ACT_ID_PAD8_CB 16
+#define GSP_ACT_ID_PAD9_CB 17
+#define GSP_ACT_ID_PP_CB 18
+#define GSP_ACT_ID_REC_CB 19
+#define GSP_ACT_ID_SLOT_FADER0_CB 20
+#define GSP_ACT_ID_SLOT_FADER1_CB 21
+#define GSP_ACT_ID_SLOT_FADER2_CB 22
+#define GSP_ACT_ID_SLOT_FADER3_CB 23
+#define GSP_ACT_ID_SLOT_MUTE0_CB 24
+#define GSP_ACT_ID_SLOT_MUTE1_CB 25
+#define GSP_ACT_ID_SLOT_MUTE2_CB 26
+#define GSP_ACT_ID_SLOT_MUTE3_CB 27
+#define GSP_ACT_ID_SLOT_SOLO0_CB 28
+#define GSP_ACT_ID_SLOT_SOLO1_CB 29
+#define GSP_ACT_ID_SLOT_SOLO2_CB 30
+#define GSP_ACT_ID_SLOT_SOLO3_CB 31
+#define GSP_ACT_ID_SPEED_05_CB 32
+#define GSP_ACT_ID_SPEED_10_CB 33
+#define GSP_ACT_ID_SPEED_15_CB 34
+#define GSP_ACT_ID_SPEED_20_CB 35
 
 #include <stdbool.h>
 #include <stdint.h>
 #include "esp_gsp.h"
 
 typedef enum {
-    GSP_TRACKER_ACTION_APPLY_PATTERN_CB = GSP_ACT_ID_APPLY_PATTERN_CB,
     GSP_TRACKER_ACTION_MASTER_FADER_CB = GSP_ACT_ID_MASTER_FADER_CB,
     GSP_TRACKER_ACTION_NAV_CB = GSP_ACT_ID_NAV_CB,
-    GSP_TRACKER_ACTION_ORDER_PAUSE_CB = GSP_ACT_ID_ORDER_PAUSE_CB,
-    GSP_TRACKER_ACTION_ORDER_PLAY_CB = GSP_ACT_ID_ORDER_PLAY_CB,
-    GSP_TRACKER_ACTION_ORDER_RESTART_CB = GSP_ACT_ID_ORDER_RESTART_CB,
-    GSP_TRACKER_ACTION_PAT_NEXT_CB = GSP_ACT_ID_PAT_NEXT_CB,
-    GSP_TRACKER_ACTION_PAT_PREV_CB = GSP_ACT_ID_PAT_PREV_CB,
+    GSP_TRACKER_ACTION_PAD0_CB = GSP_ACT_ID_PAD0_CB,
+    GSP_TRACKER_ACTION_PAD10_CB = GSP_ACT_ID_PAD10_CB,
+    GSP_TRACKER_ACTION_PAD11_CB = GSP_ACT_ID_PAD11_CB,
+    GSP_TRACKER_ACTION_PAD12_CB = GSP_ACT_ID_PAD12_CB,
+    GSP_TRACKER_ACTION_PAD13_CB = GSP_ACT_ID_PAD13_CB,
+    GSP_TRACKER_ACTION_PAD14_CB = GSP_ACT_ID_PAD14_CB,
+    GSP_TRACKER_ACTION_PAD15_CB = GSP_ACT_ID_PAD15_CB,
+    GSP_TRACKER_ACTION_PAD1_CB = GSP_ACT_ID_PAD1_CB,
+    GSP_TRACKER_ACTION_PAD2_CB = GSP_ACT_ID_PAD2_CB,
+    GSP_TRACKER_ACTION_PAD3_CB = GSP_ACT_ID_PAD3_CB,
+    GSP_TRACKER_ACTION_PAD4_CB = GSP_ACT_ID_PAD4_CB,
+    GSP_TRACKER_ACTION_PAD5_CB = GSP_ACT_ID_PAD5_CB,
+    GSP_TRACKER_ACTION_PAD6_CB = GSP_ACT_ID_PAD6_CB,
+    GSP_TRACKER_ACTION_PAD7_CB = GSP_ACT_ID_PAD7_CB,
+    GSP_TRACKER_ACTION_PAD8_CB = GSP_ACT_ID_PAD8_CB,
+    GSP_TRACKER_ACTION_PAD9_CB = GSP_ACT_ID_PAD9_CB,
     GSP_TRACKER_ACTION_PP_CB = GSP_ACT_ID_PP_CB,
     GSP_TRACKER_ACTION_REC_CB = GSP_ACT_ID_REC_CB,
     GSP_TRACKER_ACTION_SLOT_FADER0_CB = GSP_ACT_ID_SLOT_FADER0_CB,
@@ -65,8 +83,6 @@ typedef enum {
     GSP_TRACKER_ACTION_SPEED_10_CB = GSP_ACT_ID_SPEED_10_CB,
     GSP_TRACKER_ACTION_SPEED_15_CB = GSP_ACT_ID_SPEED_15_CB,
     GSP_TRACKER_ACTION_SPEED_20_CB = GSP_ACT_ID_SPEED_20_CB,
-    GSP_TRACKER_ACTION_STEP_NEXT_CB = GSP_ACT_ID_STEP_NEXT_CB,
-    GSP_TRACKER_ACTION_STEP_PREV_CB = GSP_ACT_ID_STEP_PREV_CB,
 } gsp_tracker_action_t;
 
 typedef struct {
@@ -86,14 +102,24 @@ static inline bool gsp_tracker_event_decode_call(
         return false;
     }
     switch (event->action_id) {
-    case GSP_ACT_ID_APPLY_PATTERN_CB:
     case GSP_ACT_ID_MASTER_FADER_CB:
     case GSP_ACT_ID_NAV_CB:
-    case GSP_ACT_ID_ORDER_PAUSE_CB:
-    case GSP_ACT_ID_ORDER_PLAY_CB:
-    case GSP_ACT_ID_ORDER_RESTART_CB:
-    case GSP_ACT_ID_PAT_NEXT_CB:
-    case GSP_ACT_ID_PAT_PREV_CB:
+    case GSP_ACT_ID_PAD0_CB:
+    case GSP_ACT_ID_PAD10_CB:
+    case GSP_ACT_ID_PAD11_CB:
+    case GSP_ACT_ID_PAD12_CB:
+    case GSP_ACT_ID_PAD13_CB:
+    case GSP_ACT_ID_PAD14_CB:
+    case GSP_ACT_ID_PAD15_CB:
+    case GSP_ACT_ID_PAD1_CB:
+    case GSP_ACT_ID_PAD2_CB:
+    case GSP_ACT_ID_PAD3_CB:
+    case GSP_ACT_ID_PAD4_CB:
+    case GSP_ACT_ID_PAD5_CB:
+    case GSP_ACT_ID_PAD6_CB:
+    case GSP_ACT_ID_PAD7_CB:
+    case GSP_ACT_ID_PAD8_CB:
+    case GSP_ACT_ID_PAD9_CB:
     case GSP_ACT_ID_PP_CB:
     case GSP_ACT_ID_REC_CB:
     case GSP_ACT_ID_SLOT_FADER0_CB:
@@ -112,8 +138,6 @@ static inline bool gsp_tracker_event_decode_call(
     case GSP_ACT_ID_SPEED_10_CB:
     case GSP_ACT_ID_SPEED_15_CB:
     case GSP_ACT_ID_SPEED_20_CB:
-    case GSP_ACT_ID_STEP_NEXT_CB:
-    case GSP_ACT_ID_STEP_PREV_CB:
         break;
     default:
         return false;
@@ -124,14 +148,6 @@ static inline bool gsp_tracker_event_decode_call(
     out_event->list = event->list;
     out_event->item = event->item;
     return true;
-}
-
-static inline bool gsp_tracker_event_is_apply_pattern_cb(
-        const esp_gsp_event_t *event)
-{
-    return event != NULL &&
-        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
-        event->action_id == GSP_ACT_ID_APPLY_PATTERN_CB;
 }
 
 static inline bool gsp_tracker_event_is_master_fader_cb(
@@ -150,44 +166,132 @@ static inline bool gsp_tracker_event_is_nav_cb(
         event->action_id == GSP_ACT_ID_NAV_CB;
 }
 
-static inline bool gsp_tracker_event_is_order_pause_cb(
+static inline bool gsp_tracker_event_is_pad0_cb(
         const esp_gsp_event_t *event)
 {
     return event != NULL &&
         event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
-        event->action_id == GSP_ACT_ID_ORDER_PAUSE_CB;
+        event->action_id == GSP_ACT_ID_PAD0_CB;
 }
 
-static inline bool gsp_tracker_event_is_order_play_cb(
+static inline bool gsp_tracker_event_is_pad10_cb(
         const esp_gsp_event_t *event)
 {
     return event != NULL &&
         event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
-        event->action_id == GSP_ACT_ID_ORDER_PLAY_CB;
+        event->action_id == GSP_ACT_ID_PAD10_CB;
 }
 
-static inline bool gsp_tracker_event_is_order_restart_cb(
+static inline bool gsp_tracker_event_is_pad11_cb(
         const esp_gsp_event_t *event)
 {
     return event != NULL &&
         event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
-        event->action_id == GSP_ACT_ID_ORDER_RESTART_CB;
+        event->action_id == GSP_ACT_ID_PAD11_CB;
 }
 
-static inline bool gsp_tracker_event_is_pat_next_cb(
+static inline bool gsp_tracker_event_is_pad12_cb(
         const esp_gsp_event_t *event)
 {
     return event != NULL &&
         event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
-        event->action_id == GSP_ACT_ID_PAT_NEXT_CB;
+        event->action_id == GSP_ACT_ID_PAD12_CB;
 }
 
-static inline bool gsp_tracker_event_is_pat_prev_cb(
+static inline bool gsp_tracker_event_is_pad13_cb(
         const esp_gsp_event_t *event)
 {
     return event != NULL &&
         event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
-        event->action_id == GSP_ACT_ID_PAT_PREV_CB;
+        event->action_id == GSP_ACT_ID_PAD13_CB;
+}
+
+static inline bool gsp_tracker_event_is_pad14_cb(
+        const esp_gsp_event_t *event)
+{
+    return event != NULL &&
+        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
+        event->action_id == GSP_ACT_ID_PAD14_CB;
+}
+
+static inline bool gsp_tracker_event_is_pad15_cb(
+        const esp_gsp_event_t *event)
+{
+    return event != NULL &&
+        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
+        event->action_id == GSP_ACT_ID_PAD15_CB;
+}
+
+static inline bool gsp_tracker_event_is_pad1_cb(
+        const esp_gsp_event_t *event)
+{
+    return event != NULL &&
+        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
+        event->action_id == GSP_ACT_ID_PAD1_CB;
+}
+
+static inline bool gsp_tracker_event_is_pad2_cb(
+        const esp_gsp_event_t *event)
+{
+    return event != NULL &&
+        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
+        event->action_id == GSP_ACT_ID_PAD2_CB;
+}
+
+static inline bool gsp_tracker_event_is_pad3_cb(
+        const esp_gsp_event_t *event)
+{
+    return event != NULL &&
+        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
+        event->action_id == GSP_ACT_ID_PAD3_CB;
+}
+
+static inline bool gsp_tracker_event_is_pad4_cb(
+        const esp_gsp_event_t *event)
+{
+    return event != NULL &&
+        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
+        event->action_id == GSP_ACT_ID_PAD4_CB;
+}
+
+static inline bool gsp_tracker_event_is_pad5_cb(
+        const esp_gsp_event_t *event)
+{
+    return event != NULL &&
+        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
+        event->action_id == GSP_ACT_ID_PAD5_CB;
+}
+
+static inline bool gsp_tracker_event_is_pad6_cb(
+        const esp_gsp_event_t *event)
+{
+    return event != NULL &&
+        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
+        event->action_id == GSP_ACT_ID_PAD6_CB;
+}
+
+static inline bool gsp_tracker_event_is_pad7_cb(
+        const esp_gsp_event_t *event)
+{
+    return event != NULL &&
+        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
+        event->action_id == GSP_ACT_ID_PAD7_CB;
+}
+
+static inline bool gsp_tracker_event_is_pad8_cb(
+        const esp_gsp_event_t *event)
+{
+    return event != NULL &&
+        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
+        event->action_id == GSP_ACT_ID_PAD8_CB;
+}
+
+static inline bool gsp_tracker_event_is_pad9_cb(
+        const esp_gsp_event_t *event)
+{
+    return event != NULL &&
+        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
+        event->action_id == GSP_ACT_ID_PAD9_CB;
 }
 
 static inline bool gsp_tracker_event_is_pp_cb(
@@ -332,20 +436,4 @@ static inline bool gsp_tracker_event_is_speed_20_cb(
     return event != NULL &&
         event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
         event->action_id == GSP_ACT_ID_SPEED_20_CB;
-}
-
-static inline bool gsp_tracker_event_is_step_next_cb(
-        const esp_gsp_event_t *event)
-{
-    return event != NULL &&
-        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
-        event->action_id == GSP_ACT_ID_STEP_NEXT_CB;
-}
-
-static inline bool gsp_tracker_event_is_step_prev_cb(
-        const esp_gsp_event_t *event)
-{
-    return event != NULL &&
-        event->type == ESP_GSP_EVENT_CALL && event->scene_id == 0 &&
-        event->action_id == GSP_ACT_ID_STEP_PREV_CB;
 }

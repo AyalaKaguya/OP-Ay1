@@ -98,6 +98,10 @@ struct tracker_engine {
     int tempo;
     float speed_multiplier;
     int order_index;
+    /* Pattern-pad mode: >= 0 loops a single pattern; < 0 follows the order
+     * list. pending_pattern is the queued next pad (-1 = none). */
+    int launch_pattern;
+    int pending_pattern;
     int row;
     int tick;
     int tick_frames_left;

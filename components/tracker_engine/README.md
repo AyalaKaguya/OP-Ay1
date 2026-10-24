@@ -13,7 +13,9 @@ used by `app_tracker` and `app_audio`.
   engine and the mixer only ever index slots that exist.
 - `tracker_engine.c` owns transport and event sequencing: order/row/tick
   progression, speed and tempo effects, portamento, slides, public lifecycle,
-  and cross-task state ownership.
+  and cross-task state ownership. It also implements the pattern-pad launcher:
+  one pattern loops, and a pad tapped while playing is applied at the next
+  pattern boundary (the order list resumes on stop/restart).
 - `tracker_mixer.c` owns voices, linear-interpolated sample playback, loop
   wrapping, stereo panning, channel gain/mute/solo, clipping, and waveform or
   peak monitoring.

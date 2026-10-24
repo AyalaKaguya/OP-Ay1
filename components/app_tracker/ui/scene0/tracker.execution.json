@@ -1,6 +1,6 @@
 {
   "calibration": null,
-  "content_id": "0xe53ede9d",
+  "content_id": "0xa90b1070",
   "decision_quality": "conservative_uncalibrated",
   "fonts": [
     {
@@ -40,10 +40,10 @@
       "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans-Bold.ttf"
     },
     {
-      "asset_id": "0xb051e294",
-      "charset": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
-      "encoded_bytes": 28928,
-      "glyph_count": 95,
+      "asset_id": "0x0a1e1a17",
+      "charset": "?O",
+      "encoded_bytes": 1728,
+      "glyph_count": 2,
       "link": "embedded",
       "size_px": 24,
       "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans-Bold.ttf"
@@ -58,10 +58,10 @@
       "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans-Bold.ttf"
     },
     {
-      "asset_id": "0xfa6949de",
-      "charset": ".0125?AELPRSTUYx",
-      "encoded_bytes": 3008,
-      "glyph_count": 16,
+      "asset_id": "0x533cb5aa",
+      "charset": ".0125?x",
+      "encoded_bytes": 1600,
+      "glyph_count": 7,
       "link": "embedded",
       "size_px": 15,
       "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans-Bold.ttf"
@@ -76,10 +76,10 @@
       "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans-Bold.ttf"
     },
     {
-      "asset_id": "0x4061549b",
-      "charset": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
-      "encoded_bytes": 9344,
-      "glyph_count": 95,
+      "asset_id": "0x1380dd93",
+      "charset": "?AEMRST",
+      "encoded_bytes": 1216,
+      "glyph_count": 7,
       "link": "embedded",
       "size_px": 12,
       "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans.ttf"
@@ -103,22 +103,13 @@
       "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans.ttf"
     },
     {
-      "asset_id": "0xf707902a",
-      "charset": "?CENQRSU",
-      "encoded_bytes": 2944,
-      "glyph_count": 8,
+      "asset_id": "0x6a04987f",
+      "charset": " ?ADENPRST",
+      "encoded_bytes": 3904,
+      "glyph_count": 10,
       "link": "embedded",
       "size_px": 22,
       "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans-Bold.ttf"
-    },
-    {
-      "asset_id": "0xdbceaf39",
-      "charset": " <>?ADEILNOPRSTWY·",
-      "encoded_bytes": 1792,
-      "glyph_count": 18,
-      "link": "embedded",
-      "size_px": 10,
-      "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans.ttf"
     }
   ],
   "gspc_version": "0.6.1",
@@ -151,17 +142,17 @@
     "asset_anims": 0,
     "component_instances": 0,
     "dynamic_image_slots": 2,
-    "glyph_run_slots": 20,
+    "glyph_run_slots": 18,
     "instance_states_per_slot": 0,
     "list_count": 0,
     "list_max_slots": 0,
     "list_text_slots": 0,
     "scene_count": 1,
     "stack_view_max_depth": 0,
-    "text_slots": 18
+    "text_slots": 16
   },
   "resource_budget": {
-    "font_blob_bytes": 217344,
+    "font_blob_bytes": 179776,
     "image_cache_budget_bytes": 0,
     "image_payload_bytes": 414720,
     "initial_static_set_exceeds_cache_budget": null,
@@ -170,7 +161,7 @@
       "Initial static decode bytes are an estimate, not measured resident or peak RAM. Exceeding the cache budget can cause eviction, not necessarily allocation failure.",
       "Different variants may be required for size, format or animation policy. Review authored uses before removing them or moving work to runtime."
     ],
-    "resource_blob_bytes": 632192,
+    "resource_blob_bytes": 594624,
     "scope": "scene_reachable_resources",
     "source_variants": []
   },

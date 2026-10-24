@@ -66,6 +66,17 @@ int tracker_engine_pattern_at(tracker_engine_t *engine, int order_index);
 void tracker_engine_set_pattern_at(tracker_engine_t *engine, int order_index,
                                    int pattern);
 
+/* Pattern pads (clip launcher). The first launch takes over immediately from
+ * that pattern's first row and loops it; launching another pattern while one is
+ * playing queues the switch for the end of the current pattern (bar aligned).
+ * Launching the playing pattern clears a queued switch. stop_pattern_launch()
+ * returns to order-list playback; restart() also clears the pad mode.
+ * launched_pattern()/pending_pattern() return -1 when inactive. */
+void tracker_engine_launch_pattern(tracker_engine_t *engine, int pattern);
+void tracker_engine_stop_pattern_launch(tracker_engine_t *engine);
+int tracker_engine_launched_pattern(tracker_engine_t *engine);
+int tracker_engine_pending_pattern(tracker_engine_t *engine);
+
 void tracker_engine_cell(tracker_engine_t *engine, int pattern, int row,
                          int channel, tracker_cell_t *cell);
 
