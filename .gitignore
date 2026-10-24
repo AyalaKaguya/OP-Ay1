@@ -48,3 +48,8 @@ __pycache__/
 Thumbs.db
 
 # Keep sdkconfig*.defaults, idf_component.yml and source assets versioned.
+
+# Local release packaging
+dist/
+release/
+*.zip
