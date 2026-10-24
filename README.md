@@ -82,6 +82,8 @@ python mosaico.py iris system-update --project projects/OP-Ay1
 python mosaico.py iris system-update --bundle OP-Ay1-1.0.0.irisfw
 ```
 
+Prebuilt bundles are attached to [GitHub Releases](https://github.com/AyalaKaguya/OP-Ay1/releases).
+
 `app-update` can be used for code-only iterations while the partition table is
 unchanged. The release artifact is the **ESP-Iris system-update bundle**
 (`.irisfw`), not a full-flash image: the retained Recovery image owns the
