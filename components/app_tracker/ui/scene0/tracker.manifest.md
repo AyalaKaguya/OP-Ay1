@@ -3,25 +3,25 @@
 - source: `projects\aryx\components\app_tracker\ui\tracker.json`
 - gspc version: 0.6.1
 - profile: host_rgb565 (rgb565, resource_alignment=64, id=0x6942ba48)
-- content_id: 0xa90b1070
+- content_id: 0x7d87b945
 - screen: 480x480 scene_id=0
 
 ## Outputs
 
-- gsb: `tracker.gsb` (28336 bytes)
+- gsb: `tracker.gsb` (28008 bytes)
 
 ## Tables
 
-- commands: 274
-- state slots: 145
-- binds: 138 (public: 109)
+- commands: 272
+- state slots: 143
+- binds: 136 (public: 107)
 - actions: 103
 - hits: 92
 - visibility groups: 97
 - resource refs: 13
-- glyph run pool: 1186 bytes
-- text defaults pool: 224 bytes
-- tile index: 8x8 grid of 64x64px, 16908 refs, avg 264.2 cmds/tile
+- glyph run pool: 1098 bytes
+- text defaults pool: 192 bytes
+- tile index: 8x8 grid of 64x64px, 16780 refs, avg 262.2 cmds/tile
 - templates: 0
 
 ## Scene resource budget
@@ -146,41 +146,39 @@ Registered images are addressable by this scene, including hidden controls and t
 - GSP_BIND_PAD9_NEXT = 100
 - GSP_BIND_PAD9_OFF = 101
 - GSP_BIND_PAD9_PLAY = 102
-- GSP_BIND_PAD_NEXT = 103
-- GSP_BIND_PAD_PLAY = 104
-- GSP_BIND_PB_POS = 105
-- GSP_BIND_PB_SPEED_VALUE = 106
-- GSP_BIND_PP_PAUSE_TEXT = 107
-- GSP_BIND_PP_PLAY_TEXT = 108
-- GSP_BIND_SLOT0_DB = 109
-- GSP_BIND_SLOT0_NAME = 110
-- GSP_BIND_SLOT1_DB = 111
-- GSP_BIND_SLOT1_NAME = 112
-- GSP_BIND_SLOT2_DB = 113
-- GSP_BIND_SLOT2_NAME = 114
-- GSP_BIND_SLOT3_DB = 115
-- GSP_BIND_SLOT3_NAME = 116
-- GSP_BIND_SMN0 = 117
-- GSP_BIND_SMN1 = 118
-- GSP_BIND_SMN2 = 119
-- GSP_BIND_SMN3 = 120
-- GSP_BIND_SMO0 = 121
-- GSP_BIND_SMO1 = 122
-- GSP_BIND_SMO2 = 123
-- GSP_BIND_SMO3 = 124
-- GSP_BIND_SPEED_05_SEL = 125
-- GSP_BIND_SPEED_10_SEL = 126
-- GSP_BIND_SPEED_15_SEL = 127
-- GSP_BIND_SPEED_20_SEL = 128
-- GSP_BIND_SSN0 = 129
-- GSP_BIND_SSN1 = 130
-- GSP_BIND_SSN2 = 131
-- GSP_BIND_SSN3 = 132
-- GSP_BIND_SSO0 = 133
-- GSP_BIND_SSO1 = 134
-- GSP_BIND_SSO2 = 135
-- GSP_BIND_SSO3 = 136
-- GSP_BIND_WAVES_CANVAS = 137
+- GSP_BIND_PB_POS = 103
+- GSP_BIND_PB_SPEED_VALUE = 104
+- GSP_BIND_PP_PAUSE_TEXT = 105
+- GSP_BIND_PP_PLAY_TEXT = 106
+- GSP_BIND_SLOT0_DB = 107
+- GSP_BIND_SLOT0_NAME = 108
+- GSP_BIND_SLOT1_DB = 109
+- GSP_BIND_SLOT1_NAME = 110
+- GSP_BIND_SLOT2_DB = 111
+- GSP_BIND_SLOT2_NAME = 112
+- GSP_BIND_SLOT3_DB = 113
+- GSP_BIND_SLOT3_NAME = 114
+- GSP_BIND_SMN0 = 115
+- GSP_BIND_SMN1 = 116
+- GSP_BIND_SMN2 = 117
+- GSP_BIND_SMN3 = 118
+- GSP_BIND_SMO0 = 119
+- GSP_BIND_SMO1 = 120
+- GSP_BIND_SMO2 = 121
+- GSP_BIND_SMO3 = 122
+- GSP_BIND_SPEED_05_SEL = 123
+- GSP_BIND_SPEED_10_SEL = 124
+- GSP_BIND_SPEED_15_SEL = 125
+- GSP_BIND_SPEED_20_SEL = 126
+- GSP_BIND_SSN0 = 127
+- GSP_BIND_SSN1 = 128
+- GSP_BIND_SSN2 = 129
+- GSP_BIND_SSN3 = 130
+- GSP_BIND_SSO0 = 131
+- GSP_BIND_SSO1 = 132
+- GSP_BIND_SSO2 = 133
+- GSP_BIND_SSO3 = 134
+- GSP_BIND_WAVES_CANVAS = 135
 
 ## Callbacks
 

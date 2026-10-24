@@ -292,7 +292,12 @@ static void refresh_pads(app_tracker_t *state, bool force)
     const int launched = tracker_engine_launched_pattern(state->engine);
     const int pending = tracker_engine_pending_pattern(state->engine);
     const bool stop_pending = tracker_engine_pattern_stop_pending(state->engine);
-    const int shown_playing = status.playing ? launched : -1;
+    /* Pad mode highlights the launched pad; while the order list plays, the pad
+     * of the current order's pattern is shown instead (follows the song). */
+    int shown_playing = -1;
+    if (status.playing) {
+        shown_playing = launched >= 0 ? launched : status.pattern;
+    }
     const bool blink = pad_blink_on(state, &status);
     if (!force && shown_playing == state->pad_playing &&
         pending == state->pad_pending && (int)stop_pending == state->pad_stop &&
@@ -319,20 +324,6 @@ static void refresh_pads(app_tracker_t *state, bool force)
         (void)esp_gsp_set_visible(state->ui, k_pad_play[pad], play_lit);
         (void)esp_gsp_set_visible(state->ui, k_pad_next[pad], next_lit);
     }
-    char text[24];
-    if (shown_playing >= 0) {
-        snprintf(text, sizeof(text), stop_pending ? "STOP %02X" : "PLAY %02X",
-                 shown_playing);
-    } else {
-        snprintf(text, sizeof(text), stop_pending ? "STOP --" : "PLAY --");
-    }
-    (void)esp_gsp_set_text(state->ui, GSP_TRACKER_BIND_PAD_PLAY, text);
-    if (pending >= 0) {
-        snprintf(text, sizeof(text), "NEXT %02X", pending);
-    } else {
-        snprintf(text, sizeof(text), "NEXT --");
-    }
-    (void)esp_gsp_set_text(state->ui, GSP_TRACKER_BIND_PAD_NEXT, text);
 }
 
 static void launch_pad(app_tracker_t *state, int pad)

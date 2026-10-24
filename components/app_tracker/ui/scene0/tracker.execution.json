@@ -1,6 +1,6 @@
 {
   "calibration": null,
-  "content_id": "0xa90b1070",
+  "content_id": "0x7d87b945",
   "decision_quality": "conservative_uncalibrated",
   "fonts": [
     {
@@ -142,14 +142,14 @@
     "asset_anims": 0,
     "component_instances": 0,
     "dynamic_image_slots": 2,
-    "glyph_run_slots": 18,
+    "glyph_run_slots": 16,
     "instance_states_per_slot": 0,
     "list_count": 0,
     "list_max_slots": 0,
     "list_text_slots": 0,
     "scene_count": 1,
     "stack_view_max_depth": 0,
-    "text_slots": 16
+    "text_slots": 14
   },
   "resource_budget": {
     "font_blob_bytes": 179776,

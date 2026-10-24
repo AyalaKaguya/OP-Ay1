@@ -301,142 +301,134 @@
         },
         {
           "bind_id": 103,
-          "name": "pad_next"
-        },
-        {
-          "bind_id": 104,
-          "name": "pad_play"
-        },
-        {
-          "bind_id": 105,
           "name": "pb_pos"
         },
         {
-          "bind_id": 106,
+          "bind_id": 104,
           "name": "pb_speed_value"
         },
         {
-          "bind_id": 107,
+          "bind_id": 105,
           "name": "pp_pause_text"
         },
         {
-          "bind_id": 108,
+          "bind_id": 106,
           "name": "pp_play_text"
         },
         {
-          "bind_id": 109,
+          "bind_id": 107,
           "name": "slot0_db"
         },
         {
-          "bind_id": 110,
+          "bind_id": 108,
           "name": "slot0_name"
         },
         {
-          "bind_id": 111,
+          "bind_id": 109,
           "name": "slot1_db"
         },
         {
-          "bind_id": 112,
+          "bind_id": 110,
           "name": "slot1_name"
         },
         {
-          "bind_id": 113,
+          "bind_id": 111,
           "name": "slot2_db"
         },
         {
-          "bind_id": 114,
+          "bind_id": 112,
           "name": "slot2_name"
         },
         {
-          "bind_id": 115,
+          "bind_id": 113,
           "name": "slot3_db"
         },
         {
-          "bind_id": 116,
+          "bind_id": 114,
           "name": "slot3_name"
         },
         {
-          "bind_id": 117,
+          "bind_id": 115,
           "name": "smn0"
         },
         {
-          "bind_id": 118,
+          "bind_id": 116,
           "name": "smn1"
         },
         {
-          "bind_id": 119,
+          "bind_id": 117,
           "name": "smn2"
         },
         {
-          "bind_id": 120,
+          "bind_id": 118,
           "name": "smn3"
         },
         {
-          "bind_id": 121,
+          "bind_id": 119,
           "name": "smo0"
         },
         {
-          "bind_id": 122,
+          "bind_id": 120,
           "name": "smo1"
         },
         {
-          "bind_id": 123,
+          "bind_id": 121,
           "name": "smo2"
         },
         {
-          "bind_id": 124,
+          "bind_id": 122,
           "name": "smo3"
         },
         {
-          "bind_id": 125,
+          "bind_id": 123,
           "name": "speed_05_sel"
         },
         {
-          "bind_id": 126,
+          "bind_id": 124,
           "name": "speed_10_sel"
         },
         {
-          "bind_id": 127,
+          "bind_id": 125,
           "name": "speed_15_sel"
         },
         {
-          "bind_id": 128,
+          "bind_id": 126,
           "name": "speed_20_sel"
         },
         {
-          "bind_id": 129,
+          "bind_id": 127,
           "name": "ssn0"
         },
         {
-          "bind_id": 130,
+          "bind_id": 128,
           "name": "ssn1"
         },
         {
-          "bind_id": 131,
+          "bind_id": 129,
           "name": "ssn2"
         },
         {
-          "bind_id": 132,
+          "bind_id": 130,
           "name": "ssn3"
         },
         {
-          "bind_id": 133,
+          "bind_id": 131,
           "name": "sso0"
         },
         {
-          "bind_id": 134,
+          "bind_id": 132,
           "name": "sso1"
         },
         {
-          "bind_id": 135,
+          "bind_id": 133,
           "name": "sso2"
         },
         {
-          "bind_id": 136,
+          "bind_id": 134,
           "name": "sso3"
         },
         {
-          "bind_id": 137,
+          "bind_id": 135,
           "name": "waves_canvas"
         }
       ],
@@ -622,7 +614,7 @@
           "name": "speed_20_cb"
         }
       ],
-      "content_id": "0xa90b1070",
+      "content_id": "0x7d87b945",
       "objects": [
         {
           "bounds": {
@@ -2019,10 +2011,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 76,
-            "y2": 156
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 87799307,
@@ -2062,10 +2054,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 76,
-            "y2": 156
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 922929146,
@@ -2105,10 +2097,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 76,
-            "y2": 156
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 524619008,
@@ -2148,10 +2140,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 76,
-            "y2": 156
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 4127434265,
@@ -2191,10 +2183,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 260,
-            "y2": 340
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 3940965250,
@@ -2234,10 +2226,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 260,
-            "y2": 340
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 1880847533,
@@ -2277,10 +2269,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 260,
-            "y2": 340
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 1885788857,
@@ -2320,10 +2312,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 260,
-            "y2": 340
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 3361084446,
@@ -2363,10 +2355,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 260,
-            "y2": 340
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 2770684833,
@@ -2406,10 +2398,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 260,
-            "y2": 340
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 1338069888,
@@ -2449,10 +2441,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 260,
-            "y2": 340
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 2682038050,
@@ -2492,10 +2484,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 260,
-            "y2": 340
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 1673753339,
@@ -2535,10 +2527,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 352,
-            "y2": 432
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 2826261956,
@@ -2578,10 +2570,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 352,
-            "y2": 432
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 616570911,
@@ -2621,10 +2613,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 352,
-            "y2": 432
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 2644495359,
@@ -2664,10 +2656,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 352,
-            "y2": 432
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 3256402444,
@@ -2707,10 +2699,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 352,
-            "y2": 432
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 2522350787,
@@ -2750,10 +2742,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 352,
-            "y2": 432
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 1144343970,
@@ -2793,10 +2785,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 352,
-            "y2": 432
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 4072465864,
@@ -2836,10 +2828,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 352,
-            "y2": 432
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 262687425,
@@ -2879,10 +2871,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 352,
-            "y2": 432
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 1976890854,
@@ -2922,10 +2914,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 352,
-            "y2": 432
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 262421729,
@@ -2965,10 +2957,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 352,
-            "y2": 432
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 955185301,
@@ -3008,10 +3000,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 352,
-            "y2": 432
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 1834993938,
@@ -3051,10 +3043,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 352,
-            "y2": 432
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 759810853,
@@ -3094,10 +3086,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 352,
-            "y2": 432
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 832939460,
@@ -3137,10 +3129,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 352,
-            "y2": 432
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 938326046,
@@ -3180,10 +3172,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 352,
-            "y2": 432
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 356,
+            "y2": 446
           },
           "bounds_source": "compiled",
           "component_key": 1842386319,
@@ -3223,10 +3215,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 76,
-            "y2": 156
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 3047392780,
@@ -3266,10 +3258,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 76,
-            "y2": 156
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 1680181783,
@@ -3309,10 +3301,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 76,
-            "y2": 156
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 3978818391,
@@ -3352,10 +3344,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 76,
-            "y2": 156
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 3122843460,
@@ -3395,10 +3387,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 76,
-            "y2": 156
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 872913993,
@@ -3438,10 +3430,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 76,
-            "y2": 156
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 1116655064,
@@ -3481,10 +3473,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 76,
-            "y2": 156
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 207958810,
@@ -3524,10 +3516,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 76,
-            "y2": 156
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 1243532883,
@@ -3567,10 +3559,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 76,
-            "y2": 156
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 1517442794,
@@ -3610,10 +3602,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 76,
-            "y2": 156
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 4114560773,
@@ -3653,10 +3645,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 76,
-            "y2": 156
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 1122788177,
@@ -3696,10 +3688,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 76,
-            "y2": 156
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 50,
+            "y2": 140
           },
           "bounds_source": "compiled",
           "component_key": 776293878,
@@ -3739,10 +3731,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 168,
-            "y2": 248
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 2155921615,
@@ -3782,10 +3774,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 168,
-            "y2": 248
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 2522224094,
@@ -3825,10 +3817,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 168,
-            "y2": 248
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 2868196940,
@@ -3868,10 +3860,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 168,
-            "y2": 248
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 809852045,
@@ -3911,10 +3903,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 168,
-            "y2": 248
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 2426038816,
@@ -3954,10 +3946,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 168,
-            "y2": 248
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 2985375115,
@@ -3997,10 +3989,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 168,
-            "y2": 248
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 2245448979,
@@ -4040,10 +4032,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 168,
-            "y2": 248
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 1328311048,
@@ -4083,10 +4075,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 168,
-            "y2": 248
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 146477325,
@@ -4126,10 +4118,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 168,
-            "y2": 248
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 2881138876,
@@ -4169,10 +4161,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 168,
-            "y2": 248
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 3511887318,
@@ -4212,10 +4204,10 @@
         },
         {
           "bounds": {
-            "x1": 2162,
-            "x2": 2262,
-            "y1": 168,
-            "y2": 248
+            "x1": 2165,
+            "x2": 2269,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 2523940423,
@@ -4255,10 +4247,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 168,
-            "y2": 248
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 1741215214,
@@ -4298,10 +4290,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 168,
-            "y2": 248
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 3718677241,
@@ -4341,10 +4333,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 168,
-            "y2": 248
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 1342720813,
@@ -4384,10 +4376,10 @@
         },
         {
           "bounds": {
-            "x1": 2274,
-            "x2": 2374,
-            "y1": 168,
-            "y2": 248
+            "x1": 2279,
+            "x2": 2383,
+            "y1": 152,
+            "y2": 242
           },
           "bounds_source": "compiled",
           "component_key": 1701434954,
@@ -4427,10 +4419,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 260,
-            "y2": 340
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 1561708323,
@@ -4470,10 +4462,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 260,
-            "y2": 340
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 3236867970,
@@ -4513,10 +4505,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 260,
-            "y2": 340
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 3111823400,
@@ -4556,10 +4548,10 @@
         },
         {
           "bounds": {
-            "x1": 1938,
-            "x2": 2038,
-            "y1": 260,
-            "y2": 340
+            "x1": 1937,
+            "x2": 2041,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 2355211425,
@@ -4599,10 +4591,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 260,
-            "y2": 340
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 2236784804,
@@ -4642,10 +4634,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 260,
-            "y2": 340
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 4112343935,
@@ -4685,10 +4677,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 260,
-            "y2": 340
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 2054915039,
@@ -4728,10 +4720,10 @@
         },
         {
           "bounds": {
-            "x1": 2050,
-            "x2": 2150,
-            "y1": 260,
-            "y2": 340
+            "x1": 2051,
+            "x2": 2155,
+            "y1": 254,
+            "y2": 344
           },
           "bounds_source": "compiled",
           "component_key": 2840088940,
@@ -4768,92 +4760,6 @@
             }
           ],
           "type": "button"
-        },
-        {
-          "bounds": {
-            "x1": 2200,
-            "x2": 2370,
-            "y1": 46,
-            "y2": 64
-          },
-          "bounds_source": "compiled",
-          "component_key": 4130230926,
-          "helpers": [
-            "gsp_tracker_pad_next_get_info",
-            "gsp_tracker_pad_next_get_text",
-            "gsp_tracker_pad_next_set_text"
-          ],
-          "name": "pad_next",
-          "operations": [
-            {
-              "method": "inspect_object"
-            },
-            {
-              "bounds_source": "compiled",
-              "method": "tap_object"
-            },
-            {
-              "max": 4294967295,
-              "method": "set_property",
-              "min": 0,
-              "property": "text",
-              "value_kind": "text"
-            }
-          ],
-          "properties": [
-            {
-              "bind_id": 103,
-              "key": "text",
-              "max": 4294967295,
-              "min": 0,
-              "property_key": 3185987134,
-              "value_kind": "text"
-            }
-          ],
-          "type": "label"
-        },
-        {
-          "bounds": {
-            "x1": 1950,
-            "x2": 2170,
-            "y1": 46,
-            "y2": 64
-          },
-          "bounds_source": "compiled",
-          "component_key": 3579194941,
-          "helpers": [
-            "gsp_tracker_pad_play_get_info",
-            "gsp_tracker_pad_play_get_text",
-            "gsp_tracker_pad_play_set_text"
-          ],
-          "name": "pad_play",
-          "operations": [
-            {
-              "method": "inspect_object"
-            },
-            {
-              "bounds_source": "compiled",
-              "method": "tap_object"
-            },
-            {
-              "max": 4294967295,
-              "method": "set_property",
-              "min": 0,
-              "property": "text",
-              "value_kind": "text"
-            }
-          ],
-          "properties": [
-            {
-              "bind_id": 104,
-              "key": "text",
-              "max": 4294967295,
-              "min": 0,
-              "property_key": 3185987134,
-              "value_kind": "text"
-            }
-          ],
-          "type": "label"
         },
         {
           "bounds": {
@@ -5051,7 +4957,7 @@
           ],
           "properties": [
             {
-              "bind_id": 105,
+              "bind_id": 103,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -5094,7 +5000,7 @@
           ],
           "properties": [
             {
-              "bind_id": 106,
+              "bind_id": 104,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -5162,7 +5068,7 @@
           ],
           "properties": [
             {
-              "bind_id": 107,
+              "bind_id": 105,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -5205,7 +5111,7 @@
           ],
           "properties": [
             {
-              "bind_id": 108,
+              "bind_id": 106,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -5540,7 +5446,7 @@
           ],
           "properties": [
             {
-              "bind_id": 109,
+              "bind_id": 107,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -5583,7 +5489,7 @@
           ],
           "properties": [
             {
-              "bind_id": 110,
+              "bind_id": 108,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -5703,7 +5609,7 @@
           ],
           "properties": [
             {
-              "bind_id": 111,
+              "bind_id": 109,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -5746,7 +5652,7 @@
           ],
           "properties": [
             {
-              "bind_id": 112,
+              "bind_id": 110,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -5866,7 +5772,7 @@
           ],
           "properties": [
             {
-              "bind_id": 113,
+              "bind_id": 111,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -5909,7 +5815,7 @@
           ],
           "properties": [
             {
-              "bind_id": 114,
+              "bind_id": 112,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -6029,7 +5935,7 @@
           ],
           "properties": [
             {
-              "bind_id": 115,
+              "bind_id": 113,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -6072,7 +5978,7 @@
           ],
           "properties": [
             {
-              "bind_id": 116,
+              "bind_id": 114,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -6115,7 +6021,7 @@
           ],
           "properties": [
             {
-              "bind_id": 117,
+              "bind_id": 115,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6158,7 +6064,7 @@
           ],
           "properties": [
             {
-              "bind_id": 118,
+              "bind_id": 116,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6201,7 +6107,7 @@
           ],
           "properties": [
             {
-              "bind_id": 119,
+              "bind_id": 117,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6244,7 +6150,7 @@
           ],
           "properties": [
             {
-              "bind_id": 120,
+              "bind_id": 118,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6287,7 +6193,7 @@
           ],
           "properties": [
             {
-              "bind_id": 121,
+              "bind_id": 119,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6330,7 +6236,7 @@
           ],
           "properties": [
             {
-              "bind_id": 122,
+              "bind_id": 120,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6373,7 +6279,7 @@
           ],
           "properties": [
             {
-              "bind_id": 123,
+              "bind_id": 121,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6416,7 +6322,7 @@
           ],
           "properties": [
             {
-              "bind_id": 124,
+              "bind_id": 122,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6484,7 +6390,7 @@
           ],
           "properties": [
             {
-              "bind_id": 125,
+              "bind_id": 123,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6552,7 +6458,7 @@
           ],
           "properties": [
             {
-              "bind_id": 126,
+              "bind_id": 124,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6620,7 +6526,7 @@
           ],
           "properties": [
             {
-              "bind_id": 127,
+              "bind_id": 125,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6688,7 +6594,7 @@
           ],
           "properties": [
             {
-              "bind_id": 128,
+              "bind_id": 126,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6731,7 +6637,7 @@
           ],
           "properties": [
             {
-              "bind_id": 129,
+              "bind_id": 127,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6774,7 +6680,7 @@
           ],
           "properties": [
             {
-              "bind_id": 130,
+              "bind_id": 128,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6817,7 +6723,7 @@
           ],
           "properties": [
             {
-              "bind_id": 131,
+              "bind_id": 129,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6860,7 +6766,7 @@
           ],
           "properties": [
             {
-              "bind_id": 132,
+              "bind_id": 130,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6903,7 +6809,7 @@
           ],
           "properties": [
             {
-              "bind_id": 133,
+              "bind_id": 131,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6946,7 +6852,7 @@
           ],
           "properties": [
             {
-              "bind_id": 134,
+              "bind_id": 132,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -6989,7 +6895,7 @@
           ],
           "properties": [
             {
-              "bind_id": 135,
+              "bind_id": 133,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -7032,7 +6938,7 @@
           ],
           "properties": [
             {
-              "bind_id": 136,
+              "bind_id": 134,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -7075,7 +6981,7 @@
           ],
           "properties": [
             {
-              "bind_id": 137,
+              "bind_id": 135,
               "key": "resource",
               "max": 4294967295,
               "min": 0,
