@@ -155,7 +155,7 @@ static void draw_top_bar(uint16_t *frame, const tracker_status_t *status,
     char time_buffer[9];
     fill_rect(frame, 0, 0, TRACKER_FRAME_W, TOP_H, C_PANEL);
     /* Keep the header inside the rounded-corner safe area. */
-    text(frame, 30, 10, 2, C_TEXT, "OP-Ay1");
+    text(frame, 34, 10, 2, C_TEXT, "OP-Ay1");
 
     snprintf(buffer, sizeof(buffer), "PAT %02X/%02X", status->pattern,
              status->patterns);
@@ -179,9 +179,9 @@ static void draw_top_bar(uint16_t *frame, const tracker_status_t *status,
     }
 
     snprintf(buffer, sizeof(buffer), "BPM %03d", status->tempo);
-    text_right(frame, 450, 10, 1, C_MUTED, buffer);
+    text_right(frame, 446, 10, 1, C_MUTED, buffer);
     snprintf(buffer, sizeof(buffer), "SPD %02X", status->speed);
-    text_right(frame, 450, 20, 1, C_MUTED, buffer);
+    text_right(frame, 446, 20, 1, C_MUTED, buffer);
     fill_rect(frame, 0, TOP_H, TRACKER_FRAME_W, 1, C_LINE);
 }
 

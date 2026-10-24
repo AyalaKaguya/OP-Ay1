@@ -22,17 +22,17 @@ and partition layout.
 | Item | Value |
 |---|---|
 | project name on device | `OP-Ay1` |
-| ELF SHA-256 | `6d7f89de93baade88b82ff4242df34deae6a84127603698d12b9f93ff02bb641` |
+| ELF SHA-256 | `80185875983cc759cd8e2a92718ae0121bf02df77f11147bdc2f0bf1c5de071e` |
 | install result | `system update: succeeded`, validation healthy |
-| first boot ID after install | `16005979984619734631` |
+| first boot ID after install | `12380466014685699195` |
 
 ## Checksums
 
 See the `SHA256SUMS` file next to the artifacts:
 
-- `OP-Ay1-1.0.0.irisfw` `499c2a167a3f13c383ca2931a243468345d1d76f0900d849aeb50322d151e434`
-- `OP-Ay1-1.0.0.elf` `6d7f89de93baade88b82ff4242df34deae6a84127603698d12b9f93ff02bb641`
-- `OP-Ay1-1.0.0.map` `3ce742557638937ad6d3a726e66de8480cdf76afb6aafa8dc61c862a3f508775`
+- `OP-Ay1-1.0.0.irisfw` `e43d0c627bd0b27bb961e0e2b367c87c0da7b092eb880d8e9fe1a02f21b60127`
+- `OP-Ay1-1.0.0.elf` `80185875983cc759cd8e2a92718ae0121bf02df77f11147bdc2f0bf1c5de071e`
+- `OP-Ay1-1.0.0.map` `389b638ee5eaed2dc03acdfa0061b60af122e4f476640300b8531b2d3b356f1a`
 
 ## Install
 
