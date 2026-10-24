@@ -41,6 +41,11 @@ void tracker_font_draw(uint16_t *frame, int frame_w, int frame_h, int x, int y,
     int cursor = x;
     for (const char *letter = text; *letter != '\0'; ++letter) {
         unsigned code = (unsigned char)*letter;
+        /* The generated 5x7 set has no lowercase glyphs; fold them onto the
+         * uppercase ones so names like "OP-Ay1" stay readable. */
+        if (code >= 'a' && code <= 'z') {
+            code = code - 'a' + 'A';
+        }
         if (code < TRACKER_FONT_FIRST || code > TRACKER_FONT_LAST) {
             cursor += GLYPH_ADVANCE * scale;
             continue;

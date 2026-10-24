@@ -156,7 +156,6 @@ static void draw_top_bar(uint16_t *frame, const tracker_status_t *status,
     fill_rect(frame, 0, 0, TRACKER_FRAME_W, TOP_H, C_PANEL);
     /* Keep the header inside the rounded-corner safe area. */
     text(frame, 30, 10, 2, C_TEXT, "OP-Ay1");
-    text(frame, 82, 15, 1, C_ACCENT, "S3M");
 
     snprintf(buffer, sizeof(buffer), "PAT %02X/%02X", status->pattern,
              status->patterns);
