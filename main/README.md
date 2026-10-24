@@ -1,16 +1,14 @@
 # main: device composition root
 
-Initializes platform services, starts Recovery, loads the UI bundle, prepares the
-display, starts GSP and attaches the application controller, in that order. It
-contains no input handling, animation or drawing rules and exports no headers.
+Initializes platform services, starts Recovery support, builds the portable
+tracker engine from the embedded S3M asset, starts audio and display, loads the
+GSP bundle and hands the scene to `app_tracker`. It contains no input handling,
+animation or drawing rules and exports no headers.
 
-Private dependencies: `app_display`, `app_hello`, Iris, Recovery, bundle loading,
-screen mirroring, NVS and logging. Shared product/platform components retain
-their names. Central dependency pins/overrides live in `idf_component.yml`.
+Private dependencies: `app_audio`, `app_display`, `app_tracker`,
+`tracker_engine`, BSP, ESP-Iris, Recovery, bundle loading, screen mirroring, NVS
+and logging. Central dependency pins/overrides live in `idf_component.yml`.
 
-ESP-IDF invokes `app_main()` once in task context; it takes no parameters and
-returns after startup. Its private composition context retains only owned opaque
-handles; UI/controller lifetime extends until reboot. Bundle or display
-initialization failure leaves Recovery reachable;
-other unrecoverable initialization errors use ESP-IDF's error-check policy.
-Build/run the project through the workspace launcher described in the root README.
+`app_main()` runs once in task context and returns after startup; the UI and
+audio lifetimes extend until reboot. A missing engine, bundle or display leaves
+Recovery reachable instead of blocking installation.

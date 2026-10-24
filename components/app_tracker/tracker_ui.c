@@ -776,29 +776,6 @@ static void ui_tick(esp_gsp_handle_t ui, void *context)
     (void)ui;
     app_tracker_t *state = context;
     ++state->tick_count;
-    /* Temporary memory watchdog: a 5 s heartbeat with free/min heap on both
-     * pools makes a leak or an exhausted allocator visible before a hang. */
-    if (state->tick_count % 100 == 0) {
-        multi_heap_info_t internal_info;
-        multi_heap_info_t spiram_info;
-        heap_caps_get_info(&internal_info, MALLOC_CAP_INTERNAL);
-        heap_caps_get_info(&spiram_info, MALLOC_CAP_SPIRAM);
-        tracker_status_t hb_status;
-        tracker_engine_get_status(state->engine, &hb_status);
-        ESP_LOGI(TAG,
-                 "hb t=%u play=%d pat=%02X row=%02X launch=%d next=%d stop=%d "
-                 "I=%u/%u S=%u/%u",
-                 (unsigned)state->tick_count,
-                 (int)tracker_engine_is_playing(state->engine),
-                 hb_status.pattern, hb_status.row,
-                 tracker_engine_launched_pattern(state->engine),
-                 tracker_engine_pending_pattern(state->engine),
-                 (int)tracker_engine_pattern_stop_pending(state->engine),
-                 (unsigned)internal_info.total_free_bytes,
-                 (unsigned)internal_info.minimum_free_bytes,
-                 (unsigned)spiram_info.total_free_bytes,
-                 (unsigned)spiram_info.minimum_free_bytes);
-    }
     mix_momentum(state);
     if (state->tick_count % METER_REFRESH_TICKS == 0) {
         update_meters(state);
@@ -1197,27 +1174,6 @@ fail:
     free(state->waves_frame);
     free(state);
     return ESP_ERR_NO_MEM;
-}
-
-void app_tracker_set_page(app_tracker_t *handle, int page)
-{
-    if (handle == NULL || page < 0 || page > PAGE_ORDER) {
-        return;
-    }
-    handle->page = page;
-    mix_scroll_region(handle, page == PAGE_MIX);
-    handle->last_song_key = -1;
-    (void)esp_gsp_page_flow_set_page(handle->ui, GSP_TRACKER_OBJ_KEY_PAGES,
-                                     (uint32_t)page, true);
-    update_dots(handle);
-    render_page(handle, page);
-    update_labels(handle, true);
-    update_transport(handle);
-    if (page == PAGE_MIX) {
-        refresh_mix(handle);
-    } else if (page == PAGE_ORDER) {
-        refresh_pads(handle, true);
-    }
 }
 
 void app_tracker_stop(app_tracker_t **handle)

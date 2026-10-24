@@ -1,53 +1,62 @@
-# ESP-Mosaico aryx
+# ARYX
 
-Created with `python mosaico.py project init my_app`.
-The same GSP 1.5.1 scene and portable C UI run on PC and ESP-Mosaico.
+An ESP-Mosaico tracker player. The 20 KB `main/assets/aryx.s3m` module is decoded
+by a portable C engine and rendered into 48 kHz stereo by the board audio path;
+the whole UI is one generated GSP scene driven by `app_tracker`.
 
-From the workspace root:
+## Pages
+
+| Page | Contents |
+|---|---|
+| WAVES | Per-channel oscilloscope canvas |
+| PATTERN | Pattern grid canvas with the playback cursor |
+| PLAYBACK | Transport, speed multiplier (0.5x / 1x / 1.5x / 2x), position |
+| MIX | Master fader/meter on top, scrollable 4-row channel list with M/S, dB fader and level meter |
+| SECTION PADS | 4x4 pattern launcher |
+
+## Controls
+
+- **Section pads** – tap a pad to play that pattern in a loop. Tapping another
+  pad queues it (cyan, blinking in tempo) and it takes over at the end of the
+  current pattern. Tapping the playing pad queues a stop (orange blinking) that
+  also lands on the pattern boundary; tap again to cancel. During normal song
+  playback the current pattern is orange and the upcoming pattern blinks cyan.
+- **MIX** – the list scrolls with a vertical drag (start in the right-hand gutter
+  to avoid the faders). The fader law is dB based: 100 = 0 dB, 120 = +6 dB,
+  50 = -15 dB, 0 = silent; the value is shown next to the meter. M/S follow the
+  usual solo cascade; channels the module does not have are dimmed.
+- **Playback** – PLAY/PAUSE are immediate; RESTART rewinds the song and leaves
+  pad mode.
+- **Hardware AI button** – short press play/pause, long press rewind.
+
+## Structure
+
+- `main`: composition root only (Recovery support, engine, audio, display, GSP).
+- `components/tracker_engine`: portable S3M decoder, sequencer and mixer; no
+  ESP-IDF dependency except the task lock (see its README).
+- `components/app_audio`: DSP task, chunk ring and I2S writer.
+- `components/app_tracker`: GSP scene controller, meters, mix page and pads.
+- `components/app_display`: BSP-to-GSP display setup.
+- `components/app_tracker/ui`: authored scene (`tracker.json`) and packed bundle.
+- `main/assets/aryx.s3m`: embedded song (12 patterns, 12 channels).
+
+## Build and install
+
+From the workspace root, with `IDF_PATH` and `IDF_TOOLS_PATH` set:
 
 ```sh
-python mosaico.py project sim --project projects/aryx --interactive
-python mosaico.py recover
 python mosaico.py iris system-update --project projects/aryx
 ```
 
-Run `recover` before the first install on a blank or unverified device.
-Use `system-update` for new apps or changed resources/layouts. Use `app-update`
-only for code changes with an identical full partition table and resources.
+The workspace launcher builds, packs the scene into the firmware image and
+installs through ESP-Iris/Recovery. `python mosaico.py project sim` is available
+for scene-only previews.
 
-Application components:
+## Runtime notes
 
-- `components/app_hello`: portable UI behavior and private controller state.
-- `components/app_display`: BSP-to-GSP display and optional touch policy.
-- `main`: device startup and dependency composition only.
-- `components/app_hello/host`: desktop adapter and its separate CMake build,
-  reusing the same controller and public header; excluded from the ESP32 build.
-- `components/app_hello/ui/main.json`: authored scene; generated bindings and bundles stay in the build.
-
-`project sim` discovers a unique scene under `components/*/ui/main.json` (or the
-older root `ui/main.json`). With multiple scenes, select one using `--scene PATH`,
-relative to the project. This previews only that scene; omit `--scene` to run the
-PC backend and its compiled application behavior.
-
-Dependency direction is `main -> app_hello -> ESP-GSP` and
-`main -> app_display -> BSP/ESP-GSP`. Neither application component depends on
-`main` or on its sibling. Public headers live in `include/`; private state stays
-in implementation files. Each component README includes its contract and usage.
-
-When adding behavior, keep `main` as a composition root. Add cohesive `app_*`
-components only for independent responsibilities, declare public/private CMake
-dependencies explicitly, and keep the graph acyclic. Avoid cross-module globals;
-pass handles, context and value snapshots. Keep each public API comment within
-three lines, describing its purpose and key preconditions/results. Put detailed
-ownership, lifecycle, threading and timeout contracts in the component README;
-document units and ranges beside fields.
-Third-party dependencies retain upstream names. Pins and workspace overrides live
-in `main/idf_component.yml` and the root CMake configuration. Apply local patches
-in a dedicated dependency checkout and select it with `override_path`; never edit
-`managed_components/` in place.
-
-Git, editor and hook entry files stay at the root; format rules, project policy
-and setup instructions live in `tools/quality/`. See its README to enable hooks.
-The `tools/quality/policy.json` prefix rule checks local application component names.
-Architecture and API semantics also require code review; formatter/static-analysis
-success alone does not establish those contracts.
+- The UI watchdog panics (and reboots into a healthy image) if the render task
+  stops ticking for 7 s; the task watchdog covers blocked tasks. Core dumps and
+  the retained pre-crash log ring stay readable through
+  `python mosaico.py iris crash` / `iris logs`.
+- Touch-panel and WiFi-PHY warnings are limited to errors so the retained log
+  ring keeps real evidence.

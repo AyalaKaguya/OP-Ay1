@@ -12,6 +12,3 @@ esp_err_t app_tracker_start(esp_gsp_handle_t ui, tracker_engine_t *engine,
                             app_tracker_t **out_handle);
 
 void app_tracker_stop(app_tracker_t **handle);
-
-/* Diagnostic/test hook: jump directly to a page (0..4). */
-void app_tracker_set_page(app_tracker_t *handle, int page);
