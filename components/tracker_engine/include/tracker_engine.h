@@ -88,8 +88,9 @@ float tracker_engine_channel_cycle_frames(tracker_engine_t *engine, int channel)
 /* Per-channel peak 0..255 for level meters. */
 int tracker_engine_channel_level(tracker_engine_t *engine, int channel);
 
-/* Per-track mixer controls. gain is clamped to 0..1.5; mute and solo affect
- * only the mixed output (the transport keeps running). */
+/* Per-track mixer controls. gain is clamped to 0..2.0 (1.0 = unity, 2.0 = the
+ * UI fader's +6 dB top); mute and solo affect only the mixed output (the
+ * transport keeps running). */
 void tracker_engine_set_channel_gain(tracker_engine_t *engine, int channel,
                                      float gain);
 float tracker_engine_channel_gain(tracker_engine_t *engine, int channel);

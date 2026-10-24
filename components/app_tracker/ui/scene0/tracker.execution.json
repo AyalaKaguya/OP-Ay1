@@ -1,6 +1,6 @@
 {
   "calibration": null,
-  "content_id": "0xaae7d33b",
+  "content_id": "0xe53ede9d",
   "decision_quality": "conservative_uncalibrated",
   "fonts": [
     {
@@ -13,10 +13,10 @@
       "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans.ttf"
     },
     {
-      "asset_id": "0x6a16fd6b",
-      "charset": "?",
-      "encoded_bytes": 1152,
-      "glyph_count": 1,
+      "asset_id": "0xa6a13226",
+      "charset": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+      "encoded_bytes": 10176,
+      "glyph_count": 95,
       "link": "embedded",
       "size_px": 12,
       "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans-Bold.ttf"
@@ -151,17 +151,17 @@
     "asset_anims": 0,
     "component_instances": 0,
     "dynamic_image_slots": 2,
-    "glyph_run_slots": 16,
+    "glyph_run_slots": 20,
     "instance_states_per_slot": 0,
     "list_count": 0,
     "list_max_slots": 0,
     "list_text_slots": 0,
     "scene_count": 1,
     "stack_view_max_depth": 0,
-    "text_slots": 14
+    "text_slots": 18
   },
   "resource_budget": {
-    "font_blob_bytes": 208320,
+    "font_blob_bytes": 217344,
     "image_cache_budget_bytes": 0,
     "image_payload_bytes": 414720,
     "initial_static_set_exceeds_cache_budget": null,
@@ -170,7 +170,7 @@
       "Initial static decode bytes are an estimate, not measured resident or peak RAM. Exceeding the cache budget can cause eviction, not necessarily allocation failure.",
       "Different variants may be required for size, format or animation policy. Review authored uses before removing them or moving work to runtime."
     ],
-    "resource_blob_bytes": 623168,
+    "resource_blob_bytes": 632192,
     "scope": "scene_reachable_resources",
     "source_variants": []
   },

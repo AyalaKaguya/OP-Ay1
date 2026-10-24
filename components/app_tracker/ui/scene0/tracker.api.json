@@ -73,106 +73,122 @@
         },
         {
           "bind_id": 46,
-          "name": "slot0_name"
+          "name": "slot0_db"
         },
         {
           "bind_id": 47,
-          "name": "slot1_name"
+          "name": "slot0_name"
         },
         {
           "bind_id": 48,
-          "name": "slot2_name"
+          "name": "slot1_db"
         },
         {
           "bind_id": 49,
-          "name": "slot3_name"
+          "name": "slot1_name"
         },
         {
           "bind_id": 50,
-          "name": "smn0"
+          "name": "slot2_db"
         },
         {
           "bind_id": 51,
-          "name": "smn1"
+          "name": "slot2_name"
         },
         {
           "bind_id": 52,
-          "name": "smn2"
+          "name": "slot3_db"
         },
         {
           "bind_id": 53,
-          "name": "smn3"
+          "name": "slot3_name"
         },
         {
           "bind_id": 54,
-          "name": "smo0"
+          "name": "smn0"
         },
         {
           "bind_id": 55,
-          "name": "smo1"
+          "name": "smn1"
         },
         {
           "bind_id": 56,
-          "name": "smo2"
+          "name": "smn2"
         },
         {
           "bind_id": 57,
-          "name": "smo3"
+          "name": "smn3"
         },
         {
           "bind_id": 58,
-          "name": "speed_05_sel"
+          "name": "smo0"
         },
         {
           "bind_id": 59,
-          "name": "speed_10_sel"
+          "name": "smo1"
         },
         {
           "bind_id": 60,
-          "name": "speed_15_sel"
+          "name": "smo2"
         },
         {
           "bind_id": 61,
-          "name": "speed_20_sel"
+          "name": "smo3"
         },
         {
           "bind_id": 62,
-          "name": "ssn0"
+          "name": "speed_05_sel"
         },
         {
           "bind_id": 63,
-          "name": "ssn1"
+          "name": "speed_10_sel"
         },
         {
           "bind_id": 64,
-          "name": "ssn2"
+          "name": "speed_15_sel"
         },
         {
           "bind_id": 65,
-          "name": "ssn3"
+          "name": "speed_20_sel"
         },
         {
           "bind_id": 66,
-          "name": "sso0"
+          "name": "ssn0"
         },
         {
           "bind_id": 67,
-          "name": "sso1"
+          "name": "ssn1"
         },
         {
           "bind_id": 68,
-          "name": "sso2"
+          "name": "ssn2"
         },
         {
           "bind_id": 69,
-          "name": "sso3"
+          "name": "ssn3"
         },
         {
           "bind_id": 70,
-          "name": "step_value"
+          "name": "sso0"
         },
         {
           "bind_id": 71,
+          "name": "sso1"
+        },
+        {
+          "bind_id": 72,
+          "name": "sso2"
+        },
+        {
+          "bind_id": 73,
+          "name": "sso3"
+        },
+        {
+          "bind_id": 74,
+          "name": "step_value"
+        },
+        {
+          "bind_id": 75,
           "name": "waves_canvas"
         }
       ],
@@ -318,7 +334,7 @@
           "name": "step_prev_cb"
         }
       ],
-      "content_id": "0xaae7d33b",
+      "content_id": "0xe53ede9d",
       "objects": [
         {
           "bounds": {
@@ -817,7 +833,7 @@
         {
           "bounds": {
             "x1": 1526,
-            "x2": 1708,
+            "x2": 1799,
             "y1": 80,
             "y2": 100
           },
@@ -859,7 +875,7 @@
         },
         {
           "bounds": {
-            "x1": 1817,
+            "x1": 1867,
             "x2": 1890,
             "y1": 80,
             "y2": 100
@@ -1002,8 +1018,8 @@
         },
         {
           "bounds": {
-            "x1": 1708,
-            "x2": 1817,
+            "x1": 1799,
+            "x2": 1867,
             "y1": 80,
             "y2": 100
           },
@@ -1046,7 +1062,7 @@
         {
           "bounds": {
             "x1": 1596,
-            "x2": 1725,
+            "x2": 1790,
             "y1": 157,
             "y2": 171
           },
@@ -1088,7 +1104,7 @@
         },
         {
           "bounds": {
-            "x1": 1802,
+            "x1": 1838,
             "x2": 1854,
             "y1": 157,
             "y2": 171
@@ -1131,8 +1147,8 @@
         },
         {
           "bounds": {
-            "x1": 1725,
-            "x2": 1802,
+            "x1": 1790,
+            "x2": 1838,
             "y1": 157,
             "y2": 171
           },
@@ -1175,7 +1191,7 @@
         {
           "bounds": {
             "x1": 1596,
-            "x2": 1725,
+            "x2": 1790,
             "y1": 231,
             "y2": 245
           },
@@ -1217,7 +1233,7 @@
         },
         {
           "bounds": {
-            "x1": 1802,
+            "x1": 1838,
             "x2": 1854,
             "y1": 231,
             "y2": 245
@@ -1260,8 +1276,8 @@
         },
         {
           "bounds": {
-            "x1": 1725,
-            "x2": 1802,
+            "x1": 1790,
+            "x2": 1838,
             "y1": 231,
             "y2": 245
           },
@@ -1304,7 +1320,7 @@
         {
           "bounds": {
             "x1": 1596,
-            "x2": 1725,
+            "x2": 1790,
             "y1": 305,
             "y2": 319
           },
@@ -1346,7 +1362,7 @@
         },
         {
           "bounds": {
-            "x1": 1802,
+            "x1": 1838,
             "x2": 1854,
             "y1": 305,
             "y2": 319
@@ -1389,8 +1405,8 @@
         },
         {
           "bounds": {
-            "x1": 1725,
-            "x2": 1802,
+            "x1": 1790,
+            "x2": 1838,
             "y1": 305,
             "y2": 319
           },
@@ -1433,7 +1449,7 @@
         {
           "bounds": {
             "x1": 1596,
-            "x2": 1725,
+            "x2": 1790,
             "y1": 379,
             "y2": 393
           },
@@ -1475,7 +1491,7 @@
         },
         {
           "bounds": {
-            "x1": 1802,
+            "x1": 1838,
             "x2": 1854,
             "y1": 379,
             "y2": 393
@@ -1518,8 +1534,8 @@
         },
         {
           "bounds": {
-            "x1": 1725,
-            "x2": 1802,
+            "x1": 1790,
+            "x2": 1838,
             "y1": 379,
             "y2": 393
           },
@@ -2646,6 +2662,49 @@
         },
         {
           "bounds": {
+            "x1": 1856,
+            "x2": 1916,
+            "y1": 152,
+            "y2": 170
+          },
+          "bounds_source": "compiled",
+          "component_key": 3702245830,
+          "helpers": [
+            "gsp_tracker_slot0_db_get_info",
+            "gsp_tracker_slot0_db_get_text",
+            "gsp_tracker_slot0_db_set_text"
+          ],
+          "name": "slot0_db",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 46,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
             "x1": 1460,
             "x2": 1590,
             "y1": 154,
@@ -2677,7 +2736,7 @@
           ],
           "properties": [
             {
-              "bind_id": 46,
+              "bind_id": 47,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -2766,6 +2825,49 @@
         },
         {
           "bounds": {
+            "x1": 1856,
+            "x2": 1916,
+            "y1": 226,
+            "y2": 244
+          },
+          "bounds_source": "compiled",
+          "component_key": 1599912907,
+          "helpers": [
+            "gsp_tracker_slot1_db_get_info",
+            "gsp_tracker_slot1_db_get_text",
+            "gsp_tracker_slot1_db_set_text"
+          ],
+          "name": "slot1_db",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 48,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
             "x1": 1460,
             "x2": 1590,
             "y1": 228,
@@ -2797,7 +2899,7 @@
           ],
           "properties": [
             {
-              "bind_id": 47,
+              "bind_id": 49,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -2886,6 +2988,49 @@
         },
         {
           "bounds": {
+            "x1": 1856,
+            "x2": 1916,
+            "y1": 300,
+            "y2": 318
+          },
+          "bounds_source": "compiled",
+          "component_key": 921061280,
+          "helpers": [
+            "gsp_tracker_slot2_db_get_info",
+            "gsp_tracker_slot2_db_get_text",
+            "gsp_tracker_slot2_db_set_text"
+          ],
+          "name": "slot2_db",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 50,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
             "x1": 1460,
             "x2": 1590,
             "y1": 302,
@@ -2917,7 +3062,7 @@
           ],
           "properties": [
             {
-              "bind_id": 48,
+              "bind_id": 51,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -3006,6 +3151,49 @@
         },
         {
           "bounds": {
+            "x1": 1856,
+            "x2": 1916,
+            "y1": 374,
+            "y2": 392
+          },
+          "bounds_source": "compiled",
+          "component_key": 3247916605,
+          "helpers": [
+            "gsp_tracker_slot3_db_get_info",
+            "gsp_tracker_slot3_db_get_text",
+            "gsp_tracker_slot3_db_set_text"
+          ],
+          "name": "slot3_db",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 52,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
             "x1": 1460,
             "x2": 1590,
             "y1": 376,
@@ -3037,7 +3225,7 @@
           ],
           "properties": [
             {
-              "bind_id": 49,
+              "bind_id": 53,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -3080,7 +3268,7 @@
           ],
           "properties": [
             {
-              "bind_id": 50,
+              "bind_id": 54,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3123,7 +3311,7 @@
           ],
           "properties": [
             {
-              "bind_id": 51,
+              "bind_id": 55,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3166,7 +3354,7 @@
           ],
           "properties": [
             {
-              "bind_id": 52,
+              "bind_id": 56,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3209,7 +3397,7 @@
           ],
           "properties": [
             {
-              "bind_id": 53,
+              "bind_id": 57,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3252,7 +3440,7 @@
           ],
           "properties": [
             {
-              "bind_id": 54,
+              "bind_id": 58,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3295,7 +3483,7 @@
           ],
           "properties": [
             {
-              "bind_id": 55,
+              "bind_id": 59,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3338,7 +3526,7 @@
           ],
           "properties": [
             {
-              "bind_id": 56,
+              "bind_id": 60,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3381,7 +3569,7 @@
           ],
           "properties": [
             {
-              "bind_id": 57,
+              "bind_id": 61,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3449,7 +3637,7 @@
           ],
           "properties": [
             {
-              "bind_id": 58,
+              "bind_id": 62,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3517,7 +3705,7 @@
           ],
           "properties": [
             {
-              "bind_id": 59,
+              "bind_id": 63,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3585,7 +3773,7 @@
           ],
           "properties": [
             {
-              "bind_id": 60,
+              "bind_id": 64,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3653,7 +3841,7 @@
           ],
           "properties": [
             {
-              "bind_id": 61,
+              "bind_id": 65,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3696,7 +3884,7 @@
           ],
           "properties": [
             {
-              "bind_id": 62,
+              "bind_id": 66,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3739,7 +3927,7 @@
           ],
           "properties": [
             {
-              "bind_id": 63,
+              "bind_id": 67,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3782,7 +3970,7 @@
           ],
           "properties": [
             {
-              "bind_id": 64,
+              "bind_id": 68,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3825,7 +4013,7 @@
           ],
           "properties": [
             {
-              "bind_id": 65,
+              "bind_id": 69,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3868,7 +4056,7 @@
           ],
           "properties": [
             {
-              "bind_id": 66,
+              "bind_id": 70,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3911,7 +4099,7 @@
           ],
           "properties": [
             {
-              "bind_id": 67,
+              "bind_id": 71,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3954,7 +4142,7 @@
           ],
           "properties": [
             {
-              "bind_id": 68,
+              "bind_id": 72,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -3997,7 +4185,7 @@
           ],
           "properties": [
             {
-              "bind_id": 69,
+              "bind_id": 73,
               "key": "visible",
               "max": 1,
               "min": 0,
@@ -4090,7 +4278,7 @@
           ],
           "properties": [
             {
-              "bind_id": 70,
+              "bind_id": 74,
               "key": "text",
               "max": 4294967295,
               "min": 0,
@@ -4133,7 +4321,7 @@
           ],
           "properties": [
             {
-              "bind_id": 71,
+              "bind_id": 75,
               "key": "resource",
               "max": 4294967295,
               "min": 0,

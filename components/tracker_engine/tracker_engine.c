@@ -722,8 +722,8 @@ void tracker_engine_set_channel_gain(tracker_engine_t *engine, int channel,
     }
     if (gain < 0.0f) {
         gain = 0.0f;
-    } else if (gain > 1.5f) {
-        gain = 1.5f;
+    } else if (gain > 2.0f) {
+        gain = 2.0f;
     }
     engine_lock(engine);
     engine->mixer.channel_gain[channel] = gain;

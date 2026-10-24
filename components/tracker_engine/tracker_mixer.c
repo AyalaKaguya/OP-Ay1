@@ -81,9 +81,12 @@ static void mix_frame(tracker_mixer_t *mixer, const tracker_module_t *module,
         }
 
         value *= voice->volume * mixer->channel_gain[channel];
-        const float absolute = fabsf(value);
-        if (absolute > mixer->channel_peak[channel]) {
-            mixer->channel_peak[channel] = absolute;
+        /* Channel meters must show the channel's contribution to the bus, so
+         * they use the same headroom and global volume as the final mix. */
+        const float metered =
+            fabsf(value) * TRACKER_MIX_HEADROOM * module->global_volume;
+        if (metered > mixer->channel_peak[channel]) {
+            mixer->channel_peak[channel] = metered;
         }
         write_wave(mixer, channel, value);
         *left += value * (1.0f - voice->pan) * 0.5f;

@@ -74,12 +74,16 @@
 #define GSP_OBJ_KEY_SF2 0x1A1F3C7Au
 #define GSP_OBJ_KEY_SF3 0x1B1F3E0Du
 #define GSP_OBJ_KEY_SLOT0 0x7BFF2B53u
+#define GSP_OBJ_KEY_SLOT0_DB 0xDCABC9C6u
 #define GSP_OBJ_KEY_SLOT0_NAME 0xF91EF91Fu
 #define GSP_OBJ_KEY_SLOT1 0x7AFF29C0u
+#define GSP_OBJ_KEY_SLOT1_DB 0x5F5CBBCBu
 #define GSP_OBJ_KEY_SLOT1_NAME 0x6E056C4Eu
 #define GSP_OBJ_KEY_SLOT2 0x7DFF2E79u
+#define GSP_OBJ_KEY_SLOT2_DB 0x36E647A0u
 #define GSP_OBJ_KEY_SLOT2_NAME 0x325A3599u
 #define GSP_OBJ_KEY_SLOT3 0x7CFF2CE6u
+#define GSP_OBJ_KEY_SLOT3_DB 0xC197463Du
 #define GSP_OBJ_KEY_SLOT3_NAME 0x6F41E3A0u
 #define GSP_OBJ_KEY_SMN0 0x956F05DBu
 #define GSP_OBJ_KEY_SMN1 0x946F0448u
@@ -152,35 +156,39 @@
 #define GSP_OBJ_SF2_VALUE 18
 #define GSP_OBJ_SF3_VALUE 24
 #define GSP_OBJ_SLOT0_VALUE 1
-#define GSP_OBJ_SLOT0_NAME_TEXT 46
+#define GSP_OBJ_SLOT0_DB_TEXT 46
+#define GSP_OBJ_SLOT0_NAME_TEXT 47
 #define GSP_OBJ_SLOT1_VALUE 7
-#define GSP_OBJ_SLOT1_NAME_TEXT 47
+#define GSP_OBJ_SLOT1_DB_TEXT 48
+#define GSP_OBJ_SLOT1_NAME_TEXT 49
 #define GSP_OBJ_SLOT2_VALUE 13
-#define GSP_OBJ_SLOT2_NAME_TEXT 48
+#define GSP_OBJ_SLOT2_DB_TEXT 50
+#define GSP_OBJ_SLOT2_NAME_TEXT 51
 #define GSP_OBJ_SLOT3_VALUE 19
-#define GSP_OBJ_SLOT3_NAME_TEXT 49
-#define GSP_OBJ_SMN0_VISIBLE 50
-#define GSP_OBJ_SMN1_VISIBLE 51
-#define GSP_OBJ_SMN2_VISIBLE 52
-#define GSP_OBJ_SMN3_VISIBLE 53
-#define GSP_OBJ_SMO0_VISIBLE 54
-#define GSP_OBJ_SMO1_VISIBLE 55
-#define GSP_OBJ_SMO2_VISIBLE 56
-#define GSP_OBJ_SMO3_VISIBLE 57
-#define GSP_OBJ_SPEED_05_SEL_VISIBLE 58
-#define GSP_OBJ_SPEED_10_SEL_VISIBLE 59
-#define GSP_OBJ_SPEED_15_SEL_VISIBLE 60
-#define GSP_OBJ_SPEED_20_SEL_VISIBLE 61
-#define GSP_OBJ_SSN0_VISIBLE 62
-#define GSP_OBJ_SSN1_VISIBLE 63
-#define GSP_OBJ_SSN2_VISIBLE 64
-#define GSP_OBJ_SSN3_VISIBLE 65
-#define GSP_OBJ_SSO0_VISIBLE 66
-#define GSP_OBJ_SSO1_VISIBLE 67
-#define GSP_OBJ_SSO2_VISIBLE 68
-#define GSP_OBJ_SSO3_VISIBLE 69
-#define GSP_OBJ_STEP_VALUE_TEXT 70
-#define GSP_OBJ_WAVES_CANVAS_RESOURCE 71
+#define GSP_OBJ_SLOT3_DB_TEXT 52
+#define GSP_OBJ_SLOT3_NAME_TEXT 53
+#define GSP_OBJ_SMN0_VISIBLE 54
+#define GSP_OBJ_SMN1_VISIBLE 55
+#define GSP_OBJ_SMN2_VISIBLE 56
+#define GSP_OBJ_SMN3_VISIBLE 57
+#define GSP_OBJ_SMO0_VISIBLE 58
+#define GSP_OBJ_SMO1_VISIBLE 59
+#define GSP_OBJ_SMO2_VISIBLE 60
+#define GSP_OBJ_SMO3_VISIBLE 61
+#define GSP_OBJ_SPEED_05_SEL_VISIBLE 62
+#define GSP_OBJ_SPEED_10_SEL_VISIBLE 63
+#define GSP_OBJ_SPEED_15_SEL_VISIBLE 64
+#define GSP_OBJ_SPEED_20_SEL_VISIBLE 65
+#define GSP_OBJ_SSN0_VISIBLE 66
+#define GSP_OBJ_SSN1_VISIBLE 67
+#define GSP_OBJ_SSN2_VISIBLE 68
+#define GSP_OBJ_SSN3_VISIBLE 69
+#define GSP_OBJ_SSO0_VISIBLE 70
+#define GSP_OBJ_SSO1_VISIBLE 71
+#define GSP_OBJ_SSO2_VISIBLE 72
+#define GSP_OBJ_SSO3_VISIBLE 73
+#define GSP_OBJ_STEP_VALUE_TEXT 74
+#define GSP_OBJ_WAVES_CANVAS_RESOURCE 75
 
 #ifndef GSP_PROP_KEY_ENABLED
 #define GSP_PROP_KEY_ENABLED 0x02F3B39Eu
@@ -1002,6 +1010,18 @@ static inline esp_err_t gsp_tracker_slot0_stop_y(esp_gsp_handle_t gsp)
     return esp_gsp_component_stop_animation(gsp, GSP_OBJ_KEY_SLOT0, GSP_PROP_KEY_Y);
 }
 
+/* label: slot0_db */
+static inline esp_err_t gsp_tracker_slot0_db_get_info(esp_gsp_handle_t gsp, esp_gsp_component_info_t *out_info)
+{
+    return esp_gsp_component_get_info(gsp, GSP_OBJ_KEY_SLOT0_DB, out_info);
+}
+
+static inline esp_err_t gsp_tracker_slot0_db_set_text(
+        esp_gsp_handle_t gsp, const char *text)
+{
+    return esp_gsp_component_set_text(gsp, GSP_OBJ_KEY_SLOT0_DB, text);
+}
+
 /* label: slot0_name */
 static inline esp_err_t gsp_tracker_slot0_name_get_info(esp_gsp_handle_t gsp, esp_gsp_component_info_t *out_info)
 {
@@ -1118,6 +1138,18 @@ static inline esp_err_t gsp_tracker_slot1_play_y(esp_gsp_handle_t gsp, int32_t f
 static inline esp_err_t gsp_tracker_slot1_stop_y(esp_gsp_handle_t gsp)
 {
     return esp_gsp_component_stop_animation(gsp, GSP_OBJ_KEY_SLOT1, GSP_PROP_KEY_Y);
+}
+
+/* label: slot1_db */
+static inline esp_err_t gsp_tracker_slot1_db_get_info(esp_gsp_handle_t gsp, esp_gsp_component_info_t *out_info)
+{
+    return esp_gsp_component_get_info(gsp, GSP_OBJ_KEY_SLOT1_DB, out_info);
+}
+
+static inline esp_err_t gsp_tracker_slot1_db_set_text(
+        esp_gsp_handle_t gsp, const char *text)
+{
+    return esp_gsp_component_set_text(gsp, GSP_OBJ_KEY_SLOT1_DB, text);
 }
 
 /* label: slot1_name */
@@ -1238,6 +1270,18 @@ static inline esp_err_t gsp_tracker_slot2_stop_y(esp_gsp_handle_t gsp)
     return esp_gsp_component_stop_animation(gsp, GSP_OBJ_KEY_SLOT2, GSP_PROP_KEY_Y);
 }
 
+/* label: slot2_db */
+static inline esp_err_t gsp_tracker_slot2_db_get_info(esp_gsp_handle_t gsp, esp_gsp_component_info_t *out_info)
+{
+    return esp_gsp_component_get_info(gsp, GSP_OBJ_KEY_SLOT2_DB, out_info);
+}
+
+static inline esp_err_t gsp_tracker_slot2_db_set_text(
+        esp_gsp_handle_t gsp, const char *text)
+{
+    return esp_gsp_component_set_text(gsp, GSP_OBJ_KEY_SLOT2_DB, text);
+}
+
 /* label: slot2_name */
 static inline esp_err_t gsp_tracker_slot2_name_get_info(esp_gsp_handle_t gsp, esp_gsp_component_info_t *out_info)
 {
@@ -1354,6 +1398,18 @@ static inline esp_err_t gsp_tracker_slot3_play_y(esp_gsp_handle_t gsp, int32_t f
 static inline esp_err_t gsp_tracker_slot3_stop_y(esp_gsp_handle_t gsp)
 {
     return esp_gsp_component_stop_animation(gsp, GSP_OBJ_KEY_SLOT3, GSP_PROP_KEY_Y);
+}
+
+/* label: slot3_db */
+static inline esp_err_t gsp_tracker_slot3_db_get_info(esp_gsp_handle_t gsp, esp_gsp_component_info_t *out_info)
+{
+    return esp_gsp_component_get_info(gsp, GSP_OBJ_KEY_SLOT3_DB, out_info);
+}
+
+static inline esp_err_t gsp_tracker_slot3_db_set_text(
+        esp_gsp_handle_t gsp, const char *text)
+{
+    return esp_gsp_component_set_text(gsp, GSP_OBJ_KEY_SLOT3_DB, text);
 }
 
 /* label: slot3_name */
@@ -1724,7 +1780,7 @@ static inline esp_err_t gsp_tracker_waves_canvas_get_info(esp_gsp_handle_t gsp, 
 
 static inline esp_err_t gsp_tracker_waves_canvas_set_asset(esp_gsp_handle_t gsp, esp_gsp_assets_t *assets, esp_gsp_asset_ref_t asset, bool once)
 {
-    return esp_gsp_assets_show(assets, gsp, 71, asset, once);
+    return esp_gsp_assets_show(assets, gsp, 75, asset, once);
 }
 
 static inline esp_err_t gsp_tracker_waves_canvas_set_image(
@@ -1736,37 +1792,37 @@ static inline esp_err_t gsp_tracker_waves_canvas_set_image(
 
 
 static const gsp_component_prop_t gsp_obj_props_tracker_clip_off[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 29, .property_ref = 70, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 29, .property_ref = 74, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_clip_on[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 30, .property_ref = 71, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 30, .property_ref = 75, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_dot_on_0[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 31, .property_ref = 73, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 31, .property_ref = 77, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_dot_on_1[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 32, .property_ref = 74, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 32, .property_ref = 78, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_dot_on_2[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 33, .property_ref = 75, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 33, .property_ref = 79, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_dot_on_3[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 34, .property_ref = 76, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 34, .property_ref = 80, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_dot_on_4[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 35, .property_ref = 77, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 35, .property_ref = 81, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_grid_canvas[] = {
     { .prop = GSP_COMPONENT_PROP_RESOURCE, .reserved = 0, .bind = 36, .property_ref = 10, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_RESOURCE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_RESOURCE, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_lvl_g[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 26, .property_ref = 39, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 26, .property_ref = 43, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_lvl_r[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 28, .property_ref = 41, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 28, .property_ref = 45, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_lvl_y[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 27, .property_ref = 40, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 27, .property_ref = 44, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_m0_g[] = {
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 3, .property_ref = 18, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
@@ -1778,46 +1834,46 @@ static const gsp_component_prop_t gsp_obj_props_tracker_m0_y[] = {
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 4, .property_ref = 19, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_m1_g[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 9, .property_ref = 23, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 9, .property_ref = 24, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_m1_r[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 11, .property_ref = 25, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 11, .property_ref = 26, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_m1_y[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 10, .property_ref = 24, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 10, .property_ref = 25, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_m2_g[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 15, .property_ref = 28, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 15, .property_ref = 30, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_m2_r[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 17, .property_ref = 30, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 17, .property_ref = 32, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_m2_y[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 16, .property_ref = 29, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 16, .property_ref = 31, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_m3_g[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 21, .property_ref = 33, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 21, .property_ref = 36, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_m3_r[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 23, .property_ref = 35, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 23, .property_ref = 38, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_m3_y[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 22, .property_ref = 34, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 22, .property_ref = 37, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x000000FFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_master_fader[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 25, .property_ref = 38, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x00000064u },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 25, .property_ref = 42, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x00000064u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_master_value[] = {
-    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 37, .property_ref = 37, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 37, .property_ref = 41, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_nav_icon[] = {
     { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 38, .property_ref = 12, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_order_list[] = {
-    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 39, .property_ref = 44, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 39, .property_ref = 48, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_pat_value[] = {
-    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 40, .property_ref = 43, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 40, .property_ref = 47, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_pb_pos[] = {
     { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 41, .property_ref = 11, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
@@ -1835,117 +1891,129 @@ static const gsp_component_prop_t gsp_obj_props_tracker_rec_btn[] = {
     { .prop = GSP_COMPONENT_PROP_ENABLED, .reserved = 0, .bind = 0, .property_ref = 15, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_BOOL_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_ENABLED, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_seq_pos[] = {
-    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 45, .property_ref = 45, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 45, .property_ref = 49, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_sf0[] = {
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 6, .property_ref = 21, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x00000078u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_sf1[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 12, .property_ref = 26, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x00000078u },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 12, .property_ref = 27, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x00000078u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_sf2[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 18, .property_ref = 31, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x00000078u },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 18, .property_ref = 33, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x00000078u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_sf3[] = {
-    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 24, .property_ref = 36, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x00000078u },
+    { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 24, .property_ref = 39, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_RANGE_0_100, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x00000000u, .max_value = 0x00000078u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_slot0[] = {
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 1, .property_ref = 1, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x80000000u, .max_value = 0x7FFFFFFFu },
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 1, .property_ref = 1, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_X, .min_value = 0xFFFFFE20u, .max_value = 0x000001E0u },
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 2, .property_ref = 2, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_Y, .min_value = 0xFFFFFE92u, .max_value = 0x00000124u },
 };
+static const gsp_component_prop_t gsp_obj_props_tracker_slot0_db[] = {
+    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 46, .property_ref = 22, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+};
 static const gsp_component_prop_t gsp_obj_props_tracker_slot0_name[] = {
-    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 46, .property_ref = 17, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 47, .property_ref = 17, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_slot1[] = {
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 7, .property_ref = 3, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x80000000u, .max_value = 0x7FFFFFFFu },
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 7, .property_ref = 3, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_X, .min_value = 0xFFFFFE20u, .max_value = 0x000001E0u },
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 8, .property_ref = 4, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_Y, .min_value = 0xFFFFFE92u, .max_value = 0x00000124u },
 };
+static const gsp_component_prop_t gsp_obj_props_tracker_slot1_db[] = {
+    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 48, .property_ref = 28, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+};
 static const gsp_component_prop_t gsp_obj_props_tracker_slot1_name[] = {
-    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 47, .property_ref = 22, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 49, .property_ref = 23, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_slot2[] = {
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 13, .property_ref = 5, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x80000000u, .max_value = 0x7FFFFFFFu },
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 13, .property_ref = 5, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_X, .min_value = 0xFFFFFE20u, .max_value = 0x000001E0u },
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 14, .property_ref = 6, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_Y, .min_value = 0xFFFFFE92u, .max_value = 0x00000124u },
 };
+static const gsp_component_prop_t gsp_obj_props_tracker_slot2_db[] = {
+    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 50, .property_ref = 34, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+};
 static const gsp_component_prop_t gsp_obj_props_tracker_slot2_name[] = {
-    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 48, .property_ref = 27, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 51, .property_ref = 29, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_slot3[] = {
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 19, .property_ref = 7, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VALUE, .min_value = 0x80000000u, .max_value = 0x7FFFFFFFu },
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 19, .property_ref = 7, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_X, .min_value = 0xFFFFFE20u, .max_value = 0x000001E0u },
     { .prop = GSP_COMPONENT_PROP_VALUE, .reserved = 0, .bind = 20, .property_ref = 8, .value_type = GSP_VALUE_I32, .storage = GSP_PROPERTY_STORAGE_I32, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_Y, .min_value = 0xFFFFFE92u, .max_value = 0x00000124u },
 };
+static const gsp_component_prop_t gsp_obj_props_tracker_slot3_db[] = {
+    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 52, .property_ref = 40, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+};
 static const gsp_component_prop_t gsp_obj_props_tracker_slot3_name[] = {
-    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 49, .property_ref = 32, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 53, .property_ref = 35, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_smn0[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 50, .property_ref = 47, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 54, .property_ref = 51, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_smn1[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 51, .property_ref = 51, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 55, .property_ref = 55, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_smn2[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 52, .property_ref = 55, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 56, .property_ref = 59, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_smn3[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 53, .property_ref = 59, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 57, .property_ref = 63, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_smo0[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 54, .property_ref = 46, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 58, .property_ref = 50, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_smo1[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 55, .property_ref = 50, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 59, .property_ref = 54, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_smo2[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 56, .property_ref = 54, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 60, .property_ref = 58, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_smo3[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 57, .property_ref = 58, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 61, .property_ref = 62, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_speed_05_sel[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 58, .property_ref = 65, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 62, .property_ref = 69, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_speed_10_sel[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 59, .property_ref = 66, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 63, .property_ref = 70, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_speed_15_sel[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 60, .property_ref = 67, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 64, .property_ref = 71, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_speed_20_sel[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 61, .property_ref = 68, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 65, .property_ref = 72, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_ssn0[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 62, .property_ref = 49, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 66, .property_ref = 53, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_ssn1[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 63, .property_ref = 53, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 67, .property_ref = 57, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_ssn2[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 64, .property_ref = 57, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 68, .property_ref = 61, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_ssn3[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 65, .property_ref = 61, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 69, .property_ref = 65, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_sso0[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 66, .property_ref = 48, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 70, .property_ref = 52, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_sso1[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 67, .property_ref = 52, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 71, .property_ref = 56, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_sso2[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 68, .property_ref = 56, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 72, .property_ref = 60, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_sso3[] = {
-    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 69, .property_ref = 60, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
+    { .prop = GSP_COMPONENT_PROP_VISIBLE, .reserved = 0, .bind = 73, .property_ref = 64, .value_type = GSP_VALUE_BOOL, .storage = GSP_PROPERTY_STORAGE_VISIBLE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_VISIBLE, .min_value = 0x00000000u, .max_value = 0x00000001u },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_step_value[] = {
-    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 70, .property_ref = 42, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+    { .prop = GSP_COMPONENT_PROP_TEXT, .reserved = 0, .bind = 74, .property_ref = 46, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_TEXT, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_TEXT, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
 };
 static const gsp_component_prop_t gsp_obj_props_tracker_waves_canvas[] = {
-    { .prop = GSP_COMPONENT_PROP_RESOURCE, .reserved = 0, .bind = 71, .property_ref = 9, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_RESOURCE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_RESOURCE, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
+    { .prop = GSP_COMPONENT_PROP_RESOURCE, .reserved = 0, .bind = 75, .property_ref = 9, .value_type = GSP_VALUE_U32, .storage = GSP_PROPERTY_STORAGE_RESOURCE, .codec = GSP_PROPERTY_CODEC_DIRECT, .flags = 0, .reserved2 = 0, .key = GSP_PROP_KEY_RESOURCE, .min_value = 0x00000000u, .max_value = 0xFFFFFFFFu },
 };
 
 static const gsp_range_config_t gsp_obj_range_tracker_lvl_g = { .min = 0, .max = 255 };
@@ -2007,6 +2075,8 @@ static const gsp_component_entry_t gsp_obj_entries_tracker[] = {
       .props = gsp_obj_props_tracker_slot2_name, .config = NULL, }, /* label: slot2_name */
     { .key = GSP_OBJ_KEY_PP_PLAY_TEXT, .kind = GSP_COMPONENT_KIND_GENERIC, .prop_count = 1, .reserved = 0,
       .props = gsp_obj_props_tracker_pp_play_text, .config = NULL, }, /* label: pp_play_text */
+    { .key = GSP_OBJ_KEY_SLOT2_DB, .kind = GSP_COMPONENT_KIND_GENERIC, .prop_count = 1, .reserved = 0,
+      .props = gsp_obj_props_tracker_slot2_db, .config = NULL, }, /* label: slot2_db */
     { .key = GSP_OBJ_KEY_PB_SPEED_VALUE, .kind = GSP_COMPONENT_KIND_GENERIC, .prop_count = 1, .reserved = 0,
       .props = gsp_obj_props_tracker_pb_speed_value, .config = NULL, }, /* label: pb_speed_value */
     { .key = GSP_OBJ_KEY_M1_Y, .kind = GSP_COMPONENT_KIND_RANGE, .prop_count = 1, .reserved = 0,
@@ -2031,6 +2101,8 @@ static const gsp_component_entry_t gsp_obj_entries_tracker[] = {
       .props = gsp_obj_props_tracker_lvl_g, .config = &gsp_obj_range_tracker_lvl_g, }, /* progress: lvl_g */
     { .key = GSP_OBJ_KEY_M1_G, .kind = GSP_COMPONENT_KIND_RANGE, .prop_count = 1, .reserved = 0,
       .props = gsp_obj_props_tracker_m1_g, .config = &gsp_obj_range_tracker_m1_g, }, /* progress: m1_g */
+    { .key = GSP_OBJ_KEY_SLOT1_DB, .kind = GSP_COMPONENT_KIND_GENERIC, .prop_count = 1, .reserved = 0,
+      .props = gsp_obj_props_tracker_slot1_db, .config = NULL, }, /* label: slot1_db */
     { .key = GSP_OBJ_KEY_PAGE_PATTERN, .kind = GSP_COMPONENT_KIND_GENERIC, .prop_count = 0, .reserved = 0,
       .props = NULL, .config = NULL, }, /* layer: page_pattern */
     { .key = GSP_OBJ_KEY_LVL_Y, .kind = GSP_COMPONENT_KIND_RANGE, .prop_count = 1, .reserved = 0,
@@ -2107,6 +2179,8 @@ static const gsp_component_entry_t gsp_obj_entries_tracker[] = {
       .props = gsp_obj_props_tracker_nav_icon, .config = NULL, }, /* label: nav_icon */
     { .key = GSP_OBJ_KEY_M0_G, .kind = GSP_COMPONENT_KIND_RANGE, .prop_count = 1, .reserved = 0,
       .props = gsp_obj_props_tracker_m0_g, .config = &gsp_obj_range_tracker_m0_g, }, /* progress: m0_g */
+    { .key = GSP_OBJ_KEY_SLOT3_DB, .kind = GSP_COMPONENT_KIND_GENERIC, .prop_count = 1, .reserved = 0,
+      .props = gsp_obj_props_tracker_slot3_db, .config = NULL, }, /* label: slot3_db */
     { .key = GSP_OBJ_KEY_CLIP_OFF, .kind = GSP_COMPONENT_KIND_GENERIC, .prop_count = 1, .reserved = 0,
       .props = gsp_obj_props_tracker_clip_off, .config = NULL, }, /* container: clip_off */
     { .key = GSP_OBJ_KEY_ORDER_PAUSE, .kind = GSP_COMPONENT_KIND_GENERIC, .prop_count = 0, .reserved = 0,
@@ -2141,6 +2215,8 @@ static const gsp_component_entry_t gsp_obj_entries_tracker[] = {
       .props = gsp_obj_props_tracker_pat_value, .config = NULL, }, /* label: pat_value */
     { .key = GSP_OBJ_KEY_M0_Y, .kind = GSP_COMPONENT_KIND_RANGE, .prop_count = 1, .reserved = 0,
       .props = gsp_obj_props_tracker_m0_y, .config = &gsp_obj_range_tracker_m0_y, }, /* progress: m0_y */
+    { .key = GSP_OBJ_KEY_SLOT0_DB, .kind = GSP_COMPONENT_KIND_GENERIC, .prop_count = 1, .reserved = 0,
+      .props = gsp_obj_props_tracker_slot0_db, .config = NULL, }, /* label: slot0_db */
     { .key = GSP_OBJ_KEY_SSO0, .kind = GSP_COMPONENT_KIND_GENERIC, .prop_count = 1, .reserved = 0,
       .props = gsp_obj_props_tracker_sso0, .config = NULL, }, /* button: sso0 */
     { .key = GSP_OBJ_KEY_SSO1, .kind = GSP_COMPONENT_KIND_GENERIC, .prop_count = 1, .reserved = 0,
@@ -2174,447 +2250,463 @@ static const gsp_component_entry_t gsp_obj_entries_tracker[] = {
 };
 
 static const gsp_component_route_t gsp_obj_routes_tracker[] = {
-    { .bind = 1, .entry = 35 },
-    { .bind = 3, .entry = 65 },
-    { .bind = 4, .entry = 82 },
-    { .bind = 5, .entry = 78 },
+    { .bind = 1, .entry = 37 },
+    { .bind = 3, .entry = 67 },
+    { .bind = 4, .entry = 85 },
+    { .bind = 5, .entry = 81 },
     { .bind = 6, .entry = 2 },
-    { .bind = 7, .entry = 34 },
-    { .bind = 9, .entry = 27 },
-    { .bind = 10, .entry = 17 },
-    { .bind = 11, .entry = 18 },
+    { .bind = 7, .entry = 36 },
+    { .bind = 9, .entry = 28 },
+    { .bind = 10, .entry = 18 },
+    { .bind = 11, .entry = 19 },
     { .bind = 12, .entry = 3 },
-    { .bind = 13, .entry = 37 },
-    { .bind = 15, .entry = 62 },
-    { .bind = 16, .entry = 59 },
-    { .bind = 17, .entry = 56 },
+    { .bind = 13, .entry = 39 },
+    { .bind = 15, .entry = 64 },
+    { .bind = 16, .entry = 61 },
+    { .bind = 17, .entry = 58 },
     { .bind = 18, .entry = 5 },
-    { .bind = 19, .entry = 36 },
+    { .bind = 19, .entry = 38 },
     { .bind = 21, .entry = 4 },
     { .bind = 22, .entry = 9 },
     { .bind = 23, .entry = 11 },
     { .bind = 24, .entry = 7 },
-    { .bind = 25, .entry = 94 },
-    { .bind = 26, .entry = 26 },
-    { .bind = 27, .entry = 29 },
-    { .bind = 28, .entry = 31 },
+    { .bind = 25, .entry = 98 },
+    { .bind = 26, .entry = 27 },
+    { .bind = 27, .entry = 31 },
+    { .bind = 28, .entry = 33 },
 };
 
 static const gsp_component_property_route_t gsp_obj_property_routes_tracker[] = {
-    { .property_ref = 1, .entry = 35 },
-    { .property_ref = 3, .entry = 34 },
-    { .property_ref = 5, .entry = 37 },
-    { .property_ref = 7, .entry = 36 },
-    { .property_ref = 18, .entry = 65 },
-    { .property_ref = 19, .entry = 82 },
-    { .property_ref = 20, .entry = 78 },
+    { .property_ref = 1, .entry = 37 },
+    { .property_ref = 3, .entry = 36 },
+    { .property_ref = 5, .entry = 39 },
+    { .property_ref = 7, .entry = 38 },
+    { .property_ref = 18, .entry = 67 },
+    { .property_ref = 19, .entry = 85 },
+    { .property_ref = 20, .entry = 81 },
     { .property_ref = 21, .entry = 2 },
-    { .property_ref = 23, .entry = 27 },
-    { .property_ref = 24, .entry = 17 },
+    { .property_ref = 24, .entry = 28 },
     { .property_ref = 25, .entry = 18 },
-    { .property_ref = 26, .entry = 3 },
-    { .property_ref = 28, .entry = 62 },
-    { .property_ref = 29, .entry = 59 },
-    { .property_ref = 30, .entry = 56 },
-    { .property_ref = 31, .entry = 5 },
-    { .property_ref = 33, .entry = 4 },
-    { .property_ref = 34, .entry = 9 },
-    { .property_ref = 35, .entry = 11 },
-    { .property_ref = 36, .entry = 7 },
-    { .property_ref = 38, .entry = 94 },
-    { .property_ref = 39, .entry = 26 },
-    { .property_ref = 40, .entry = 29 },
-    { .property_ref = 41, .entry = 31 },
+    { .property_ref = 26, .entry = 19 },
+    { .property_ref = 27, .entry = 3 },
+    { .property_ref = 30, .entry = 64 },
+    { .property_ref = 31, .entry = 61 },
+    { .property_ref = 32, .entry = 58 },
+    { .property_ref = 33, .entry = 5 },
+    { .property_ref = 36, .entry = 4 },
+    { .property_ref = 37, .entry = 9 },
+    { .property_ref = 38, .entry = 11 },
+    { .property_ref = 39, .entry = 7 },
+    { .property_ref = 42, .entry = 98 },
+    { .property_ref = 43, .entry = 27 },
+    { .property_ref = 44, .entry = 31 },
+    { .property_ref = 45, .entry = 33 },
 };
 
 static const gsp_component_directory_t gsp_obj_directory_tracker = {
-    .entries = gsp_obj_entries_tracker, .count = 98,
+    .entries = gsp_obj_entries_tracker, .count = 102,
     .routes = gsp_obj_routes_tracker, .route_count = 24,
     .property_routes = gsp_obj_property_routes_tracker, .property_route_count = 24,
 };
 
-static const esp_gsp_visibility_target_t gsp_tracker_pages_visibility = { .scene_content_id = 2867319611u, .bounds = {0,0,480,480}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pages_visibility = { .scene_content_id = 3846102685u, .bounds = {0,0,480,480}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pages_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pages_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_page_waves_visibility_slots[] = {61};
-static const esp_gsp_visibility_target_t gsp_tracker_page_waves_visibility = { .scene_content_id = 2867319611u, .bounds = {0,0,480,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_waves_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_page_waves_visibility_slots[] = {65};
+static const esp_gsp_visibility_target_t gsp_tracker_page_waves_visibility = { .scene_content_id = 3846102685u, .bounds = {0,0,480,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_waves_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_page_waves_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_page_waves_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_waves_canvas_visibility_slots[] = {61};
-static const esp_gsp_visibility_target_t gsp_tracker_waves_canvas_visibility = { .scene_content_id = 2867319611u, .bounds = {0,0,480,432}, .group_ref = 1, .visible_slots = gsp_tracker_waves_canvas_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_waves_canvas_visibility_slots[] = {65};
+static const esp_gsp_visibility_target_t gsp_tracker_waves_canvas_visibility = { .scene_content_id = 3846102685u, .bounds = {0,0,480,432}, .group_ref = 1, .visible_slots = gsp_tracker_waves_canvas_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_waves_canvas_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_waves_canvas_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_page_pattern_visibility_slots[] = {62};
-static const esp_gsp_visibility_target_t gsp_tracker_page_pattern_visibility = { .scene_content_id = 2867319611u, .bounds = {480,0,960,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_pattern_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_page_pattern_visibility_slots[] = {66};
+static const esp_gsp_visibility_target_t gsp_tracker_page_pattern_visibility = { .scene_content_id = 3846102685u, .bounds = {480,0,960,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_pattern_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_page_pattern_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_page_pattern_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_grid_canvas_visibility_slots[] = {62};
-static const esp_gsp_visibility_target_t gsp_tracker_grid_canvas_visibility = { .scene_content_id = 2867319611u, .bounds = {480,0,960,432}, .group_ref = 1, .visible_slots = gsp_tracker_grid_canvas_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_grid_canvas_visibility_slots[] = {66};
+static const esp_gsp_visibility_target_t gsp_tracker_grid_canvas_visibility = { .scene_content_id = 3846102685u, .bounds = {480,0,960,432}, .group_ref = 1, .visible_slots = gsp_tracker_grid_canvas_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_grid_canvas_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_grid_canvas_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_page_playback_visibility_slots[] = {63};
-static const esp_gsp_visibility_target_t gsp_tracker_page_playback_visibility = { .scene_content_id = 2867319611u, .bounds = {960,0,1440,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_playback_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_page_playback_visibility_slots[] = {67};
+static const esp_gsp_visibility_target_t gsp_tracker_page_playback_visibility = { .scene_content_id = 3846102685u, .bounds = {960,0,1440,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_playback_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_page_playback_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_page_playback_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_pb_pos_visibility_slots[] = {63};
-static const esp_gsp_visibility_target_t gsp_tracker_pb_pos_visibility = { .scene_content_id = 2867319611u, .bounds = {1210,24,1410,42}, .group_ref = 1, .visible_slots = gsp_tracker_pb_pos_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_pb_pos_visibility_slots[] = {67};
+static const esp_gsp_visibility_target_t gsp_tracker_pb_pos_visibility = { .scene_content_id = 3846102685u, .bounds = {1210,24,1410,42}, .group_ref = 1, .visible_slots = gsp_tracker_pb_pos_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pb_pos_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pb_pos_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_nav_hit_visibility_slots[] = {63};
-static const esp_gsp_visibility_target_t gsp_tracker_nav_hit_visibility = { .scene_content_id = 2867319611u, .bounds = {990,130,1126,226}, .group_ref = 1, .visible_slots = gsp_tracker_nav_hit_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_nav_hit_visibility_slots[] = {67};
+static const esp_gsp_visibility_target_t gsp_tracker_nav_hit_visibility = { .scene_content_id = 3846102685u, .bounds = {990,130,1126,226}, .group_ref = 1, .visible_slots = gsp_tracker_nav_hit_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_nav_hit_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_nav_hit_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_nav_icon_visibility_slots[] = {63};
-static const esp_gsp_visibility_target_t gsp_tracker_nav_icon_visibility = { .scene_content_id = 2867319611u, .bounds = {990,156,1126,200}, .group_ref = 1, .visible_slots = gsp_tracker_nav_icon_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_nav_icon_visibility_slots[] = {67};
+static const esp_gsp_visibility_target_t gsp_tracker_nav_icon_visibility = { .scene_content_id = 3846102685u, .bounds = {990,156,1126,200}, .group_ref = 1, .visible_slots = gsp_tracker_nav_icon_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_nav_icon_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_nav_icon_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_pp_hit_visibility_slots[] = {63};
-static const esp_gsp_visibility_target_t gsp_tracker_pp_hit_visibility = { .scene_content_id = 2867319611u, .bounds = {1136,130,1272,226}, .group_ref = 1, .visible_slots = gsp_tracker_pp_hit_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_pp_hit_visibility_slots[] = {67};
+static const esp_gsp_visibility_target_t gsp_tracker_pp_hit_visibility = { .scene_content_id = 3846102685u, .bounds = {1136,130,1272,226}, .group_ref = 1, .visible_slots = gsp_tracker_pp_hit_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pp_hit_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pp_hit_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_pp_play_text_visibility_slots[] = {63};
-static const esp_gsp_visibility_target_t gsp_tracker_pp_play_text_visibility = { .scene_content_id = 2867319611u, .bounds = {1136,156,1272,200}, .group_ref = 1, .visible_slots = gsp_tracker_pp_play_text_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_pp_play_text_visibility_slots[] = {67};
+static const esp_gsp_visibility_target_t gsp_tracker_pp_play_text_visibility = { .scene_content_id = 3846102685u, .bounds = {1136,156,1272,200}, .group_ref = 1, .visible_slots = gsp_tracker_pp_play_text_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pp_play_text_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pp_play_text_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_pp_pause_text_visibility_slots[] = {63};
-static const esp_gsp_visibility_target_t gsp_tracker_pp_pause_text_visibility = { .scene_content_id = 2867319611u, .bounds = {1136,156,1272,200}, .group_ref = 1, .visible_slots = gsp_tracker_pp_pause_text_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_pp_pause_text_visibility_slots[] = {67};
+static const esp_gsp_visibility_target_t gsp_tracker_pp_pause_text_visibility = { .scene_content_id = 3846102685u, .bounds = {1136,156,1272,200}, .group_ref = 1, .visible_slots = gsp_tracker_pp_pause_text_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pp_pause_text_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pp_pause_text_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_rec_btn_visibility_slots[] = {63};
-static const esp_gsp_visibility_target_t gsp_tracker_rec_btn_visibility = { .scene_content_id = 2867319611u, .bounds = {1282,130,1410,226}, .group_ref = 1, .visible_slots = gsp_tracker_rec_btn_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_rec_btn_visibility_slots[] = {67};
+static const esp_gsp_visibility_target_t gsp_tracker_rec_btn_visibility = { .scene_content_id = 3846102685u, .bounds = {1282,130,1410,226}, .group_ref = 1, .visible_slots = gsp_tracker_rec_btn_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_rec_btn_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_rec_btn_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_pb_speed_value_visibility_slots[] = {63};
-static const esp_gsp_visibility_target_t gsp_tracker_pb_speed_value_visibility = { .scene_content_id = 2867319611u, .bounds = {1270,272,1410,310}, .group_ref = 1, .visible_slots = gsp_tracker_pb_speed_value_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_pb_speed_value_visibility_slots[] = {67};
+static const esp_gsp_visibility_target_t gsp_tracker_pb_speed_value_visibility = { .scene_content_id = 3846102685u, .bounds = {1270,272,1410,310}, .group_ref = 1, .visible_slots = gsp_tracker_pb_speed_value_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pb_speed_value_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pb_speed_value_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_speed_05_visibility_slots[] = {63};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_05_visibility = { .scene_content_id = 2867319611u, .bounds = {990,330,1090,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_05_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_speed_05_visibility_slots[] = {67};
+static const esp_gsp_visibility_target_t gsp_tracker_speed_05_visibility = { .scene_content_id = 3846102685u, .bounds = {990,330,1090,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_05_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_05_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_05_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_speed_05_sel_visibility_slots[] = {64,63};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_05_sel_visibility = { .scene_content_id = 2867319611u, .bounds = {1002,378,1078,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_05_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_speed_05_sel_visibility_slots[] = {68,67};
+static const esp_gsp_visibility_target_t gsp_tracker_speed_05_sel_visibility = { .scene_content_id = 3846102685u, .bounds = {1002,378,1078,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_05_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_05_sel_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_05_sel_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_speed_10_visibility_slots[] = {63};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_10_visibility = { .scene_content_id = 2867319611u, .bounds = {1098,330,1198,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_10_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_speed_10_visibility_slots[] = {67};
+static const esp_gsp_visibility_target_t gsp_tracker_speed_10_visibility = { .scene_content_id = 3846102685u, .bounds = {1098,330,1198,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_10_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_10_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_10_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_speed_10_sel_visibility_slots[] = {65,63};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_10_sel_visibility = { .scene_content_id = 2867319611u, .bounds = {1110,378,1186,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_10_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_speed_10_sel_visibility_slots[] = {69,67};
+static const esp_gsp_visibility_target_t gsp_tracker_speed_10_sel_visibility = { .scene_content_id = 3846102685u, .bounds = {1110,378,1186,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_10_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_10_sel_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_10_sel_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_speed_15_visibility_slots[] = {63};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_15_visibility = { .scene_content_id = 2867319611u, .bounds = {1206,330,1306,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_15_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_speed_15_visibility_slots[] = {67};
+static const esp_gsp_visibility_target_t gsp_tracker_speed_15_visibility = { .scene_content_id = 3846102685u, .bounds = {1206,330,1306,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_15_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_15_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_15_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_speed_15_sel_visibility_slots[] = {66,63};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_15_sel_visibility = { .scene_content_id = 2867319611u, .bounds = {1218,378,1294,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_15_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_speed_15_sel_visibility_slots[] = {70,67};
+static const esp_gsp_visibility_target_t gsp_tracker_speed_15_sel_visibility = { .scene_content_id = 3846102685u, .bounds = {1218,378,1294,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_15_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_15_sel_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_15_sel_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_speed_20_visibility_slots[] = {63};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_20_visibility = { .scene_content_id = 2867319611u, .bounds = {1314,330,1410,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_20_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_speed_20_visibility_slots[] = {67};
+static const esp_gsp_visibility_target_t gsp_tracker_speed_20_visibility = { .scene_content_id = 3846102685u, .bounds = {1314,330,1410,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_20_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_20_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_20_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_speed_20_sel_visibility_slots[] = {67,63};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_20_sel_visibility = { .scene_content_id = 2867319611u, .bounds = {1326,378,1398,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_20_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_speed_20_sel_visibility_slots[] = {71,67};
+static const esp_gsp_visibility_target_t gsp_tracker_speed_20_sel_visibility = { .scene_content_id = 3846102685u, .bounds = {1326,378,1398,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_20_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_20_sel_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_20_sel_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_page_mix_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_page_mix_visibility = { .scene_content_id = 2867319611u, .bounds = {1440,0,1920,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_mix_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_page_mix_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_page_mix_visibility = { .scene_content_id = 3846102685u, .bounds = {1440,0,1920,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_mix_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_page_mix_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_page_mix_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_mix_view_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_mix_view_visibility = { .scene_content_id = 2867319611u, .bounds = {1440,150,1920,442}, .group_ref = 1, .visible_slots = gsp_tracker_mix_view_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_mix_view_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_mix_view_visibility = { .scene_content_id = 3846102685u, .bounds = {1440,150,1920,442}, .group_ref = 1, .visible_slots = gsp_tracker_mix_view_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_mix_view_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_mix_view_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_slot0_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_slot0_visibility = { .scene_content_id = 2867319611u, .bounds = {1440,150,1920,220}, .group_ref = 3, .visible_slots = gsp_tracker_slot0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_slot0_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_slot0_visibility = { .scene_content_id = 3846102685u, .bounds = {1440,150,1920,220}, .group_ref = 3, .visible_slots = gsp_tracker_slot0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot0_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_slot0_name_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_slot0_name_visibility = { .scene_content_id = 2867319611u, .bounds = {1460,154,1590,172}, .group_ref = 3, .visible_slots = gsp_tracker_slot0_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_slot0_name_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_slot0_name_visibility = { .scene_content_id = 3846102685u, .bounds = {1460,154,1590,172}, .group_ref = 3, .visible_slots = gsp_tracker_slot0_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot0_name_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot0_name_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_m0_g_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_m0_g_visibility = { .scene_content_id = 2867319611u, .bounds = {1596,157,1725,171}, .group_ref = 3, .visible_slots = gsp_tracker_m0_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_m0_g_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_m0_g_visibility = { .scene_content_id = 3846102685u, .bounds = {1596,157,1790,171}, .group_ref = 3, .visible_slots = gsp_tracker_m0_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m0_g_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m0_g_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_m0_y_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_m0_y_visibility = { .scene_content_id = 2867319611u, .bounds = {1725,157,1802,171}, .group_ref = 3, .visible_slots = gsp_tracker_m0_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_m0_y_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_m0_y_visibility = { .scene_content_id = 3846102685u, .bounds = {1790,157,1838,171}, .group_ref = 3, .visible_slots = gsp_tracker_m0_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m0_y_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m0_y_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_m0_r_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_m0_r_visibility = { .scene_content_id = 2867319611u, .bounds = {1802,157,1854,171}, .group_ref = 3, .visible_slots = gsp_tracker_m0_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_m0_r_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_m0_r_visibility = { .scene_content_id = 3846102685u, .bounds = {1838,157,1854,171}, .group_ref = 3, .visible_slots = gsp_tracker_m0_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m0_r_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m0_r_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_smo0_visibility_slots[] = {45,68};
-static const esp_gsp_visibility_target_t gsp_tracker_smo0_visibility = { .scene_content_id = 2867319611u, .bounds = {1460,174,1514,218}, .group_ref = 3, .visible_slots = gsp_tracker_smo0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_smo0_visibility_slots[] = {49,72};
+static const esp_gsp_visibility_target_t gsp_tracker_smo0_visibility = { .scene_content_id = 3846102685u, .bounds = {1460,174,1514,218}, .group_ref = 3, .visible_slots = gsp_tracker_smo0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smo0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smo0_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_smn0_visibility_slots[] = {46,68};
-static const esp_gsp_visibility_target_t gsp_tracker_smn0_visibility = { .scene_content_id = 2867319611u, .bounds = {1460,174,1514,218}, .group_ref = 3, .visible_slots = gsp_tracker_smn0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_smn0_visibility_slots[] = {50,72};
+static const esp_gsp_visibility_target_t gsp_tracker_smn0_visibility = { .scene_content_id = 3846102685u, .bounds = {1460,174,1514,218}, .group_ref = 3, .visible_slots = gsp_tracker_smn0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smn0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smn0_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_sso0_visibility_slots[] = {47,68};
-static const esp_gsp_visibility_target_t gsp_tracker_sso0_visibility = { .scene_content_id = 2867319611u, .bounds = {1522,174,1576,218}, .group_ref = 3, .visible_slots = gsp_tracker_sso0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_sso0_visibility_slots[] = {51,72};
+static const esp_gsp_visibility_target_t gsp_tracker_sso0_visibility = { .scene_content_id = 3846102685u, .bounds = {1522,174,1576,218}, .group_ref = 3, .visible_slots = gsp_tracker_sso0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sso0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sso0_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_ssn0_visibility_slots[] = {48,68};
-static const esp_gsp_visibility_target_t gsp_tracker_ssn0_visibility = { .scene_content_id = 2867319611u, .bounds = {1522,174,1576,218}, .group_ref = 3, .visible_slots = gsp_tracker_ssn0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_ssn0_visibility_slots[] = {52,72};
+static const esp_gsp_visibility_target_t gsp_tracker_ssn0_visibility = { .scene_content_id = 3846102685u, .bounds = {1522,174,1576,218}, .group_ref = 3, .visible_slots = gsp_tracker_ssn0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_ssn0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_ssn0_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_sf0_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_sf0_visibility = { .scene_content_id = 2867319611u, .bounds = {1586,174,1836,218}, .group_ref = 3, .visible_slots = gsp_tracker_sf0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_sf0_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_sf0_visibility = { .scene_content_id = 3846102685u, .bounds = {1586,174,1836,218}, .group_ref = 3, .visible_slots = gsp_tracker_sf0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sf0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sf0_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_slot1_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_slot1_visibility = { .scene_content_id = 2867319611u, .bounds = {1440,224,1920,294}, .group_ref = 4, .visible_slots = gsp_tracker_slot1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_slot0_db_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_slot0_db_visibility = { .scene_content_id = 3846102685u, .bounds = {1856,152,1916,170}, .group_ref = 3, .visible_slots = gsp_tracker_slot0_db_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static inline esp_err_t gsp_tracker_slot0_db_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot0_db_visibility, out_visible); }
+
+static const uint16_t gsp_tracker_slot1_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_slot1_visibility = { .scene_content_id = 3846102685u, .bounds = {1440,224,1920,294}, .group_ref = 4, .visible_slots = gsp_tracker_slot1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot1_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_slot1_name_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_slot1_name_visibility = { .scene_content_id = 2867319611u, .bounds = {1460,228,1590,246}, .group_ref = 4, .visible_slots = gsp_tracker_slot1_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_slot1_name_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_slot1_name_visibility = { .scene_content_id = 3846102685u, .bounds = {1460,228,1590,246}, .group_ref = 4, .visible_slots = gsp_tracker_slot1_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot1_name_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot1_name_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_m1_g_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_m1_g_visibility = { .scene_content_id = 2867319611u, .bounds = {1596,231,1725,245}, .group_ref = 4, .visible_slots = gsp_tracker_m1_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_m1_g_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_m1_g_visibility = { .scene_content_id = 3846102685u, .bounds = {1596,231,1790,245}, .group_ref = 4, .visible_slots = gsp_tracker_m1_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m1_g_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m1_g_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_m1_y_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_m1_y_visibility = { .scene_content_id = 2867319611u, .bounds = {1725,231,1802,245}, .group_ref = 4, .visible_slots = gsp_tracker_m1_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_m1_y_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_m1_y_visibility = { .scene_content_id = 3846102685u, .bounds = {1790,231,1838,245}, .group_ref = 4, .visible_slots = gsp_tracker_m1_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m1_y_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m1_y_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_m1_r_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_m1_r_visibility = { .scene_content_id = 2867319611u, .bounds = {1802,231,1854,245}, .group_ref = 4, .visible_slots = gsp_tracker_m1_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_m1_r_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_m1_r_visibility = { .scene_content_id = 3846102685u, .bounds = {1838,231,1854,245}, .group_ref = 4, .visible_slots = gsp_tracker_m1_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m1_r_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m1_r_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_smo1_visibility_slots[] = {49,68};
-static const esp_gsp_visibility_target_t gsp_tracker_smo1_visibility = { .scene_content_id = 2867319611u, .bounds = {1460,248,1514,292}, .group_ref = 4, .visible_slots = gsp_tracker_smo1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_smo1_visibility_slots[] = {53,72};
+static const esp_gsp_visibility_target_t gsp_tracker_smo1_visibility = { .scene_content_id = 3846102685u, .bounds = {1460,248,1514,292}, .group_ref = 4, .visible_slots = gsp_tracker_smo1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smo1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smo1_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_smn1_visibility_slots[] = {50,68};
-static const esp_gsp_visibility_target_t gsp_tracker_smn1_visibility = { .scene_content_id = 2867319611u, .bounds = {1460,248,1514,292}, .group_ref = 4, .visible_slots = gsp_tracker_smn1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_smn1_visibility_slots[] = {54,72};
+static const esp_gsp_visibility_target_t gsp_tracker_smn1_visibility = { .scene_content_id = 3846102685u, .bounds = {1460,248,1514,292}, .group_ref = 4, .visible_slots = gsp_tracker_smn1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smn1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smn1_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_sso1_visibility_slots[] = {51,68};
-static const esp_gsp_visibility_target_t gsp_tracker_sso1_visibility = { .scene_content_id = 2867319611u, .bounds = {1522,248,1576,292}, .group_ref = 4, .visible_slots = gsp_tracker_sso1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_sso1_visibility_slots[] = {55,72};
+static const esp_gsp_visibility_target_t gsp_tracker_sso1_visibility = { .scene_content_id = 3846102685u, .bounds = {1522,248,1576,292}, .group_ref = 4, .visible_slots = gsp_tracker_sso1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sso1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sso1_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_ssn1_visibility_slots[] = {52,68};
-static const esp_gsp_visibility_target_t gsp_tracker_ssn1_visibility = { .scene_content_id = 2867319611u, .bounds = {1522,248,1576,292}, .group_ref = 4, .visible_slots = gsp_tracker_ssn1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_ssn1_visibility_slots[] = {56,72};
+static const esp_gsp_visibility_target_t gsp_tracker_ssn1_visibility = { .scene_content_id = 3846102685u, .bounds = {1522,248,1576,292}, .group_ref = 4, .visible_slots = gsp_tracker_ssn1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_ssn1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_ssn1_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_sf1_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_sf1_visibility = { .scene_content_id = 2867319611u, .bounds = {1586,248,1836,292}, .group_ref = 4, .visible_slots = gsp_tracker_sf1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_sf1_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_sf1_visibility = { .scene_content_id = 3846102685u, .bounds = {1586,248,1836,292}, .group_ref = 4, .visible_slots = gsp_tracker_sf1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sf1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sf1_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_slot2_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_slot2_visibility = { .scene_content_id = 2867319611u, .bounds = {1440,298,1920,368}, .group_ref = 5, .visible_slots = gsp_tracker_slot2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_slot1_db_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_slot1_db_visibility = { .scene_content_id = 3846102685u, .bounds = {1856,226,1916,244}, .group_ref = 4, .visible_slots = gsp_tracker_slot1_db_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static inline esp_err_t gsp_tracker_slot1_db_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot1_db_visibility, out_visible); }
+
+static const uint16_t gsp_tracker_slot2_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_slot2_visibility = { .scene_content_id = 3846102685u, .bounds = {1440,298,1920,368}, .group_ref = 5, .visible_slots = gsp_tracker_slot2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot2_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_slot2_name_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_slot2_name_visibility = { .scene_content_id = 2867319611u, .bounds = {1460,302,1590,320}, .group_ref = 5, .visible_slots = gsp_tracker_slot2_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_slot2_name_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_slot2_name_visibility = { .scene_content_id = 3846102685u, .bounds = {1460,302,1590,320}, .group_ref = 5, .visible_slots = gsp_tracker_slot2_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot2_name_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot2_name_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_m2_g_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_m2_g_visibility = { .scene_content_id = 2867319611u, .bounds = {1596,305,1725,319}, .group_ref = 5, .visible_slots = gsp_tracker_m2_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_m2_g_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_m2_g_visibility = { .scene_content_id = 3846102685u, .bounds = {1596,305,1790,319}, .group_ref = 5, .visible_slots = gsp_tracker_m2_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m2_g_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m2_g_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_m2_y_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_m2_y_visibility = { .scene_content_id = 2867319611u, .bounds = {1725,305,1802,319}, .group_ref = 5, .visible_slots = gsp_tracker_m2_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_m2_y_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_m2_y_visibility = { .scene_content_id = 3846102685u, .bounds = {1790,305,1838,319}, .group_ref = 5, .visible_slots = gsp_tracker_m2_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m2_y_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m2_y_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_m2_r_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_m2_r_visibility = { .scene_content_id = 2867319611u, .bounds = {1802,305,1854,319}, .group_ref = 5, .visible_slots = gsp_tracker_m2_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_m2_r_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_m2_r_visibility = { .scene_content_id = 3846102685u, .bounds = {1838,305,1854,319}, .group_ref = 5, .visible_slots = gsp_tracker_m2_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m2_r_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m2_r_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_smo2_visibility_slots[] = {53,68};
-static const esp_gsp_visibility_target_t gsp_tracker_smo2_visibility = { .scene_content_id = 2867319611u, .bounds = {1460,322,1514,366}, .group_ref = 5, .visible_slots = gsp_tracker_smo2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_smo2_visibility_slots[] = {57,72};
+static const esp_gsp_visibility_target_t gsp_tracker_smo2_visibility = { .scene_content_id = 3846102685u, .bounds = {1460,322,1514,366}, .group_ref = 5, .visible_slots = gsp_tracker_smo2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smo2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smo2_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_smn2_visibility_slots[] = {54,68};
-static const esp_gsp_visibility_target_t gsp_tracker_smn2_visibility = { .scene_content_id = 2867319611u, .bounds = {1460,322,1514,366}, .group_ref = 5, .visible_slots = gsp_tracker_smn2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_smn2_visibility_slots[] = {58,72};
+static const esp_gsp_visibility_target_t gsp_tracker_smn2_visibility = { .scene_content_id = 3846102685u, .bounds = {1460,322,1514,366}, .group_ref = 5, .visible_slots = gsp_tracker_smn2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smn2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smn2_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_sso2_visibility_slots[] = {55,68};
-static const esp_gsp_visibility_target_t gsp_tracker_sso2_visibility = { .scene_content_id = 2867319611u, .bounds = {1522,322,1576,366}, .group_ref = 5, .visible_slots = gsp_tracker_sso2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_sso2_visibility_slots[] = {59,72};
+static const esp_gsp_visibility_target_t gsp_tracker_sso2_visibility = { .scene_content_id = 3846102685u, .bounds = {1522,322,1576,366}, .group_ref = 5, .visible_slots = gsp_tracker_sso2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sso2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sso2_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_ssn2_visibility_slots[] = {56,68};
-static const esp_gsp_visibility_target_t gsp_tracker_ssn2_visibility = { .scene_content_id = 2867319611u, .bounds = {1522,322,1576,366}, .group_ref = 5, .visible_slots = gsp_tracker_ssn2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_ssn2_visibility_slots[] = {60,72};
+static const esp_gsp_visibility_target_t gsp_tracker_ssn2_visibility = { .scene_content_id = 3846102685u, .bounds = {1522,322,1576,366}, .group_ref = 5, .visible_slots = gsp_tracker_ssn2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_ssn2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_ssn2_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_sf2_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_sf2_visibility = { .scene_content_id = 2867319611u, .bounds = {1586,322,1836,366}, .group_ref = 5, .visible_slots = gsp_tracker_sf2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_sf2_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_sf2_visibility = { .scene_content_id = 3846102685u, .bounds = {1586,322,1836,366}, .group_ref = 5, .visible_slots = gsp_tracker_sf2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sf2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sf2_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_slot3_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_slot3_visibility = { .scene_content_id = 2867319611u, .bounds = {1440,372,1920,442}, .group_ref = 6, .visible_slots = gsp_tracker_slot3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_slot2_db_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_slot2_db_visibility = { .scene_content_id = 3846102685u, .bounds = {1856,300,1916,318}, .group_ref = 5, .visible_slots = gsp_tracker_slot2_db_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static inline esp_err_t gsp_tracker_slot2_db_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot2_db_visibility, out_visible); }
+
+static const uint16_t gsp_tracker_slot3_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_slot3_visibility = { .scene_content_id = 3846102685u, .bounds = {1440,372,1920,442}, .group_ref = 6, .visible_slots = gsp_tracker_slot3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot3_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_slot3_name_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_slot3_name_visibility = { .scene_content_id = 2867319611u, .bounds = {1460,376,1590,394}, .group_ref = 6, .visible_slots = gsp_tracker_slot3_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_slot3_name_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_slot3_name_visibility = { .scene_content_id = 3846102685u, .bounds = {1460,376,1590,394}, .group_ref = 6, .visible_slots = gsp_tracker_slot3_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot3_name_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot3_name_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_m3_g_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_m3_g_visibility = { .scene_content_id = 2867319611u, .bounds = {1596,379,1725,393}, .group_ref = 6, .visible_slots = gsp_tracker_m3_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_m3_g_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_m3_g_visibility = { .scene_content_id = 3846102685u, .bounds = {1596,379,1790,393}, .group_ref = 6, .visible_slots = gsp_tracker_m3_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m3_g_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m3_g_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_m3_y_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_m3_y_visibility = { .scene_content_id = 2867319611u, .bounds = {1725,379,1802,393}, .group_ref = 6, .visible_slots = gsp_tracker_m3_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_m3_y_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_m3_y_visibility = { .scene_content_id = 3846102685u, .bounds = {1790,379,1838,393}, .group_ref = 6, .visible_slots = gsp_tracker_m3_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m3_y_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m3_y_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_m3_r_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_m3_r_visibility = { .scene_content_id = 2867319611u, .bounds = {1802,379,1854,393}, .group_ref = 6, .visible_slots = gsp_tracker_m3_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_m3_r_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_m3_r_visibility = { .scene_content_id = 3846102685u, .bounds = {1838,379,1854,393}, .group_ref = 6, .visible_slots = gsp_tracker_m3_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m3_r_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m3_r_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_smo3_visibility_slots[] = {57,68};
-static const esp_gsp_visibility_target_t gsp_tracker_smo3_visibility = { .scene_content_id = 2867319611u, .bounds = {1460,396,1514,440}, .group_ref = 6, .visible_slots = gsp_tracker_smo3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_smo3_visibility_slots[] = {61,72};
+static const esp_gsp_visibility_target_t gsp_tracker_smo3_visibility = { .scene_content_id = 3846102685u, .bounds = {1460,396,1514,440}, .group_ref = 6, .visible_slots = gsp_tracker_smo3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smo3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smo3_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_smn3_visibility_slots[] = {58,68};
-static const esp_gsp_visibility_target_t gsp_tracker_smn3_visibility = { .scene_content_id = 2867319611u, .bounds = {1460,396,1514,440}, .group_ref = 6, .visible_slots = gsp_tracker_smn3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_smn3_visibility_slots[] = {62,72};
+static const esp_gsp_visibility_target_t gsp_tracker_smn3_visibility = { .scene_content_id = 3846102685u, .bounds = {1460,396,1514,440}, .group_ref = 6, .visible_slots = gsp_tracker_smn3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smn3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smn3_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_sso3_visibility_slots[] = {59,68};
-static const esp_gsp_visibility_target_t gsp_tracker_sso3_visibility = { .scene_content_id = 2867319611u, .bounds = {1522,396,1576,440}, .group_ref = 6, .visible_slots = gsp_tracker_sso3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_sso3_visibility_slots[] = {63,72};
+static const esp_gsp_visibility_target_t gsp_tracker_sso3_visibility = { .scene_content_id = 3846102685u, .bounds = {1522,396,1576,440}, .group_ref = 6, .visible_slots = gsp_tracker_sso3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sso3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sso3_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_ssn3_visibility_slots[] = {60,68};
-static const esp_gsp_visibility_target_t gsp_tracker_ssn3_visibility = { .scene_content_id = 2867319611u, .bounds = {1522,396,1576,440}, .group_ref = 6, .visible_slots = gsp_tracker_ssn3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_ssn3_visibility_slots[] = {64,72};
+static const esp_gsp_visibility_target_t gsp_tracker_ssn3_visibility = { .scene_content_id = 3846102685u, .bounds = {1522,396,1576,440}, .group_ref = 6, .visible_slots = gsp_tracker_ssn3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_ssn3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_ssn3_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_sf3_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_sf3_visibility = { .scene_content_id = 2867319611u, .bounds = {1586,396,1836,440}, .group_ref = 6, .visible_slots = gsp_tracker_sf3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_sf3_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_sf3_visibility = { .scene_content_id = 3846102685u, .bounds = {1586,396,1836,440}, .group_ref = 6, .visible_slots = gsp_tracker_sf3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sf3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sf3_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_master_value_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_master_value_visibility = { .scene_content_id = 2867319611u, .bounds = {1720,6,1890,32}, .group_ref = 1, .visible_slots = gsp_tracker_master_value_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_slot3_db_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_slot3_db_visibility = { .scene_content_id = 3846102685u, .bounds = {1856,374,1916,392}, .group_ref = 6, .visible_slots = gsp_tracker_slot3_db_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static inline esp_err_t gsp_tracker_slot3_db_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot3_db_visibility, out_visible); }
+
+static const uint16_t gsp_tracker_master_value_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_master_value_visibility = { .scene_content_id = 3846102685u, .bounds = {1720,6,1890,32}, .group_ref = 1, .visible_slots = gsp_tracker_master_value_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_master_value_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_master_value_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_master_fader_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_master_fader_visibility = { .scene_content_id = 2867319611u, .bounds = {1470,30,1890,74}, .group_ref = 1, .visible_slots = gsp_tracker_master_fader_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_master_fader_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_master_fader_visibility = { .scene_content_id = 3846102685u, .bounds = {1470,30,1890,74}, .group_ref = 1, .visible_slots = gsp_tracker_master_fader_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_master_fader_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_master_fader_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_clip_off_visibility_slots[] = {69,68};
-static const esp_gsp_visibility_target_t gsp_tracker_clip_off_visibility = { .scene_content_id = 2867319611u, .bounds = {1470,80,1516,100}, .group_ref = 1, .visible_slots = gsp_tracker_clip_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_clip_off_visibility_slots[] = {73,72};
+static const esp_gsp_visibility_target_t gsp_tracker_clip_off_visibility = { .scene_content_id = 3846102685u, .bounds = {1470,80,1516,100}, .group_ref = 1, .visible_slots = gsp_tracker_clip_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_clip_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_clip_off_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_clip_on_visibility_slots[] = {70,68};
-static const esp_gsp_visibility_target_t gsp_tracker_clip_on_visibility = { .scene_content_id = 2867319611u, .bounds = {1470,80,1516,100}, .group_ref = 1, .visible_slots = gsp_tracker_clip_on_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_clip_on_visibility_slots[] = {74,72};
+static const esp_gsp_visibility_target_t gsp_tracker_clip_on_visibility = { .scene_content_id = 3846102685u, .bounds = {1470,80,1516,100}, .group_ref = 1, .visible_slots = gsp_tracker_clip_on_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_clip_on_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_clip_on_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_lvl_g_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_g_visibility = { .scene_content_id = 2867319611u, .bounds = {1526,80,1708,100}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_lvl_g_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_g_visibility = { .scene_content_id = 3846102685u, .bounds = {1526,80,1799,100}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_g_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_g_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_lvl_y_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_y_visibility = { .scene_content_id = 2867319611u, .bounds = {1708,80,1817,100}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_lvl_y_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_y_visibility = { .scene_content_id = 3846102685u, .bounds = {1799,80,1867,100}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_y_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_y_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_lvl_r_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_r_visibility = { .scene_content_id = 2867319611u, .bounds = {1817,80,1890,100}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_lvl_r_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_r_visibility = { .scene_content_id = 3846102685u, .bounds = {1867,80,1890,100}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_r_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_r_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_lvl_tick_0_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_0_visibility = { .scene_content_id = 2867319611u, .bounds = {1526,102,1527,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_lvl_tick_0_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_0_visibility = { .scene_content_id = 3846102685u, .bounds = {1526,102,1527,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_tick_0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_tick_0_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_lvl_tick_1_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_1_visibility = { .scene_content_id = 2867319611u, .bounds = {1617,102,1618,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_lvl_tick_1_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_1_visibility = { .scene_content_id = 3846102685u, .bounds = {1617,102,1618,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_tick_1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_tick_1_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_lvl_tick_2_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_2_visibility = { .scene_content_id = 2867319611u, .bounds = {1708,102,1709,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_lvl_tick_2_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_2_visibility = { .scene_content_id = 3846102685u, .bounds = {1708,102,1709,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_tick_2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_tick_2_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_lvl_tick_3_visibility_slots[] = {68};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_3_visibility = { .scene_content_id = 2867319611u, .bounds = {1799,102,1800,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_lvl_tick_3_visibility_slots[] = {72};
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_3_visibility = { .scene_content_id = 3846102685u, .bounds = {1799,102,1800,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_tick_3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_tick_3_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_page_order_visibility_slots[] = {71};
-static const esp_gsp_visibility_target_t gsp_tracker_page_order_visibility = { .scene_content_id = 2867319611u, .bounds = {1920,0,2400,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_order_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_page_order_visibility_slots[] = {75};
+static const esp_gsp_visibility_target_t gsp_tracker_page_order_visibility = { .scene_content_id = 3846102685u, .bounds = {1920,0,2400,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_order_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_page_order_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_page_order_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_step_value_visibility_slots[] = {71};
-static const esp_gsp_visibility_target_t gsp_tracker_step_value_visibility = { .scene_content_id = 2867319611u, .bounds = {2230,56,2370,94}, .group_ref = 1, .visible_slots = gsp_tracker_step_value_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_step_value_visibility_slots[] = {75};
+static const esp_gsp_visibility_target_t gsp_tracker_step_value_visibility = { .scene_content_id = 3846102685u, .bounds = {2230,56,2370,94}, .group_ref = 1, .visible_slots = gsp_tracker_step_value_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_step_value_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_step_value_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_step_prev_visibility_slots[] = {71};
-static const esp_gsp_visibility_target_t gsp_tracker_step_prev_visibility = { .scene_content_id = 2867319611u, .bounds = {1950,94,2024,142}, .group_ref = 1, .visible_slots = gsp_tracker_step_prev_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_step_prev_visibility_slots[] = {75};
+static const esp_gsp_visibility_target_t gsp_tracker_step_prev_visibility = { .scene_content_id = 3846102685u, .bounds = {1950,94,2024,142}, .group_ref = 1, .visible_slots = gsp_tracker_step_prev_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_step_prev_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_step_prev_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_step_next_visibility_slots[] = {71};
-static const esp_gsp_visibility_target_t gsp_tracker_step_next_visibility = { .scene_content_id = 2867319611u, .bounds = {2034,94,2108,142}, .group_ref = 1, .visible_slots = gsp_tracker_step_next_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_step_next_visibility_slots[] = {75};
+static const esp_gsp_visibility_target_t gsp_tracker_step_next_visibility = { .scene_content_id = 3846102685u, .bounds = {2034,94,2108,142}, .group_ref = 1, .visible_slots = gsp_tracker_step_next_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_step_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_step_next_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_pat_value_visibility_slots[] = {71};
-static const esp_gsp_visibility_target_t gsp_tracker_pat_value_visibility = { .scene_content_id = 2867319611u, .bounds = {2230,148,2370,186}, .group_ref = 1, .visible_slots = gsp_tracker_pat_value_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_pat_value_visibility_slots[] = {75};
+static const esp_gsp_visibility_target_t gsp_tracker_pat_value_visibility = { .scene_content_id = 3846102685u, .bounds = {2230,148,2370,186}, .group_ref = 1, .visible_slots = gsp_tracker_pat_value_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pat_value_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pat_value_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_pat_prev_visibility_slots[] = {71};
-static const esp_gsp_visibility_target_t gsp_tracker_pat_prev_visibility = { .scene_content_id = 2867319611u, .bounds = {1950,186,2024,234}, .group_ref = 1, .visible_slots = gsp_tracker_pat_prev_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_pat_prev_visibility_slots[] = {75};
+static const esp_gsp_visibility_target_t gsp_tracker_pat_prev_visibility = { .scene_content_id = 3846102685u, .bounds = {1950,186,2024,234}, .group_ref = 1, .visible_slots = gsp_tracker_pat_prev_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pat_prev_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pat_prev_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_pat_next_visibility_slots[] = {71};
-static const esp_gsp_visibility_target_t gsp_tracker_pat_next_visibility = { .scene_content_id = 2867319611u, .bounds = {2034,186,2108,234}, .group_ref = 1, .visible_slots = gsp_tracker_pat_next_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_pat_next_visibility_slots[] = {75};
+static const esp_gsp_visibility_target_t gsp_tracker_pat_next_visibility = { .scene_content_id = 3846102685u, .bounds = {2034,186,2108,234}, .group_ref = 1, .visible_slots = gsp_tracker_pat_next_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pat_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pat_next_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_apply_btn_visibility_slots[] = {71};
-static const esp_gsp_visibility_target_t gsp_tracker_apply_btn_visibility = { .scene_content_id = 2867319611u, .bounds = {2116,186,2248,234}, .group_ref = 1, .visible_slots = gsp_tracker_apply_btn_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_apply_btn_visibility_slots[] = {75};
+static const esp_gsp_visibility_target_t gsp_tracker_apply_btn_visibility = { .scene_content_id = 3846102685u, .bounds = {2116,186,2248,234}, .group_ref = 1, .visible_slots = gsp_tracker_apply_btn_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_apply_btn_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_apply_btn_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_order_list_visibility_slots[] = {71};
-static const esp_gsp_visibility_target_t gsp_tracker_order_list_visibility = { .scene_content_id = 2867319611u, .bounds = {1950,250,2370,360}, .group_ref = 1, .visible_slots = gsp_tracker_order_list_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_order_list_visibility_slots[] = {75};
+static const esp_gsp_visibility_target_t gsp_tracker_order_list_visibility = { .scene_content_id = 3846102685u, .bounds = {1950,250,2370,360}, .group_ref = 1, .visible_slots = gsp_tracker_order_list_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_order_list_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_order_list_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_seq_pos_visibility_slots[] = {71};
-static const esp_gsp_visibility_target_t gsp_tracker_seq_pos_visibility = { .scene_content_id = 2867319611u, .bounds = {1950,366,2370,384}, .group_ref = 1, .visible_slots = gsp_tracker_seq_pos_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_seq_pos_visibility_slots[] = {75};
+static const esp_gsp_visibility_target_t gsp_tracker_seq_pos_visibility = { .scene_content_id = 3846102685u, .bounds = {1950,366,2370,384}, .group_ref = 1, .visible_slots = gsp_tracker_seq_pos_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_seq_pos_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_seq_pos_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_order_play_visibility_slots[] = {71};
-static const esp_gsp_visibility_target_t gsp_tracker_order_play_visibility = { .scene_content_id = 2867319611u, .bounds = {1950,396,2086,448}, .group_ref = 1, .visible_slots = gsp_tracker_order_play_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_order_play_visibility_slots[] = {75};
+static const esp_gsp_visibility_target_t gsp_tracker_order_play_visibility = { .scene_content_id = 3846102685u, .bounds = {1950,396,2086,448}, .group_ref = 1, .visible_slots = gsp_tracker_order_play_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_order_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_order_play_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_order_pause_visibility_slots[] = {71};
-static const esp_gsp_visibility_target_t gsp_tracker_order_pause_visibility = { .scene_content_id = 2867319611u, .bounds = {2096,396,2232,448}, .group_ref = 1, .visible_slots = gsp_tracker_order_pause_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_order_pause_visibility_slots[] = {75};
+static const esp_gsp_visibility_target_t gsp_tracker_order_pause_visibility = { .scene_content_id = 3846102685u, .bounds = {2096,396,2232,448}, .group_ref = 1, .visible_slots = gsp_tracker_order_pause_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_order_pause_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_order_pause_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_order_restart_visibility_slots[] = {71};
-static const esp_gsp_visibility_target_t gsp_tracker_order_restart_visibility = { .scene_content_id = 2867319611u, .bounds = {2242,396,2370,448}, .group_ref = 1, .visible_slots = gsp_tracker_order_restart_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_order_restart_visibility_slots[] = {75};
+static const esp_gsp_visibility_target_t gsp_tracker_order_restart_visibility = { .scene_content_id = 3846102685u, .bounds = {2242,396,2370,448}, .group_ref = 1, .visible_slots = gsp_tracker_order_restart_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_order_restart_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_order_restart_visibility, out_visible); }
 
-static const esp_gsp_visibility_target_t gsp_tracker_dot_off_0_visibility = { .scene_content_id = 2867319611u, .bounds = {204,456,212,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_off_0_visibility = { .scene_content_id = 3846102685u, .bounds = {204,456,212,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_off_0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_off_0_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_dot_on_0_visibility_slots[] = {72};
-static const esp_gsp_visibility_target_t gsp_tracker_dot_on_0_visibility = { .scene_content_id = 2867319611u, .bounds = {204,456,212,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_dot_on_0_visibility_slots[] = {76};
+static const esp_gsp_visibility_target_t gsp_tracker_dot_on_0_visibility = { .scene_content_id = 3846102685u, .bounds = {204,456,212,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_on_0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_on_0_visibility, out_visible); }
 
-static const esp_gsp_visibility_target_t gsp_tracker_dot_off_1_visibility = { .scene_content_id = 2867319611u, .bounds = {220,456,228,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_off_1_visibility = { .scene_content_id = 3846102685u, .bounds = {220,456,228,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_off_1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_off_1_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_dot_on_1_visibility_slots[] = {73};
-static const esp_gsp_visibility_target_t gsp_tracker_dot_on_1_visibility = { .scene_content_id = 2867319611u, .bounds = {220,456,228,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_dot_on_1_visibility_slots[] = {77};
+static const esp_gsp_visibility_target_t gsp_tracker_dot_on_1_visibility = { .scene_content_id = 3846102685u, .bounds = {220,456,228,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_on_1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_on_1_visibility, out_visible); }
 
-static const esp_gsp_visibility_target_t gsp_tracker_dot_off_2_visibility = { .scene_content_id = 2867319611u, .bounds = {236,456,244,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_off_2_visibility = { .scene_content_id = 3846102685u, .bounds = {236,456,244,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_off_2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_off_2_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_dot_on_2_visibility_slots[] = {74};
-static const esp_gsp_visibility_target_t gsp_tracker_dot_on_2_visibility = { .scene_content_id = 2867319611u, .bounds = {236,456,244,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_dot_on_2_visibility_slots[] = {78};
+static const esp_gsp_visibility_target_t gsp_tracker_dot_on_2_visibility = { .scene_content_id = 3846102685u, .bounds = {236,456,244,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_on_2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_on_2_visibility, out_visible); }
 
-static const esp_gsp_visibility_target_t gsp_tracker_dot_off_3_visibility = { .scene_content_id = 2867319611u, .bounds = {252,456,260,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_off_3_visibility = { .scene_content_id = 3846102685u, .bounds = {252,456,260,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_off_3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_off_3_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_dot_on_3_visibility_slots[] = {75};
-static const esp_gsp_visibility_target_t gsp_tracker_dot_on_3_visibility = { .scene_content_id = 2867319611u, .bounds = {252,456,260,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_dot_on_3_visibility_slots[] = {79};
+static const esp_gsp_visibility_target_t gsp_tracker_dot_on_3_visibility = { .scene_content_id = 3846102685u, .bounds = {252,456,260,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_on_3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_on_3_visibility, out_visible); }
 
-static const esp_gsp_visibility_target_t gsp_tracker_dot_off_4_visibility = { .scene_content_id = 2867319611u, .bounds = {268,456,276,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_off_4_visibility = { .scene_content_id = 3846102685u, .bounds = {268,456,276,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_off_4_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_off_4_visibility, out_visible); }
 
-static const uint16_t gsp_tracker_dot_on_4_visibility_slots[] = {76};
-static const esp_gsp_visibility_target_t gsp_tracker_dot_on_4_visibility = { .scene_content_id = 2867319611u, .bounds = {268,456,276,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_4_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const uint16_t gsp_tracker_dot_on_4_visibility_slots[] = {80};
+static const esp_gsp_visibility_target_t gsp_tracker_dot_on_4_visibility = { .scene_content_id = 3846102685u, .bounds = {268,456,276,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_4_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_on_4_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_on_4_visibility, out_visible); }

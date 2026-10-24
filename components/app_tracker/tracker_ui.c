@@ -52,6 +52,7 @@ static const char *TAG = "app_tracker";
 
 typedef esp_err_t (*vis_fn)(esp_gsp_handle_t, bool);
 typedef esp_err_t (*value_fn)(esp_gsp_handle_t, int32_t);
+typedef esp_err_t (*text_fn)(esp_gsp_handle_t, const char *);
 
 static const vis_fn k_mute_off[4] = {
     gsp_tracker_smo0_set_visible, gsp_tracker_smo1_set_visible,
@@ -72,6 +73,10 @@ static const vis_fn k_solo_on[4] = {
 static const value_fn k_fader_set[4] = {
     gsp_tracker_sf0_set_value, gsp_tracker_sf1_set_value,
     gsp_tracker_sf2_set_value, gsp_tracker_sf3_set_value,
+};
+static const text_fn k_fader_db[4] = {
+    gsp_tracker_slot0_db_set_text, gsp_tracker_slot1_db_set_text,
+    gsp_tracker_slot2_db_set_text, gsp_tracker_slot3_db_set_text,
 };
 static const value_fn k_meter_g[4] = {
     gsp_tracker_m0_g_set_value, gsp_tracker_m1_g_set_value,
@@ -211,6 +216,16 @@ static void update_labels(app_tracker_t *state, bool force)
     gsp_tracker_pat_value_set_text(state->ui, buffer);
 }
 
+/* Meter zones in dBFS: the bar spans -48..0, green ends at -12 and yellow at
+ * -3 (red only near clipping). The scene draws the matching segment widths and
+ * the printed ticks, so a full green segment means -12 dBFS. */
+#define METER_FLOOR_DB (-48.0f)
+#define METER_YELLOW_DB (-12.0f)
+#define METER_RED_DB (-3.0f)
+#define FADER_UNITY 100
+#define FADER_DB_PER_STEP 0.3f
+#define FADER_MIN_DB (-60.0f)
+
 static void zone_value(float db, float low, float high, int32_t *out)
 {
     float fraction = (db - low) / (high - low);
@@ -224,13 +239,14 @@ static void zone_value(float db, float low, float high, int32_t *out)
 
 static void meter_levels(int level, int32_t *g, int32_t *y, int32_t *r)
 {
-    float db = level > 0 ? 20.0f * log10f((float)level / 255.0f) : -60.0f;
-    if (db < -48.0f) {
-        db = -48.0f;
+    float db = level > 0 ? 20.0f * log10f((float)level / 255.0f)
+                         : METER_FLOOR_DB;
+    if (db < METER_FLOOR_DB) {
+        db = METER_FLOOR_DB;
     }
-    zone_value(db, -48.0f, -24.0f, g);
-    zone_value(db, -24.0f, -12.0f, y);
-    zone_value(db, -12.0f, 0.0f, r);
+    zone_value(db, METER_FLOOR_DB, METER_YELLOW_DB, g);
+    zone_value(db, METER_YELLOW_DB, METER_RED_DB, y);
+    zone_value(db, METER_RED_DB, 0.0f, r);
 }
 
 static void update_transport(app_tracker_t *state)
@@ -357,6 +373,38 @@ static void toggle_solo(app_tracker_t *state, int channel)
     }
 }
 
+/** Channel fader law: 100 = unity, 120 = +6 dB, and the lower half tapers in
+ *  dB so the travel behaves like a console channel fader (50 = -15 dB,
+ *  0 = silent) instead of a linear attenuator. */
+static float fader_gain(int value)
+{
+    if (value <= 0) {
+        return 0.0f;
+    }
+    float db = (float)(value - FADER_UNITY) * FADER_DB_PER_STEP;
+    if (db < FADER_MIN_DB) {
+        db = FADER_MIN_DB;
+    }
+    return powf(10.0f, db / 20.0f);
+}
+
+/** Shows the fader law next to the slider so a change is visible immediately. */
+static void push_fader_db(app_tracker_t *state, int slot, int value)
+{
+    char text[12];
+    if (value <= 0) {
+        snprintf(text, sizeof(text), "-inf");
+    } else {
+        const float db = (float)(value - FADER_UNITY) * FADER_DB_PER_STEP;
+        if (fabsf(db) < 0.05f) {
+            snprintf(text, sizeof(text), "0.0");
+        } else {
+            snprintf(text, sizeof(text), "%+.1f", db);
+        }
+    }
+    (void)k_fader_db[slot](state->ui, text);
+}
+
 static void set_gain(app_tracker_t *state, int channel, int value)
 {
     if (value < 0) {
@@ -366,7 +414,12 @@ static void set_gain(app_tracker_t *state, int channel, int value)
     }
     state->fader_value[channel] = (uint8_t)value;
     tracker_engine_set_channel_gain(state->engine, channel,
-                                    (float)value / 100.0f);
+                                    fader_gain(value));
+    for (int slot = 0; slot < 4; ++slot) {
+        if (state->slot_channel[slot] == channel) {
+            push_fader_db(state, slot, value);
+        }
+    }
 }
 
 static void apply_master(app_tracker_t *state, int raw_value)
@@ -497,6 +550,7 @@ static void refresh_mix(app_tracker_t *state)
             default: gsp_tracker_slot3_name_set_text(state->ui, name); break;
             }
             (void)k_fader_set[slot](state->ui, state->fader_value[channel]);
+            push_fader_db(state, slot, state->fader_value[channel]);
             push_channel_buttons(state, channel);
         }
     }

@@ -1,34 +1,34 @@
 # tracker build manifest
 
-- source: `tracker.json`
+- source: `projects\aryx\components\app_tracker\ui\tracker.json`
 - gspc version: 0.6.1
 - profile: host_rgb565 (rgb565, resource_alignment=64, id=0x6942ba48)
-- content_id: 0xaae7d33b
+- content_id: 0xe53ede9d
 - screen: 480x480 scene_id=0
 
 ## Outputs
 
-- gsb: `tracker.gsb` (16688 bytes)
+- gsb: `tracker.gsb` (17148 bytes)
 
 ## Tables
 
-- commands: 164
-- state slots: 79
-- binds: 72 (public: 43)
+- commands: 168
+- state slots: 83
+- binds: 76 (public: 47)
 - actions: 47
 - hits: 36
 - visibility groups: 33
 - resource refs: 14
-- glyph run pool: 1548 bytes
-- text defaults pool: 240 bytes
-- tile index: 8x8 grid of 64x64px, 9868 refs, avg 154.2 cmds/tile
+- glyph run pool: 1574 bytes
+- text defaults pool: 256 bytes
+- tile index: 8x8 grid of 64x64px, 10124 refs, avg 158.2 cmds/tile
 - templates: 0
 
 ## Scene resource budget
 
-- reachable resource blobs: 623168 bytes
+- reachable resource blobs: 632192 bytes
 - image payloads: 414720 bytes
-- font blobs: 208320 bytes
+- font blobs: 217344 bytes
 
 - Resource blobs include their own headers but exclude scene GSB, bundle tables/alignment and firmware code; shared blobs must not be summed across scenes.
 - Initial static decode bytes are an estimate, not measured resident or peak RAM. Exceeding the cache budget can cause eviction, not necessarily allocation failure.
@@ -58,7 +58,7 @@ Registered images are addressable by this scene, including hidden controls and t
 ## Fonts
 
 - resource_id 0x9ac39459: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans.ttf` @11px
-- resource_id 0x6a16fd6b: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @12px
+- resource_id 0xa6a13226: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @12px
 - resource_id 0x4cc5746: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @26px
 - resource_id 0x390afea7: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @32px
 - resource_id 0xb051e294: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @24px
@@ -90,32 +90,36 @@ Registered images are addressable by this scene, including hidden controls and t
 - GSP_BIND_PP_PAUSE_TEXT = 43
 - GSP_BIND_PP_PLAY_TEXT = 44
 - GSP_BIND_SEQ_POS = 45
-- GSP_BIND_SLOT0_NAME = 46
-- GSP_BIND_SLOT1_NAME = 47
-- GSP_BIND_SLOT2_NAME = 48
-- GSP_BIND_SLOT3_NAME = 49
-- GSP_BIND_SMN0 = 50
-- GSP_BIND_SMN1 = 51
-- GSP_BIND_SMN2 = 52
-- GSP_BIND_SMN3 = 53
-- GSP_BIND_SMO0 = 54
-- GSP_BIND_SMO1 = 55
-- GSP_BIND_SMO2 = 56
-- GSP_BIND_SMO3 = 57
-- GSP_BIND_SPEED_05_SEL = 58
-- GSP_BIND_SPEED_10_SEL = 59
-- GSP_BIND_SPEED_15_SEL = 60
-- GSP_BIND_SPEED_20_SEL = 61
-- GSP_BIND_SSN0 = 62
-- GSP_BIND_SSN1 = 63
-- GSP_BIND_SSN2 = 64
-- GSP_BIND_SSN3 = 65
-- GSP_BIND_SSO0 = 66
-- GSP_BIND_SSO1 = 67
-- GSP_BIND_SSO2 = 68
-- GSP_BIND_SSO3 = 69
-- GSP_BIND_STEP_VALUE = 70
-- GSP_BIND_WAVES_CANVAS = 71
+- GSP_BIND_SLOT0_DB = 46
+- GSP_BIND_SLOT0_NAME = 47
+- GSP_BIND_SLOT1_DB = 48
+- GSP_BIND_SLOT1_NAME = 49
+- GSP_BIND_SLOT2_DB = 50
+- GSP_BIND_SLOT2_NAME = 51
+- GSP_BIND_SLOT3_DB = 52
+- GSP_BIND_SLOT3_NAME = 53
+- GSP_BIND_SMN0 = 54
+- GSP_BIND_SMN1 = 55
+- GSP_BIND_SMN2 = 56
+- GSP_BIND_SMN3 = 57
+- GSP_BIND_SMO0 = 58
+- GSP_BIND_SMO1 = 59
+- GSP_BIND_SMO2 = 60
+- GSP_BIND_SMO3 = 61
+- GSP_BIND_SPEED_05_SEL = 62
+- GSP_BIND_SPEED_10_SEL = 63
+- GSP_BIND_SPEED_15_SEL = 64
+- GSP_BIND_SPEED_20_SEL = 65
+- GSP_BIND_SSN0 = 66
+- GSP_BIND_SSN1 = 67
+- GSP_BIND_SSN2 = 68
+- GSP_BIND_SSN3 = 69
+- GSP_BIND_SSO0 = 70
+- GSP_BIND_SSO1 = 71
+- GSP_BIND_SSO2 = 72
+- GSP_BIND_SSO3 = 73
+- GSP_BIND_STEP_VALUE = 74
+- GSP_BIND_WAVES_CANVAS = 75
 
 ## Callbacks
 
