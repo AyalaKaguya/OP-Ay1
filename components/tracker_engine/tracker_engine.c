@@ -192,6 +192,15 @@ static void next_row_locked(tracker_engine_t *engine)
     if (engine->launch_pattern >= 0) {
         /* Pattern-pad mode: loop this pattern and apply a queued launch at the
          * pattern boundary (bar aligned) instead of walking the order list. */
+        if (engine->stop_pending) {
+            /* Close the last pad only after the pattern has played out. */
+            engine->stop_pending = false;
+            engine->pending_pattern = -1;
+            engine->launch_pattern = -1;
+            engine->tick = 0;
+            engine_set_playing(engine, false);
+            return;
+        }
         if (engine->pending_pattern >= 0) {
             engine->launch_pattern = engine->pending_pattern;
             engine->pending_pattern = -1;
@@ -404,6 +413,7 @@ tracker_engine_t *tracker_engine_create(const uint8_t *s3m, size_t size)
     engine->loop = true;
     engine->launch_pattern = -1;
     engine->pending_pattern = -1;
+    engine->stop_pending = false;
     engine->order_index = first_playable_order(engine);
     publish_status(engine);
     return engine;
@@ -438,6 +448,7 @@ void tracker_engine_pause(tracker_engine_t *engine)
     }
     engine_lock(engine);
     engine_set_playing(engine, false);
+    engine->stop_pending = false;
     tracker_mixer_clear_monitoring(&engine->mixer);
     publish_status(engine);
     engine_unlock(engine);
@@ -451,6 +462,7 @@ void tracker_engine_restart(tracker_engine_t *engine)
     engine_lock(engine);
     engine->launch_pattern = -1;
     engine->pending_pattern = -1;
+    engine->stop_pending = false;
     engine->order_index = first_playable_order(engine);
     engine->row = 0;
     engine->tick = 0;
@@ -468,6 +480,7 @@ void tracker_engine_launch_pattern(tracker_engine_t *engine, int pattern)
         return;
     }
     engine_lock(engine);
+    engine->stop_pending = false;
     if (engine->launch_pattern < 0) {
         /* The first pad takes over right away from the pattern's first row. */
         engine->launch_pattern = pattern;
@@ -492,6 +505,7 @@ void tracker_engine_stop_pattern_launch(tracker_engine_t *engine)
     engine_lock(engine);
     engine->launch_pattern = -1;
     engine->pending_pattern = -1;
+    engine->stop_pending = false;
     engine->row = 0;
     engine->tick = 0;
     engine->tick_frames_left = 0;
@@ -519,6 +533,33 @@ int tracker_engine_pending_pattern(tracker_engine_t *engine)
     const int pattern = engine->pending_pattern;
     engine_unlock(engine);
     return pattern;
+}
+
+void tracker_engine_queue_pattern_stop(tracker_engine_t *engine)
+{
+    if (engine == NULL) {
+        return;
+    }
+    engine_lock(engine);
+    if (engine->launch_pattern >= 0) {
+        engine->stop_pending = !engine->stop_pending;
+        if (engine->stop_pending) {
+            engine->pending_pattern = -1;
+        }
+    }
+    publish_status(engine);
+    engine_unlock(engine);
+}
+
+bool tracker_engine_pattern_stop_pending(tracker_engine_t *engine)
+{
+    if (engine == NULL) {
+        return false;
+    }
+    engine_lock(engine);
+    const bool pending = engine->stop_pending;
+    engine_unlock(engine);
+    return pending;
 }
 
 void tracker_engine_set_loop(tracker_engine_t *engine, bool loop)
@@ -611,6 +652,13 @@ void tracker_engine_render(tracker_engine_t *engine, int16_t *stereo, int frames
         engine->tick_frames_left -= chunk;
         if (engine->tick_frames_left <= 0) {
             finish_tick_locked(engine);
+            if (!engine_get_playing(engine)) {
+                /* A queued pad stop landed on the pattern boundary: finish this
+                 * audio chunk with silence instead of starting the next row. */
+                memset(stereo + produced * 2, 0,
+                       (size_t)(frames - produced) * 2 * sizeof(int16_t));
+                break;
+            }
         }
     }
     engine->frames += (uint64_t)frames;

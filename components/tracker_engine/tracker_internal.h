@@ -102,6 +102,7 @@ struct tracker_engine {
      * list. pending_pattern is the queued next pad (-1 = none). */
     int launch_pattern;
     int pending_pattern;
+    bool stop_pending;
     int row;
     int tick;
     int tick_frames_left;

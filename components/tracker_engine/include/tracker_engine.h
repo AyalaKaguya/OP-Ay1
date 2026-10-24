@@ -76,6 +76,10 @@ void tracker_engine_launch_pattern(tracker_engine_t *engine, int pattern);
 void tracker_engine_stop_pattern_launch(tracker_engine_t *engine);
 int tracker_engine_launched_pattern(tracker_engine_t *engine);
 int tracker_engine_pending_pattern(tracker_engine_t *engine);
+/* Queues (or cancels) shutting the running pad down: the current pattern plays
+ * to its end and playback stops at the next pattern boundary. */
+void tracker_engine_queue_pattern_stop(tracker_engine_t *engine);
+bool tracker_engine_pattern_stop_pending(tracker_engine_t *engine);
 
 void tracker_engine_cell(tracker_engine_t *engine, int pattern, int row,
                          int channel, tracker_cell_t *cell);

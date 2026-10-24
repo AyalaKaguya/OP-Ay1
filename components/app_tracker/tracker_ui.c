@@ -109,6 +109,8 @@ struct app_tracker {
     int page;
     int pad_playing;
     int pad_pending;
+    int pad_stop;
+    bool pad_blink;
     int volume;
     int mix_scroll;
     int mix_channels;
@@ -262,34 +264,67 @@ static const event_match_fn k_pad_event[16] = {
     gsp_tracker_event_is_pad14_cb, gsp_tracker_event_is_pad15_cb,
 };
 
+/** Blink phase for a queued pad / queued stop: one toggle per half beat so it
+ *  visibly follows the song tempo (the engine's tempo already includes the
+ *  speed multiplier). Frozen while paused. */
+static bool pad_blink_on(app_tracker_t *state, const tracker_status_t *status)
+{
+    if (!status->playing) {
+        return true;
+    }
+    const float bpm = (float)status->tempo *
+                      tracker_engine_speed_multiplier(state->engine);
+    if (bpm < 1.0f) {
+        return true;
+    }
+    const uint64_t half_beat = (uint64_t)(48000.0 * 30.0 / (double)bpm);
+    if (half_beat == 0) {
+        return true;
+    }
+    return ((status->frames / half_beat) & 1u) != 0;
+}
+
 static void refresh_pads(app_tracker_t *state, bool force)
 {
+    tracker_status_t status;
+    tracker_engine_get_status(state->engine, &status);
     const int patterns = tracker_engine_patterns(state->engine);
-    const bool playing = tracker_engine_is_playing(state->engine);
     const int launched = tracker_engine_launched_pattern(state->engine);
     const int pending = tracker_engine_pending_pattern(state->engine);
-    const int shown_playing = playing ? launched : -1;
+    const bool stop_pending = tracker_engine_pattern_stop_pending(state->engine);
+    const int shown_playing = status.playing ? launched : -1;
+    const bool blink = pad_blink_on(state, &status);
     if (!force && shown_playing == state->pad_playing &&
-        pending == state->pad_pending) {
+        pending == state->pad_pending && (int)stop_pending == state->pad_stop &&
+        blink == state->pad_blink) {
         return;
     }
     state->pad_playing = shown_playing;
     state->pad_pending = pending;
+    state->pad_stop = (int)stop_pending;
+    state->pad_blink = blink;
     for (int pad = 0; pad < 16; ++pad) {
         const bool available = pad < patterns;
         const bool is_playing = available && pad == shown_playing;
         const bool is_pending = available && !is_playing && pad == pending;
+        const bool play_lit = is_playing && (!stop_pending || blink);
+        const bool dark_playing = is_playing && stop_pending && !blink;
+        const bool next_lit = is_pending && blink;
+        const bool dark_pending = is_pending && !blink;
         (void)esp_gsp_set_visible(state->ui, k_pad_dim[pad], !available);
-        (void)esp_gsp_set_visible(state->ui, k_pad_off[pad],
-                                  available && !is_playing && !is_pending);
-        (void)esp_gsp_set_visible(state->ui, k_pad_play[pad], is_playing);
-        (void)esp_gsp_set_visible(state->ui, k_pad_next[pad], is_pending);
+        (void)esp_gsp_set_visible(
+            state->ui, k_pad_off[pad],
+            available && ((!is_playing && !is_pending) || dark_playing ||
+                          dark_pending));
+        (void)esp_gsp_set_visible(state->ui, k_pad_play[pad], play_lit);
+        (void)esp_gsp_set_visible(state->ui, k_pad_next[pad], next_lit);
     }
     char text[24];
     if (shown_playing >= 0) {
-        snprintf(text, sizeof(text), "PLAY %02X", shown_playing);
+        snprintf(text, sizeof(text), stop_pending ? "STOP %02X" : "PLAY %02X",
+                 shown_playing);
     } else {
-        snprintf(text, sizeof(text), "PLAY --");
+        snprintf(text, sizeof(text), stop_pending ? "STOP --" : "PLAY --");
     }
     (void)esp_gsp_set_text(state->ui, GSP_TRACKER_BIND_PAD_PLAY, text);
     if (pending >= 0) {
@@ -308,8 +343,14 @@ static void launch_pad(app_tracker_t *state, int pad)
     }
     const bool playing = tracker_engine_is_playing(state->engine);
     const int launched = tracker_engine_launched_pattern(state->engine);
-    if (playing && launched == pad) {
-        tracker_engine_pause(state->engine);
+    if (launched == pad) {
+        if (playing) {
+            /* Close this pad after the pattern has played out; a second tap
+             * cancels the queued stop. */
+            tracker_engine_queue_pattern_stop(state->engine);
+        } else {
+            tracker_engine_play(state->engine);
+        }
     } else {
         tracker_engine_launch_pattern(state->engine, pad);
         if (!playing) {
@@ -725,9 +766,17 @@ static void ui_tick(esp_gsp_handle_t ui, void *context)
         multi_heap_info_t spiram_info;
         heap_caps_get_info(&internal_info, MALLOC_CAP_INTERNAL);
         heap_caps_get_info(&spiram_info, MALLOC_CAP_SPIRAM);
-        ESP_LOGI(TAG, "hb t=%u play=%d I=%u/%u S=%u/%u",
+        tracker_status_t hb_status;
+        tracker_engine_get_status(state->engine, &hb_status);
+        ESP_LOGI(TAG,
+                 "hb t=%u play=%d pat=%02X row=%02X launch=%d next=%d stop=%d "
+                 "I=%u/%u S=%u/%u",
                  (unsigned)state->tick_count,
                  (int)tracker_engine_is_playing(state->engine),
+                 hb_status.pattern, hb_status.row,
+                 tracker_engine_launched_pattern(state->engine),
+                 tracker_engine_pending_pattern(state->engine),
+                 (int)tracker_engine_pattern_stop_pending(state->engine),
                  (unsigned)internal_info.total_free_bytes,
                  (unsigned)internal_info.minimum_free_bytes,
                  (unsigned)spiram_info.total_free_bytes,
@@ -740,10 +789,10 @@ static void ui_tick(esp_gsp_handle_t ui, void *context)
     if (state->tick_count % LABEL_REFRESH_TICKS == 0) {
         update_labels(state, false);
         update_transport(state);
-        if (state->page == PAGE_ORDER) {
-            /* Picks up a queued pad once the engine crosses the boundary. */
-            refresh_pads(state, false);
-        }
+    }
+    if (state->page == PAGE_ORDER) {
+        /* Blinks queued pads in tempo and picks up boundary switches. */
+        refresh_pads(state, false);
     }
     const bool playing = tracker_engine_is_playing(state->engine);
     if (playing != state->last_playing) {
