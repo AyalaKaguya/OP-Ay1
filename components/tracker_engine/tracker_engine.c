@@ -9,15 +9,6 @@
 #include <string.h>
 
 #if defined(_MSC_VER)
-static int engine_lock_test_and_set(tracker_engine_t *engine)
-{
-    if (engine->state_lock) {
-        return 1;
-    }
-    engine->state_lock = 1;
-    return 0;
-}
-static void engine_lock_clear(tracker_engine_t *engine) { engine->state_lock = 0; }
 static unsigned engine_seq_read(tracker_engine_t *engine) { return engine->status_seq; }
 static void engine_seq_begin(tracker_engine_t *engine) { ++engine->status_seq; }
 static void engine_set_playing(tracker_engine_t *engine, bool playing)
@@ -26,14 +17,6 @@ static void engine_set_playing(tracker_engine_t *engine, bool playing)
 }
 static bool engine_get_playing(tracker_engine_t *engine) { return engine->playing; }
 #else
-static int engine_lock_test_and_set(tracker_engine_t *engine)
-{
-    return __atomic_exchange_n(&engine->state_lock, 1, __ATOMIC_ACQUIRE) != 0;
-}
-static void engine_lock_clear(tracker_engine_t *engine)
-{
-    __atomic_store_n(&engine->state_lock, 0, __ATOMIC_RELEASE);
-}
 static unsigned engine_seq_read(tracker_engine_t *engine)
 {
     return __atomic_load_n(&engine->status_seq, __ATOMIC_ACQUIRE);
@@ -52,16 +35,73 @@ static bool engine_get_playing(tracker_engine_t *engine)
 }
 #endif
 
+#if defined(ESP_PLATFORM)
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+
+/* The audio task (priority 7) and the GSP UI task share a core, and the UI takes
+ * this lock from tracker_engine_song_row_at()/cell reads while it renders the
+ * pattern view. With a spin lock the higher-priority audio task could preempt
+ * the UI inside that critical section and then spin forever waiting for it
+ * (priority inversion, observed as a UI freeze after playback). A
+ * priority-inheriting mutex blocks the waiter and boosts the holder instead. */
+static bool engine_lock_create(tracker_engine_t *engine)
+{
+    engine->state_mutex = (void *)xSemaphoreCreateMutex();
+    return engine->state_mutex != NULL;
+}
+
+static void engine_lock_destroy(tracker_engine_t *engine)
+{
+    if (engine->state_mutex != NULL) {
+        vSemaphoreDelete((SemaphoreHandle_t)engine->state_mutex);
+        engine->state_mutex = NULL;
+    }
+}
+
 static void engine_lock(tracker_engine_t *engine)
 {
-    while (engine_lock_test_and_set(engine)) {
-    }
+    (void)xSemaphoreTake((SemaphoreHandle_t)engine->state_mutex,
+                         portMAX_DELAY);
 }
 
 static void engine_unlock(tracker_engine_t *engine)
 {
-    engine_lock_clear(engine);
+    (void)xSemaphoreGive((SemaphoreHandle_t)engine->state_mutex);
 }
+#else
+
+static bool engine_lock_create(tracker_engine_t *engine)
+{
+    (void)engine;
+    return true;
+}
+
+static void engine_lock_destroy(tracker_engine_t *engine) { engine->state_lock = 0; }
+
+/* Host builds have no scheduler: tests are single threaded, so a plain flag or
+ * an atomic exchange is enough. */
+static void engine_lock(tracker_engine_t *engine)
+{
+#if defined(_MSC_VER)
+    while (engine->state_lock) {
+    }
+    engine->state_lock = 1;
+#else
+    while (__atomic_exchange_n(&engine->state_lock, 1, __ATOMIC_ACQUIRE) != 0) {
+    }
+#endif
+}
+
+static void engine_unlock(tracker_engine_t *engine)
+{
+#if defined(_MSC_VER)
+    engine->state_lock = 0;
+#else
+    __atomic_store_n(&engine->state_lock, 0, __ATOMIC_RELEASE);
+#endif
+}
+#endif
 
 static void publish_status(tracker_engine_t *engine)
 {
@@ -335,7 +375,8 @@ tracker_engine_t *tracker_engine_create(const uint8_t *s3m, size_t size)
         return NULL;
     }
     if (!tracker_module_parse(&engine->module, s3m, size) ||
-        !tracker_mixer_init(&engine->mixer, &engine->module)) {
+        !tracker_mixer_init(&engine->mixer, &engine->module) ||
+        !engine_lock_create(engine)) {
         tracker_mixer_destroy(&engine->mixer);
         tracker_module_destroy(&engine->module);
         free(engine);
@@ -356,6 +397,7 @@ void tracker_engine_destroy(tracker_engine_t *engine)
     if (engine == NULL) {
         return;
     }
+    engine_lock_destroy(engine);
     tracker_mixer_destroy(&engine->mixer);
     tracker_module_destroy(&engine->module);
     free(engine);

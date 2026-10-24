@@ -27,11 +27,14 @@ device transport.
 
 ## Threading
 
-`tracker_engine_render` is the real-time audio entry point. `state_lock` is a
-short critical section that serializes DSP state with UI transport edits,
-sequencer edits, mixer changes, and monitoring reads. The audio task renders
-512-frame chunks (about 10.7 ms at 48 kHz), so the lock bounds UI access
-without allowing partial transport or mixer state to be observed.
+`tracker_engine_render` is the real-time audio entry point. The engine state is
+guarded by one lock: a priority-inheriting FreeRTOS mutex on the device and a
+single-threaded atomic flag on the host. The mutex matters because the audio
+task (priority 7) and the GSP UI task share a core and the UI reads engine state
+while rendering the pattern view; a spin lock let the audio task preempt the
+holder and spin forever in priority inversion. The audio task renders 512-frame
+chunks (about 10.7 ms at 48 kHz), so the lock bounds UI access without allowing
+partial transport or mixer state to be observed.
 
 The status snapshot uses a seqlock for lock-free UI polling. Publishing is
 serialized with `state_lock`; `playing` remains an atomic fast-path flag. The

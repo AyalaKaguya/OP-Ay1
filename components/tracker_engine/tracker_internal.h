@@ -107,7 +107,11 @@ struct tracker_engine {
 
     unsigned status_seq;
     tracker_status_t snapshot;
-    int state_lock; /* guards mutable song/transport/mixer state across tasks */
+    /* Guards mutable song/transport/mixer state across tasks. The device build
+     * uses a priority-inheriting FreeRTOS mutex (state_mutex); host builds use
+     * the atomic spin flag. */
+    void *state_mutex;
+    int state_lock;
 };
 
 /* tracker_module.c */
