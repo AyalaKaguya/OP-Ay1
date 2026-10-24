@@ -1,0 +1,55 @@
+{
+  "schema": "mosaico-ideas/project-release/1",
+  "project": {
+    "title": "OP-Ay1｜ARYX 模块播放器",
+    "categories": ["audio", "display"],
+    "tags": [
+      "S3M",
+      "tracker",
+      "模块音乐",
+      "播放器",
+      "混音台",
+      "ESP-Mosaico"
+    ],
+    "license": "Code: Apache-2.0. Bundled music: aryx.s3m (license to be confirmed).",
+    "external_links": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/AyalaKaguya/OP-Ay1",
+        "platform": "github"
+      }
+    ]
+  },
+  "firmware": "build/OP-Ay1-system-update.irisfw",
+  "website": {
+    "readme": "docs/store/README.zh-CN.md",
+    "changelog": "docs/store/changelog.zh-CN.md",
+    "covers": [
+      "docs/store/covers/cover-01-hero.png",
+      "docs/store/covers/cover-02-mix.png",
+      "docs/store/covers/cover-03-pads.png",
+      "docs/store/gallery/playback.png",
+      "docs/store/gallery/waves.png",
+      "docs/store/gallery/mix.png"
+    ]
+  },
+  "device": {
+    "default_locale": "zh-CN",
+    "presentations": {
+      "zh-CN": {
+        "mode": "generate",
+        "name": "OP-Ay1 播放器",
+        "description": "内置 ARYX 模块音乐播放器，带混音台与片段启动器",
+        "font": "docs/store/fonts/NotoSansSC-Regular.ttf",
+        "icon": "docs/store/icon-64.png"
+      },
+      "en": {
+        "mode": "generate",
+        "name": "OP-Ay1 Player",
+        "description": "ARYX module player with mixer and section pads",
+        "font": "components/app_tracker/ui/fonts/DejaVuSans.ttf",
+        "icon": "docs/store/icon-64.png"
+      }
+    }
+  }
+}
