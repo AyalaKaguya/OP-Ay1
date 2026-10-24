@@ -19,7 +19,9 @@
 #include "esp_check.h"
 #include "esp_heap_caps.h"
 #include "esp_log.h"
+#include "esp_system.h"
 #include "esp_timer.h"
+#include "freertos/task.h"
 #include "iot_button.h"
 #include "tracker_render.h"
 
@@ -101,6 +103,7 @@ struct app_tracker {
     esp_gsp_handle_t ui;
     tracker_engine_t *engine;
     void *timer;
+    esp_timer_handle_t stall_timer;
     uint16_t *grid_frame;
     uint16_t *waves_frame;
     int page;
@@ -116,7 +119,7 @@ struct app_tracker {
     float mix_fling_rest;
     int last_song_key;
     int last_playing;
-    unsigned tick_count;
+    volatile unsigned tick_count;
     int clip_hold;
     int slot_channel[4];
     uint8_t fader_value[TRACKER_MIX_STRIPS];
@@ -604,11 +607,73 @@ static void render_page(app_tracker_t *state, int page)
     }
 }
 
+/* --- UI stall detector ----------------------------------------------------
+ * ui_tick advances on every 50 ms GSP tick, so a frozen render task shows up as
+ * a counter that stops moving. The esp_timer task is independent: when the UI
+ * stops we log a task/heap snapshot and then panic, so the retained pre-crash
+ * log ring and a core dump survive the reboot instead of leaving the device
+ * stuck until it is power cycled. */
+static void stall_log(app_tracker_t *state)
+{
+    multi_heap_info_t internal_info;
+    multi_heap_info_t spiram_info;
+    heap_caps_get_info(&internal_info, MALLOC_CAP_INTERNAL);
+    heap_caps_get_info(&spiram_info, MALLOC_CAP_SPIRAM);
+    ESP_LOGE(TAG, "UI STALL ticks=%u I=%u/%u S=%u/%u largest=%u",
+             (unsigned)state->tick_count,
+             (unsigned)internal_info.total_free_bytes,
+             (unsigned)internal_info.minimum_free_bytes,
+             (unsigned)spiram_info.total_free_bytes,
+             (unsigned)spiram_info.minimum_free_bytes,
+             (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL));
+    static TaskStatus_t tasks[24];
+    const UBaseType_t count = uxTaskGetSystemState(tasks, 24, NULL);
+    for (UBaseType_t index = 0; index < count; ++index) {
+        ESP_LOGE(TAG, "UI STALL task=%s state=%u stack_free=%u",
+                 tasks[index].pcTaskName, (unsigned)tasks[index].eCurrentState,
+                 (unsigned)tasks[index].usStackHighWaterMark);
+    }
+}
+
+static void stall_check(void *arg)
+{
+    app_tracker_t *state = arg;
+    static unsigned last_tick;
+    static unsigned stalled;
+    const unsigned tick = state->tick_count;
+    if (tick != last_tick) {
+        last_tick = tick;
+        stalled = 0;
+        return;
+    }
+    ++stalled;
+    if (stalled == 5) {
+        stall_log(state);
+    } else if (stalled == 7) {
+        esp_system_abort("UI task stalled");
+    }
+}
+
 static void ui_tick(esp_gsp_handle_t ui, void *context)
 {
     (void)ui;
     app_tracker_t *state = context;
     ++state->tick_count;
+    /* Temporary memory watchdog: a 5 s heartbeat with free/min heap on both
+     * pools makes a leak or an exhausted allocator visible before a hang. */
+    if (state->tick_count % 100 == 0) {
+        multi_heap_info_t internal_info;
+        multi_heap_info_t spiram_info;
+        heap_caps_get_info(&internal_info, MALLOC_CAP_INTERNAL);
+        heap_caps_get_info(&spiram_info, MALLOC_CAP_SPIRAM);
+        ESP_LOGI(TAG, "hb t=%u play=%d I=%u/%u S=%u/%u",
+                 (unsigned)state->tick_count,
+                 (int)tracker_engine_is_playing(state->engine),
+                 (unsigned)internal_info.total_free_bytes,
+                 (unsigned)internal_info.minimum_free_bytes,
+                 (unsigned)spiram_info.total_free_bytes,
+                 (unsigned)spiram_info.minimum_free_bytes);
+    }
     mix_momentum(state);
     if (state->tick_count % METER_REFRESH_TICKS == 0) {
         update_meters(state);
@@ -994,6 +1059,19 @@ esp_err_t app_tracker_start(esp_gsp_handle_t ui, tracker_engine_t *engine,
         goto fail;
     }
 
+    /* Independent watchdog for the render/UI task, which the task watchdog
+     * cannot see when the task spins or deadlocks with IDLE still running. */
+    const esp_timer_create_args_t stall_args = {
+        .callback = stall_check,
+        .arg = state,
+        .name = "ui_stall",
+    };
+    if (esp_timer_create(&stall_args, &state->stall_timer) != ESP_OK) {
+        ESP_LOGW(TAG, "UI stall timer unavailable");
+    } else if (esp_timer_start_periodic(state->stall_timer, 1000000) != ESP_OK) {
+        ESP_LOGW(TAG, "UI stall timer could not start");
+    }
+
     button_handle_t buttons[BSP_BUTTON_NUM] = {0};
     int button_count = 0;
     if (bsp_iot_button_create(buttons, &button_count, BSP_BUTTON_NUM) == ESP_OK &&
@@ -1019,6 +1097,10 @@ fail:
                                      NULL);
     if (state->timer != NULL) {
         esp_gsp_timer_delete(ui, state->timer);
+    }
+    if (state->stall_timer != NULL) {
+        (void)esp_timer_stop(state->stall_timer);
+        (void)esp_timer_delete(state->stall_timer);
     }
     free(state->grid_frame);
     free(state->waves_frame);
@@ -1051,6 +1133,11 @@ void app_tracker_stop(app_tracker_t **handle)
         return;
     }
     app_tracker_t *state = *handle;
+    if (state->stall_timer != NULL) {
+        (void)esp_timer_stop(state->stall_timer);
+        (void)esp_timer_delete(state->stall_timer);
+        state->stall_timer = NULL;
+    }
     if (state->timer != NULL) {
         esp_gsp_timer_delete(state->ui, state->timer);
         state->timer = NULL;

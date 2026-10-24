@@ -62,7 +62,19 @@ CONFIG_SPIRAM_XIP_FROM_PSRAM=y
 CONFIG_SPIRAM_MEMTEST=n
 
 CONFIG_ESP_MAIN_TASK_STACK_SIZE=20480
-CONFIG_ESP_TASK_WDT_INIT=n
+# A frozen UI must recover by itself and leave evidence behind: the app's own
+# stall timer (app_tracker) panics after 5 s without a UI tick, and the task
+# watchdog catches blocked or IDLE-starved tasks. Panics persist both the core
+# dump and the ESP-Iris pre-crash log ring, so the next boot can be inspected.
+CONFIG_ESP_TASK_WDT_INIT=y
+CONFIG_ESP_TASK_WDT_PANIC=y
+CONFIG_ESP_TASK_WDT_TIMEOUT_S=10
+CONFIG_ESP_IRIS_LOG_RING_BYTES=65536
+# Nested USB/display/touch ISRs overflowed the old 2096-byte ISR stack in an
+# earlier crash (SP ran past xIsrStack); keep real headroom.
+CONFIG_FREERTOS_ISR_STACKSIZE=4096
+# Lets the stall handler dump every task's state and stack high-water mark.
+CONFIG_FREERTOS_USE_TRACE_FACILITY=y
 
 CONFIG_APP_PROJECT_VER_FROM_CONFIG=y
 CONFIG_APP_PROJECT_VER="1.0.0"

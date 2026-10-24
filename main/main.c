@@ -101,6 +101,11 @@ static esp_err_t drag_rpc(const esp_iris_rpc_request_t *request,
 
 void app_main(void)
 {
+    /* The CST9220 emits a continuous malformed-report warning stream and the
+     * WiFi PHY prints its rate table; both would flush the retained log ring
+     * that holds the evidence for a real failure. Keep only their errors. */
+    esp_log_level_set("cst9220", ESP_LOG_ERROR);
+    esp_log_level_set("wifi", ESP_LOG_ERROR);
     ESP_ERROR_CHECK_WITHOUT_ABORT(esp_iris_boot_probe());
     /* Never inherit a latched haptic motor from another firmware. */
     (void)bsp_motor_init();
