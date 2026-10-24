@@ -1,0 +1,4153 @@
+{
+  "gspc_version": "0.6.1",
+  "scenes": [
+    {
+      "binds": [
+        {
+          "bind_id": 29,
+          "name": "clip_off"
+        },
+        {
+          "bind_id": 30,
+          "name": "clip_on"
+        },
+        {
+          "bind_id": 31,
+          "name": "dot_on_0"
+        },
+        {
+          "bind_id": 32,
+          "name": "dot_on_1"
+        },
+        {
+          "bind_id": 33,
+          "name": "dot_on_2"
+        },
+        {
+          "bind_id": 34,
+          "name": "dot_on_3"
+        },
+        {
+          "bind_id": 35,
+          "name": "dot_on_4"
+        },
+        {
+          "bind_id": 36,
+          "name": "grid_canvas"
+        },
+        {
+          "bind_id": 37,
+          "name": "master_value"
+        },
+        {
+          "bind_id": 38,
+          "name": "nav_icon"
+        },
+        {
+          "bind_id": 39,
+          "name": "order_list"
+        },
+        {
+          "bind_id": 40,
+          "name": "pat_value"
+        },
+        {
+          "bind_id": 41,
+          "name": "pb_pos"
+        },
+        {
+          "bind_id": 42,
+          "name": "pb_speed_value"
+        },
+        {
+          "bind_id": 43,
+          "name": "pp_pause_text"
+        },
+        {
+          "bind_id": 44,
+          "name": "pp_play_text"
+        },
+        {
+          "bind_id": 45,
+          "name": "seq_pos"
+        },
+        {
+          "bind_id": 46,
+          "name": "slot0_name"
+        },
+        {
+          "bind_id": 47,
+          "name": "slot1_name"
+        },
+        {
+          "bind_id": 48,
+          "name": "slot2_name"
+        },
+        {
+          "bind_id": 49,
+          "name": "slot3_name"
+        },
+        {
+          "bind_id": 50,
+          "name": "smn0"
+        },
+        {
+          "bind_id": 51,
+          "name": "smn1"
+        },
+        {
+          "bind_id": 52,
+          "name": "smn2"
+        },
+        {
+          "bind_id": 53,
+          "name": "smn3"
+        },
+        {
+          "bind_id": 54,
+          "name": "smo0"
+        },
+        {
+          "bind_id": 55,
+          "name": "smo1"
+        },
+        {
+          "bind_id": 56,
+          "name": "smo2"
+        },
+        {
+          "bind_id": 57,
+          "name": "smo3"
+        },
+        {
+          "bind_id": 58,
+          "name": "speed_05_sel"
+        },
+        {
+          "bind_id": 59,
+          "name": "speed_10_sel"
+        },
+        {
+          "bind_id": 60,
+          "name": "speed_15_sel"
+        },
+        {
+          "bind_id": 61,
+          "name": "speed_20_sel"
+        },
+        {
+          "bind_id": 62,
+          "name": "ssn0"
+        },
+        {
+          "bind_id": 63,
+          "name": "ssn1"
+        },
+        {
+          "bind_id": 64,
+          "name": "ssn2"
+        },
+        {
+          "bind_id": 65,
+          "name": "ssn3"
+        },
+        {
+          "bind_id": 66,
+          "name": "sso0"
+        },
+        {
+          "bind_id": 67,
+          "name": "sso1"
+        },
+        {
+          "bind_id": 68,
+          "name": "sso2"
+        },
+        {
+          "bind_id": 69,
+          "name": "sso3"
+        },
+        {
+          "bind_id": 70,
+          "name": "step_value"
+        },
+        {
+          "bind_id": 71,
+          "name": "waves_canvas"
+        }
+      ],
+      "callbacks": [
+        {
+          "action_id": 0,
+          "helper": "gsp_tracker_event_is_apply_pattern_cb",
+          "name": "apply_pattern_cb"
+        },
+        {
+          "action_id": 1,
+          "helper": "gsp_tracker_event_is_master_fader_cb",
+          "name": "master_fader_cb"
+        },
+        {
+          "action_id": 2,
+          "helper": "gsp_tracker_event_is_nav_cb",
+          "name": "nav_cb"
+        },
+        {
+          "action_id": 3,
+          "helper": "gsp_tracker_event_is_order_pause_cb",
+          "name": "order_pause_cb"
+        },
+        {
+          "action_id": 4,
+          "helper": "gsp_tracker_event_is_order_play_cb",
+          "name": "order_play_cb"
+        },
+        {
+          "action_id": 5,
+          "helper": "gsp_tracker_event_is_order_restart_cb",
+          "name": "order_restart_cb"
+        },
+        {
+          "action_id": 6,
+          "helper": "gsp_tracker_event_is_pat_next_cb",
+          "name": "pat_next_cb"
+        },
+        {
+          "action_id": 7,
+          "helper": "gsp_tracker_event_is_pat_prev_cb",
+          "name": "pat_prev_cb"
+        },
+        {
+          "action_id": 8,
+          "helper": "gsp_tracker_event_is_pp_cb",
+          "name": "pp_cb"
+        },
+        {
+          "action_id": 9,
+          "helper": "gsp_tracker_event_is_rec_cb",
+          "name": "rec_cb"
+        },
+        {
+          "action_id": 10,
+          "helper": "gsp_tracker_event_is_slot_fader0_cb",
+          "name": "slot_fader0_cb"
+        },
+        {
+          "action_id": 11,
+          "helper": "gsp_tracker_event_is_slot_fader1_cb",
+          "name": "slot_fader1_cb"
+        },
+        {
+          "action_id": 12,
+          "helper": "gsp_tracker_event_is_slot_fader2_cb",
+          "name": "slot_fader2_cb"
+        },
+        {
+          "action_id": 13,
+          "helper": "gsp_tracker_event_is_slot_fader3_cb",
+          "name": "slot_fader3_cb"
+        },
+        {
+          "action_id": 14,
+          "helper": "gsp_tracker_event_is_slot_mute0_cb",
+          "name": "slot_mute0_cb"
+        },
+        {
+          "action_id": 15,
+          "helper": "gsp_tracker_event_is_slot_mute1_cb",
+          "name": "slot_mute1_cb"
+        },
+        {
+          "action_id": 16,
+          "helper": "gsp_tracker_event_is_slot_mute2_cb",
+          "name": "slot_mute2_cb"
+        },
+        {
+          "action_id": 17,
+          "helper": "gsp_tracker_event_is_slot_mute3_cb",
+          "name": "slot_mute3_cb"
+        },
+        {
+          "action_id": 18,
+          "helper": "gsp_tracker_event_is_slot_solo0_cb",
+          "name": "slot_solo0_cb"
+        },
+        {
+          "action_id": 19,
+          "helper": "gsp_tracker_event_is_slot_solo1_cb",
+          "name": "slot_solo1_cb"
+        },
+        {
+          "action_id": 20,
+          "helper": "gsp_tracker_event_is_slot_solo2_cb",
+          "name": "slot_solo2_cb"
+        },
+        {
+          "action_id": 21,
+          "helper": "gsp_tracker_event_is_slot_solo3_cb",
+          "name": "slot_solo3_cb"
+        },
+        {
+          "action_id": 22,
+          "helper": "gsp_tracker_event_is_speed_05_cb",
+          "name": "speed_05_cb"
+        },
+        {
+          "action_id": 23,
+          "helper": "gsp_tracker_event_is_speed_10_cb",
+          "name": "speed_10_cb"
+        },
+        {
+          "action_id": 24,
+          "helper": "gsp_tracker_event_is_speed_15_cb",
+          "name": "speed_15_cb"
+        },
+        {
+          "action_id": 25,
+          "helper": "gsp_tracker_event_is_speed_20_cb",
+          "name": "speed_20_cb"
+        },
+        {
+          "action_id": 26,
+          "helper": "gsp_tracker_event_is_step_next_cb",
+          "name": "step_next_cb"
+        },
+        {
+          "action_id": 27,
+          "helper": "gsp_tracker_event_is_step_prev_cb",
+          "name": "step_prev_cb"
+        }
+      ],
+      "content_id": "0xaae7d33b",
+      "objects": [
+        {
+          "bounds": {
+            "x1": 2116,
+            "x2": 2248,
+            "y1": 186,
+            "y2": 234
+          },
+          "bounds_source": "compiled",
+          "component_key": 3395875548,
+          "helpers": [
+            "gsp_tracker_apply_btn_get_info"
+          ],
+          "name": "apply_btn",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1470,
+            "x2": 1516,
+            "y1": 80,
+            "y2": 100
+          },
+          "bounds_source": "compiled",
+          "component_key": 3260002865,
+          "helpers": [
+            "gsp_tracker_clip_off_get_info",
+            "gsp_tracker_clip_off_get_visible",
+            "gsp_tracker_clip_off_set_visible"
+          ],
+          "name": "clip_off",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 29,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 1470,
+            "x2": 1516,
+            "y1": 80,
+            "y2": 100
+          },
+          "bounds_source": "compiled",
+          "component_key": 2222054197,
+          "helpers": [
+            "gsp_tracker_clip_on_get_info",
+            "gsp_tracker_clip_on_get_visible",
+            "gsp_tracker_clip_on_set_visible"
+          ],
+          "name": "clip_on",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 30,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 204,
+            "x2": 212,
+            "y1": 456,
+            "y2": 464
+          },
+          "bounds_source": "compiled",
+          "component_key": 1447793989,
+          "helpers": [
+            "gsp_tracker_dot_off_0_get_info"
+          ],
+          "name": "dot_off_0",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 220,
+            "x2": 228,
+            "y1": 456,
+            "y2": 464
+          },
+          "bounds_source": "compiled",
+          "component_key": 1431016370,
+          "helpers": [
+            "gsp_tracker_dot_off_1_get_info"
+          ],
+          "name": "dot_off_1",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 236,
+            "x2": 244,
+            "y1": 456,
+            "y2": 464
+          },
+          "bounds_source": "compiled",
+          "component_key": 1414238751,
+          "helpers": [
+            "gsp_tracker_dot_off_2_get_info"
+          ],
+          "name": "dot_off_2",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 252,
+            "x2": 260,
+            "y1": 456,
+            "y2": 464
+          },
+          "bounds_source": "compiled",
+          "component_key": 1397461132,
+          "helpers": [
+            "gsp_tracker_dot_off_3_get_info"
+          ],
+          "name": "dot_off_3",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 268,
+            "x2": 276,
+            "y1": 456,
+            "y2": 464
+          },
+          "bounds_source": "compiled",
+          "component_key": 1380683513,
+          "helpers": [
+            "gsp_tracker_dot_off_4_get_info"
+          ],
+          "name": "dot_off_4",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 204,
+            "x2": 212,
+            "y1": 456,
+            "y2": 464
+          },
+          "bounds_source": "compiled",
+          "component_key": 3559111407,
+          "helpers": [
+            "gsp_tracker_dot_on_0_get_info",
+            "gsp_tracker_dot_on_0_get_visible",
+            "gsp_tracker_dot_on_0_set_visible"
+          ],
+          "name": "dot_on_0",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 31,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 220,
+            "x2": 228,
+            "y1": 456,
+            "y2": 464
+          },
+          "bounds_source": "compiled",
+          "component_key": 3542333788,
+          "helpers": [
+            "gsp_tracker_dot_on_1_get_info",
+            "gsp_tracker_dot_on_1_get_visible",
+            "gsp_tracker_dot_on_1_set_visible"
+          ],
+          "name": "dot_on_1",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 32,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 236,
+            "x2": 244,
+            "y1": 456,
+            "y2": 464
+          },
+          "bounds_source": "compiled",
+          "component_key": 3592666645,
+          "helpers": [
+            "gsp_tracker_dot_on_2_get_info",
+            "gsp_tracker_dot_on_2_get_visible",
+            "gsp_tracker_dot_on_2_set_visible"
+          ],
+          "name": "dot_on_2",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 33,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 252,
+            "x2": 260,
+            "y1": 456,
+            "y2": 464
+          },
+          "bounds_source": "compiled",
+          "component_key": 3575889026,
+          "helpers": [
+            "gsp_tracker_dot_on_3_get_info",
+            "gsp_tracker_dot_on_3_get_visible",
+            "gsp_tracker_dot_on_3_set_visible"
+          ],
+          "name": "dot_on_3",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 34,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 268,
+            "x2": 276,
+            "y1": 456,
+            "y2": 464
+          },
+          "bounds_source": "compiled",
+          "component_key": 3492000931,
+          "helpers": [
+            "gsp_tracker_dot_on_4_get_info",
+            "gsp_tracker_dot_on_4_get_visible",
+            "gsp_tracker_dot_on_4_set_visible"
+          ],
+          "name": "dot_on_4",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 35,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 480,
+            "x2": 960,
+            "y1": 0,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 2818307086,
+          "helpers": [
+            "gsp_tracker_grid_canvas_get_info",
+            "gsp_tracker_grid_canvas_get_resource",
+            "gsp_tracker_grid_canvas_set_resource"
+          ],
+          "name": "grid_canvas",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "resource",
+              "value_kind": "resource"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 36,
+              "key": "resource",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 702513141,
+              "value_kind": "resource"
+            }
+          ],
+          "type": "image"
+        },
+        {
+          "bounds": {
+            "x1": 1526,
+            "x2": 1708,
+            "y1": 80,
+            "y2": 100
+          },
+          "bounds_source": "compiled",
+          "component_key": 1540674103,
+          "helpers": [
+            "gsp_tracker_lvl_g_get_info",
+            "gsp_tracker_lvl_g_get_value",
+            "gsp_tracker_lvl_g_set_value"
+          ],
+          "name": "lvl_g",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 26,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1817,
+            "x2": 1890,
+            "y1": 80,
+            "y2": 100
+          },
+          "bounds_source": "compiled",
+          "component_key": 1725227912,
+          "helpers": [
+            "gsp_tracker_lvl_r_get_info",
+            "gsp_tracker_lvl_r_get_value",
+            "gsp_tracker_lvl_r_set_value"
+          ],
+          "name": "lvl_r",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 28,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1526,
+            "x2": 1527,
+            "y1": 102,
+            "y2": 107
+          },
+          "bounds_source": "compiled",
+          "component_key": 3580117504,
+          "helpers": [
+            "gsp_tracker_lvl_tick_0_get_info"
+          ],
+          "name": "lvl_tick_0",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 1617,
+            "x2": 1618,
+            "y1": 102,
+            "y2": 107
+          },
+          "bounds_source": "compiled",
+          "component_key": 3596895123,
+          "helpers": [
+            "gsp_tracker_lvl_tick_1_get_info"
+          ],
+          "name": "lvl_tick_1",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 1708,
+            "x2": 1709,
+            "y1": 102,
+            "y2": 107
+          },
+          "bounds_source": "compiled",
+          "component_key": 3613672742,
+          "helpers": [
+            "gsp_tracker_lvl_tick_2_get_info"
+          ],
+          "name": "lvl_tick_2",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 1799,
+            "x2": 1800,
+            "y1": 102,
+            "y2": 107
+          },
+          "bounds_source": "compiled",
+          "component_key": 3630450361,
+          "helpers": [
+            "gsp_tracker_lvl_tick_3_get_info"
+          ],
+          "name": "lvl_tick_3",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 1708,
+            "x2": 1817,
+            "y1": 80,
+            "y2": 100
+          },
+          "bounds_source": "compiled",
+          "component_key": 1641339817,
+          "helpers": [
+            "gsp_tracker_lvl_y_get_info",
+            "gsp_tracker_lvl_y_get_value",
+            "gsp_tracker_lvl_y_set_value"
+          ],
+          "name": "lvl_y",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 27,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1596,
+            "x2": 1725,
+            "y1": 157,
+            "y2": 171
+          },
+          "bounds_source": "compiled",
+          "component_key": 3246983494,
+          "helpers": [
+            "gsp_tracker_m0_g_get_info",
+            "gsp_tracker_m0_g_get_value",
+            "gsp_tracker_m0_g_set_value"
+          ],
+          "name": "m0_g",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 3,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1802,
+            "x2": 1854,
+            "y1": 157,
+            "y2": 171
+          },
+          "bounds_source": "compiled",
+          "component_key": 3599313493,
+          "helpers": [
+            "gsp_tracker_m0_r_get_info",
+            "gsp_tracker_m0_r_get_value",
+            "gsp_tracker_m0_r_set_value"
+          ],
+          "name": "m0_r",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 5,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1725,
+            "x2": 1802,
+            "y1": 157,
+            "y2": 171
+          },
+          "bounds_source": "compiled",
+          "component_key": 3683201588,
+          "helpers": [
+            "gsp_tracker_m0_y_get_info",
+            "gsp_tracker_m0_y_get_value",
+            "gsp_tracker_m0_y_set_value"
+          ],
+          "name": "m0_y",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 4,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1596,
+            "x2": 1725,
+            "y1": 231,
+            "y2": 245
+          },
+          "bounds_source": "compiled",
+          "component_key": 1588552929,
+          "helpers": [
+            "gsp_tracker_m1_g_get_info",
+            "gsp_tracker_m1_g_get_value",
+            "gsp_tracker_m1_g_set_value"
+          ],
+          "name": "m1_g",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 9,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1802,
+            "x2": 1854,
+            "y1": 231,
+            "y2": 245
+          },
+          "bounds_source": "compiled",
+          "component_key": 1370443882,
+          "helpers": [
+            "gsp_tracker_m1_r_get_info",
+            "gsp_tracker_m1_r_get_value",
+            "gsp_tracker_m1_r_set_value"
+          ],
+          "name": "m1_r",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 11,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1725,
+            "x2": 1802,
+            "y1": 231,
+            "y2": 245
+          },
+          "bounds_source": "compiled",
+          "component_key": 1219445311,
+          "helpers": [
+            "gsp_tracker_m1_y_get_info",
+            "gsp_tracker_m1_y_get_value",
+            "gsp_tracker_m1_y_set_value"
+          ],
+          "name": "m1_y",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 10,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1596,
+            "x2": 1725,
+            "y1": 305,
+            "y2": 319
+          },
+          "bounds_source": "compiled",
+          "component_key": 3140979452,
+          "helpers": [
+            "gsp_tracker_m2_g_get_info",
+            "gsp_tracker_m2_g_get_value",
+            "gsp_tracker_m2_g_set_value"
+          ],
+          "name": "m2_g",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 15,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1802,
+            "x2": 1854,
+            "y1": 305,
+            "y2": 319
+          },
+          "bounds_source": "compiled",
+          "component_key": 2822204691,
+          "helpers": [
+            "gsp_tracker_m2_r_get_info",
+            "gsp_tracker_m2_r_get_value",
+            "gsp_tracker_m2_r_set_value"
+          ],
+          "name": "m2_r",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 17,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1725,
+            "x2": 1802,
+            "y1": 305,
+            "y2": 319
+          },
+          "bounds_source": "compiled",
+          "component_key": 2973203262,
+          "helpers": [
+            "gsp_tracker_m2_y_get_info",
+            "gsp_tracker_m2_y_get_value",
+            "gsp_tracker_m2_y_set_value"
+          ],
+          "name": "m2_y",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 16,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1596,
+            "x2": 1725,
+            "y1": 379,
+            "y2": 393
+          },
+          "bounds_source": "compiled",
+          "component_key": 429672791,
+          "helpers": [
+            "gsp_tracker_m3_g_get_info",
+            "gsp_tracker_m3_g_get_value",
+            "gsp_tracker_m3_g_set_value"
+          ],
+          "name": "m3_g",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 21,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1802,
+            "x2": 1854,
+            "y1": 379,
+            "y2": 393
+          },
+          "bounds_source": "compiled",
+          "component_key": 614226600,
+          "helpers": [
+            "gsp_tracker_m3_r_get_info",
+            "gsp_tracker_m3_r_get_value",
+            "gsp_tracker_m3_r_set_value"
+          ],
+          "name": "m3_r",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 23,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1725,
+            "x2": 1802,
+            "y1": 379,
+            "y2": 393
+          },
+          "bounds_source": "compiled",
+          "component_key": 530338505,
+          "helpers": [
+            "gsp_tracker_m3_y_get_info",
+            "gsp_tracker_m3_y_get_value",
+            "gsp_tracker_m3_y_set_value"
+          ],
+          "name": "m3_y",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 255,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 22,
+              "key": "value",
+              "max": 255,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "progress"
+        },
+        {
+          "bounds": {
+            "x1": 1470,
+            "x2": 1890,
+            "y1": 30,
+            "y2": 74
+          },
+          "bounds_source": "compiled",
+          "component_key": 4048833424,
+          "helpers": [
+            "gsp_tracker_master_fader_get_info",
+            "gsp_tracker_master_fader_get_value",
+            "gsp_tracker_master_fader_set_value"
+          ],
+          "name": "master_fader",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 100,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 25,
+              "key": "value",
+              "max": 100,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "slider"
+        },
+        {
+          "bounds": {
+            "x1": 1720,
+            "x2": 1890,
+            "y1": 6,
+            "y2": 32
+          },
+          "bounds_source": "compiled",
+          "component_key": 2451632989,
+          "helpers": [
+            "gsp_tracker_master_value_get_info",
+            "gsp_tracker_master_value_get_text",
+            "gsp_tracker_master_value_set_text"
+          ],
+          "name": "master_value",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 37,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 1440,
+            "x2": 1920,
+            "y1": 150,
+            "y2": 442
+          },
+          "bounds_source": "compiled",
+          "component_key": 4137630355,
+          "helpers": [
+            "gsp_tracker_mix_view_get_info"
+          ],
+          "name": "mix_view",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 990,
+            "x2": 1126,
+            "y1": 130,
+            "y2": 226
+          },
+          "bounds_source": "compiled",
+          "component_key": 2538616296,
+          "helpers": [
+            "gsp_tracker_nav_hit_get_info"
+          ],
+          "name": "nav_hit",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 990,
+            "x2": 1126,
+            "y1": 156,
+            "y2": 200
+          },
+          "bounds_source": "compiled",
+          "component_key": 3186589398,
+          "helpers": [
+            "gsp_tracker_nav_icon_get_info",
+            "gsp_tracker_nav_icon_get_text",
+            "gsp_tracker_nav_icon_set_text"
+          ],
+          "name": "nav_icon",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 38,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 1950,
+            "x2": 2370,
+            "y1": 250,
+            "y2": 360
+          },
+          "bounds_source": "compiled",
+          "component_key": 3011828000,
+          "helpers": [
+            "gsp_tracker_order_list_get_info",
+            "gsp_tracker_order_list_get_text",
+            "gsp_tracker_order_list_set_text"
+          ],
+          "name": "order_list",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 39,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 2096,
+            "x2": 2232,
+            "y1": 396,
+            "y2": 448
+          },
+          "bounds_source": "compiled",
+          "component_key": 3394634138,
+          "helpers": [
+            "gsp_tracker_order_pause_get_info"
+          ],
+          "name": "order_pause",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1950,
+            "x2": 2086,
+            "y1": 396,
+            "y2": 448
+          },
+          "bounds_source": "compiled",
+          "component_key": 391859578,
+          "helpers": [
+            "gsp_tracker_order_play_get_info"
+          ],
+          "name": "order_play",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2242,
+            "x2": 2370,
+            "y1": 396,
+            "y2": 448
+          },
+          "bounds_source": "compiled",
+          "component_key": 2802534483,
+          "helpers": [
+            "gsp_tracker_order_restart_get_info"
+          ],
+          "name": "order_restart",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1440,
+            "x2": 1920,
+            "y1": 0,
+            "y2": 480
+          },
+          "bounds_source": "compiled",
+          "component_key": 2984246427,
+          "helpers": [
+            "gsp_tracker_page_mix_get_info"
+          ],
+          "name": "page_mix",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "layer"
+        },
+        {
+          "bounds": {
+            "x1": 1920,
+            "x2": 2400,
+            "y1": 0,
+            "y2": 480
+          },
+          "bounds_source": "compiled",
+          "component_key": 1453275565,
+          "helpers": [
+            "gsp_tracker_page_order_get_info"
+          ],
+          "name": "page_order",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "layer"
+        },
+        {
+          "bounds": {
+            "x1": 480,
+            "x2": 960,
+            "y1": 0,
+            "y2": 480
+          },
+          "bounds_source": "compiled",
+          "component_key": 1624832371,
+          "helpers": [
+            "gsp_tracker_page_pattern_get_info"
+          ],
+          "name": "page_pattern",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "layer"
+        },
+        {
+          "bounds": {
+            "x1": 960,
+            "x2": 1440,
+            "y1": 0,
+            "y2": 480
+          },
+          "bounds_source": "compiled",
+          "component_key": 3962525710,
+          "helpers": [
+            "gsp_tracker_page_playback_get_info"
+          ],
+          "name": "page_playback",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "layer"
+        },
+        {
+          "bounds": {
+            "x1": 0,
+            "x2": 480,
+            "y1": 0,
+            "y2": 480
+          },
+          "bounds_source": "compiled",
+          "component_key": 3413135659,
+          "helpers": [
+            "gsp_tracker_page_waves_get_info"
+          ],
+          "name": "page_waves",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "layer"
+        },
+        {
+          "bounds": {
+            "x1": 0,
+            "x2": 480,
+            "y1": 0,
+            "y2": 480
+          },
+          "bounds_source": "compiled",
+          "component_key": 2884670943,
+          "helpers": [
+            "gsp_tracker_pages_get_info"
+          ],
+          "name": "pages",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "method": "page_flow_set_page"
+            },
+            {
+              "capability": "component_motion_version",
+              "method": "component_get_motion",
+              "min_version": 1
+            },
+            {
+              "capability": "wait_component_version",
+              "method": "wait_component",
+              "min_version": 1
+            }
+          ],
+          "properties": [],
+          "type": "page_flow"
+        },
+        {
+          "bounds": {
+            "x1": 2034,
+            "x2": 2108,
+            "y1": 186,
+            "y2": 234
+          },
+          "bounds_source": "compiled",
+          "component_key": 548323006,
+          "helpers": [
+            "gsp_tracker_pat_next_get_info"
+          ],
+          "name": "pat_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1950,
+            "x2": 2024,
+            "y1": 186,
+            "y2": 234
+          },
+          "bounds_source": "compiled",
+          "component_key": 4233166522,
+          "helpers": [
+            "gsp_tracker_pat_prev_get_info"
+          ],
+          "name": "pat_prev",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2230,
+            "x2": 2370,
+            "y1": 148,
+            "y2": 186
+          },
+          "bounds_source": "compiled",
+          "component_key": 3677506452,
+          "helpers": [
+            "gsp_tracker_pat_value_get_info",
+            "gsp_tracker_pat_value_get_text",
+            "gsp_tracker_pat_value_set_text"
+          ],
+          "name": "pat_value",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 40,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 1210,
+            "x2": 1410,
+            "y1": 24,
+            "y2": 42
+          },
+          "bounds_source": "compiled",
+          "component_key": 1466157906,
+          "helpers": [
+            "gsp_tracker_pb_pos_get_info",
+            "gsp_tracker_pb_pos_get_text",
+            "gsp_tracker_pb_pos_set_text"
+          ],
+          "name": "pb_pos",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 41,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 1270,
+            "x2": 1410,
+            "y1": 272,
+            "y2": 310
+          },
+          "bounds_source": "compiled",
+          "component_key": 1180817309,
+          "helpers": [
+            "gsp_tracker_pb_speed_value_get_info",
+            "gsp_tracker_pb_speed_value_get_text",
+            "gsp_tracker_pb_speed_value_set_text"
+          ],
+          "name": "pb_speed_value",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 42,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 1136,
+            "x2": 1272,
+            "y1": 130,
+            "y2": 226
+          },
+          "bounds_source": "compiled",
+          "component_key": 4040919111,
+          "helpers": [
+            "gsp_tracker_pp_hit_get_info"
+          ],
+          "name": "pp_hit",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1136,
+            "x2": 1272,
+            "y1": 156,
+            "y2": 200
+          },
+          "bounds_source": "compiled",
+          "component_key": 2470142006,
+          "helpers": [
+            "gsp_tracker_pp_pause_text_get_info",
+            "gsp_tracker_pp_pause_text_get_text",
+            "gsp_tracker_pp_pause_text_set_text"
+          ],
+          "name": "pp_pause_text",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 43,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 1136,
+            "x2": 1272,
+            "y1": 156,
+            "y2": 200
+          },
+          "bounds_source": "compiled",
+          "component_key": 891800270,
+          "helpers": [
+            "gsp_tracker_pp_play_text_get_info",
+            "gsp_tracker_pp_play_text_get_text",
+            "gsp_tracker_pp_play_text_set_text"
+          ],
+          "name": "pp_play_text",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 44,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 1282,
+            "x2": 1410,
+            "y1": 130,
+            "y2": 226
+          },
+          "bounds_source": "compiled",
+          "component_key": 2402672182,
+          "helpers": [
+            "gsp_tracker_rec_btn_get_info",
+            "gsp_tracker_rec_btn_get_enabled",
+            "gsp_tracker_rec_btn_set_enabled"
+          ],
+          "name": "rec_btn",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "enabled",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 0,
+              "key": "enabled",
+              "max": 1,
+              "min": 0,
+              "property_key": 49525662,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1950,
+            "x2": 2370,
+            "y1": 366,
+            "y2": 384
+          },
+          "bounds_source": "compiled",
+          "component_key": 287514189,
+          "helpers": [
+            "gsp_tracker_seq_pos_get_info",
+            "gsp_tracker_seq_pos_get_text",
+            "gsp_tracker_seq_pos_set_text"
+          ],
+          "name": "seq_pos",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 45,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 1586,
+            "x2": 1836,
+            "y1": 174,
+            "y2": 218
+          },
+          "bounds_source": "compiled",
+          "component_key": 404699476,
+          "helpers": [
+            "gsp_tracker_sf0_get_info",
+            "gsp_tracker_sf0_get_value",
+            "gsp_tracker_sf0_set_value"
+          ],
+          "name": "sf0",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 120,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 6,
+              "key": "value",
+              "max": 120,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "slider"
+        },
+        {
+          "bounds": {
+            "x1": 1586,
+            "x2": 1836,
+            "y1": 248,
+            "y2": 292
+          },
+          "bounds_source": "compiled",
+          "component_key": 421477095,
+          "helpers": [
+            "gsp_tracker_sf1_get_info",
+            "gsp_tracker_sf1_get_value",
+            "gsp_tracker_sf1_set_value"
+          ],
+          "name": "sf1",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 120,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 12,
+              "key": "value",
+              "max": 120,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "slider"
+        },
+        {
+          "bounds": {
+            "x1": 1586,
+            "x2": 1836,
+            "y1": 322,
+            "y2": 366
+          },
+          "bounds_source": "compiled",
+          "component_key": 438254714,
+          "helpers": [
+            "gsp_tracker_sf2_get_info",
+            "gsp_tracker_sf2_get_value",
+            "gsp_tracker_sf2_set_value"
+          ],
+          "name": "sf2",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 120,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 18,
+              "key": "value",
+              "max": 120,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "slider"
+        },
+        {
+          "bounds": {
+            "x1": 1586,
+            "x2": 1836,
+            "y1": 396,
+            "y2": 440
+          },
+          "bounds_source": "compiled",
+          "component_key": 455032333,
+          "helpers": [
+            "gsp_tracker_sf3_get_info",
+            "gsp_tracker_sf3_get_value",
+            "gsp_tracker_sf3_set_value"
+          ],
+          "name": "sf3",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 120,
+              "method": "set_property",
+              "min": 0,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 24,
+              "key": "value",
+              "max": 120,
+              "min": 0,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "slider"
+        },
+        {
+          "bounds": {
+            "x1": 1440,
+            "x2": 1920,
+            "y1": 150,
+            "y2": 220
+          },
+          "bounds_source": "compiled",
+          "component_key": 2080320339,
+          "helpers": [
+            "gsp_tracker_slot0_get_info",
+            "gsp_tracker_slot0_get_x",
+            "gsp_tracker_slot0_set_x",
+            "gsp_tracker_slot0_get_y",
+            "gsp_tracker_slot0_set_y",
+            "gsp_tracker_slot0_get_value",
+            "gsp_tracker_slot0_set_value"
+          ],
+          "name": "slot0",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 480,
+              "method": "set_property",
+              "min": -480,
+              "property": "x",
+              "value_kind": "i32"
+            },
+            {
+              "max": 292,
+              "method": "set_property",
+              "min": -366,
+              "property": "y",
+              "value_kind": "i32"
+            },
+            {
+              "max": 2147483647,
+              "method": "set_property",
+              "min": -2147483648,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 1,
+              "key": "x",
+              "max": 480,
+              "min": -480,
+              "property_key": 4245442695,
+              "value_kind": "i32"
+            },
+            {
+              "bind_id": 2,
+              "key": "y",
+              "max": 292,
+              "min": -366,
+              "property_key": 4228665076,
+              "value_kind": "i32"
+            },
+            {
+              "bind_id": 1,
+              "key": "value",
+              "max": 2147483647,
+              "min": -2147483648,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 1460,
+            "x2": 1590,
+            "y1": 154,
+            "y2": 172
+          },
+          "bounds_source": "compiled",
+          "component_key": 4179556639,
+          "helpers": [
+            "gsp_tracker_slot0_name_get_info",
+            "gsp_tracker_slot0_name_get_text",
+            "gsp_tracker_slot0_name_set_text"
+          ],
+          "name": "slot0_name",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 46,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 1440,
+            "x2": 1920,
+            "y1": 224,
+            "y2": 294
+          },
+          "bounds_source": "compiled",
+          "component_key": 2063542720,
+          "helpers": [
+            "gsp_tracker_slot1_get_info",
+            "gsp_tracker_slot1_get_x",
+            "gsp_tracker_slot1_set_x",
+            "gsp_tracker_slot1_get_y",
+            "gsp_tracker_slot1_set_y",
+            "gsp_tracker_slot1_get_value",
+            "gsp_tracker_slot1_set_value"
+          ],
+          "name": "slot1",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 480,
+              "method": "set_property",
+              "min": -480,
+              "property": "x",
+              "value_kind": "i32"
+            },
+            {
+              "max": 292,
+              "method": "set_property",
+              "min": -366,
+              "property": "y",
+              "value_kind": "i32"
+            },
+            {
+              "max": 2147483647,
+              "method": "set_property",
+              "min": -2147483648,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 7,
+              "key": "x",
+              "max": 480,
+              "min": -480,
+              "property_key": 4245442695,
+              "value_kind": "i32"
+            },
+            {
+              "bind_id": 8,
+              "key": "y",
+              "max": 292,
+              "min": -366,
+              "property_key": 4228665076,
+              "value_kind": "i32"
+            },
+            {
+              "bind_id": 7,
+              "key": "value",
+              "max": 2147483647,
+              "min": -2147483648,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 1460,
+            "x2": 1590,
+            "y1": 228,
+            "y2": 246
+          },
+          "bounds_source": "compiled",
+          "component_key": 1845849166,
+          "helpers": [
+            "gsp_tracker_slot1_name_get_info",
+            "gsp_tracker_slot1_name_get_text",
+            "gsp_tracker_slot1_name_set_text"
+          ],
+          "name": "slot1_name",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 47,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 1440,
+            "x2": 1920,
+            "y1": 298,
+            "y2": 368
+          },
+          "bounds_source": "compiled",
+          "component_key": 2113875577,
+          "helpers": [
+            "gsp_tracker_slot2_get_info",
+            "gsp_tracker_slot2_get_x",
+            "gsp_tracker_slot2_set_x",
+            "gsp_tracker_slot2_get_y",
+            "gsp_tracker_slot2_set_y",
+            "gsp_tracker_slot2_get_value",
+            "gsp_tracker_slot2_set_value"
+          ],
+          "name": "slot2",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 480,
+              "method": "set_property",
+              "min": -480,
+              "property": "x",
+              "value_kind": "i32"
+            },
+            {
+              "max": 292,
+              "method": "set_property",
+              "min": -366,
+              "property": "y",
+              "value_kind": "i32"
+            },
+            {
+              "max": 2147483647,
+              "method": "set_property",
+              "min": -2147483648,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 13,
+              "key": "x",
+              "max": 480,
+              "min": -480,
+              "property_key": 4245442695,
+              "value_kind": "i32"
+            },
+            {
+              "bind_id": 14,
+              "key": "y",
+              "max": 292,
+              "min": -366,
+              "property_key": 4228665076,
+              "value_kind": "i32"
+            },
+            {
+              "bind_id": 13,
+              "key": "value",
+              "max": 2147483647,
+              "min": -2147483648,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 1460,
+            "x2": 1590,
+            "y1": 302,
+            "y2": 320
+          },
+          "bounds_source": "compiled",
+          "component_key": 844772761,
+          "helpers": [
+            "gsp_tracker_slot2_name_get_info",
+            "gsp_tracker_slot2_name_get_text",
+            "gsp_tracker_slot2_name_set_text"
+          ],
+          "name": "slot2_name",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 48,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 1440,
+            "x2": 1920,
+            "y1": 372,
+            "y2": 442
+          },
+          "bounds_source": "compiled",
+          "component_key": 2097097958,
+          "helpers": [
+            "gsp_tracker_slot3_get_info",
+            "gsp_tracker_slot3_get_x",
+            "gsp_tracker_slot3_set_x",
+            "gsp_tracker_slot3_get_y",
+            "gsp_tracker_slot3_set_y",
+            "gsp_tracker_slot3_get_value",
+            "gsp_tracker_slot3_set_value"
+          ],
+          "name": "slot3",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 480,
+              "method": "set_property",
+              "min": -480,
+              "property": "x",
+              "value_kind": "i32"
+            },
+            {
+              "max": 292,
+              "method": "set_property",
+              "min": -366,
+              "property": "y",
+              "value_kind": "i32"
+            },
+            {
+              "max": 2147483647,
+              "method": "set_property",
+              "min": -2147483648,
+              "property": "value",
+              "value_kind": "i32"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 19,
+              "key": "x",
+              "max": 480,
+              "min": -480,
+              "property_key": 4245442695,
+              "value_kind": "i32"
+            },
+            {
+              "bind_id": 20,
+              "key": "y",
+              "max": 292,
+              "min": -366,
+              "property_key": 4228665076,
+              "value_kind": "i32"
+            },
+            {
+              "bind_id": 19,
+              "key": "value",
+              "max": 2147483647,
+              "min": -2147483648,
+              "property_key": 1113510858,
+              "value_kind": "i32"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 1460,
+            "x2": 1590,
+            "y1": 376,
+            "y2": 394
+          },
+          "bounds_source": "compiled",
+          "component_key": 1866589088,
+          "helpers": [
+            "gsp_tracker_slot3_name_get_info",
+            "gsp_tracker_slot3_name_get_text",
+            "gsp_tracker_slot3_name_set_text"
+          ],
+          "name": "slot3_name",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 49,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 1460,
+            "x2": 1514,
+            "y1": 174,
+            "y2": 218
+          },
+          "bounds_source": "compiled",
+          "component_key": 2507081179,
+          "helpers": [
+            "gsp_tracker_smn0_get_info",
+            "gsp_tracker_smn0_get_visible",
+            "gsp_tracker_smn0_set_visible"
+          ],
+          "name": "smn0",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 50,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1460,
+            "x2": 1514,
+            "y1": 248,
+            "y2": 292
+          },
+          "bounds_source": "compiled",
+          "component_key": 2490303560,
+          "helpers": [
+            "gsp_tracker_smn1_get_info",
+            "gsp_tracker_smn1_get_visible",
+            "gsp_tracker_smn1_set_visible"
+          ],
+          "name": "smn1",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 51,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1460,
+            "x2": 1514,
+            "y1": 322,
+            "y2": 366
+          },
+          "bounds_source": "compiled",
+          "component_key": 2540636417,
+          "helpers": [
+            "gsp_tracker_smn2_get_info",
+            "gsp_tracker_smn2_get_visible",
+            "gsp_tracker_smn2_set_visible"
+          ],
+          "name": "smn2",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 52,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1460,
+            "x2": 1514,
+            "y1": 396,
+            "y2": 440
+          },
+          "bounds_source": "compiled",
+          "component_key": 2523858798,
+          "helpers": [
+            "gsp_tracker_smn3_get_info",
+            "gsp_tracker_smn3_get_visible",
+            "gsp_tracker_smn3_set_visible"
+          ],
+          "name": "smn3",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 53,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1460,
+            "x2": 1514,
+            "y1": 174,
+            "y2": 218
+          },
+          "bounds_source": "compiled",
+          "component_key": 2406268370,
+          "helpers": [
+            "gsp_tracker_smo0_get_info",
+            "gsp_tracker_smo0_get_visible",
+            "gsp_tracker_smo0_set_visible"
+          ],
+          "name": "smo0",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 54,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1460,
+            "x2": 1514,
+            "y1": 248,
+            "y2": 292
+          },
+          "bounds_source": "compiled",
+          "component_key": 2423045989,
+          "helpers": [
+            "gsp_tracker_smo1_get_info",
+            "gsp_tracker_smo1_get_visible",
+            "gsp_tracker_smo1_set_visible"
+          ],
+          "name": "smo1",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 55,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1460,
+            "x2": 1514,
+            "y1": 322,
+            "y2": 366
+          },
+          "bounds_source": "compiled",
+          "component_key": 2372713132,
+          "helpers": [
+            "gsp_tracker_smo2_get_info",
+            "gsp_tracker_smo2_get_visible",
+            "gsp_tracker_smo2_set_visible"
+          ],
+          "name": "smo2",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 56,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1460,
+            "x2": 1514,
+            "y1": 396,
+            "y2": 440
+          },
+          "bounds_source": "compiled",
+          "component_key": 2389490751,
+          "helpers": [
+            "gsp_tracker_smo3_get_info",
+            "gsp_tracker_smo3_get_visible",
+            "gsp_tracker_smo3_set_visible"
+          ],
+          "name": "smo3",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 57,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 990,
+            "x2": 1090,
+            "y1": 330,
+            "y2": 386
+          },
+          "bounds_source": "compiled",
+          "component_key": 441234102,
+          "helpers": [
+            "gsp_tracker_speed_05_get_info"
+          ],
+          "name": "speed_05",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1002,
+            "x2": 1078,
+            "y1": 378,
+            "y2": 381
+          },
+          "bounds_source": "compiled",
+          "component_key": 644338625,
+          "helpers": [
+            "gsp_tracker_speed_05_sel_get_info",
+            "gsp_tracker_speed_05_sel_get_visible",
+            "gsp_tracker_speed_05_sel_set_visible"
+          ],
+          "name": "speed_05_sel",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 58,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 1098,
+            "x2": 1198,
+            "y1": 330,
+            "y2": 386
+          },
+          "bounds_source": "compiled",
+          "component_key": 2571741452,
+          "helpers": [
+            "gsp_tracker_speed_10_get_info"
+          ],
+          "name": "speed_10",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1110,
+            "x2": 1186,
+            "y1": 378,
+            "y2": 381
+          },
+          "bounds_source": "compiled",
+          "component_key": 491029703,
+          "helpers": [
+            "gsp_tracker_speed_10_sel_get_info",
+            "gsp_tracker_speed_10_sel_get_visible",
+            "gsp_tracker_speed_10_sel_set_visible"
+          ],
+          "name": "speed_10_sel",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 59,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 1206,
+            "x2": 1306,
+            "y1": 330,
+            "y2": 386
+          },
+          "bounds_source": "compiled",
+          "component_key": 2521408595,
+          "helpers": [
+            "gsp_tracker_speed_15_get_info"
+          ],
+          "name": "speed_15",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1218,
+            "x2": 1294,
+            "y1": 378,
+            "y2": 381
+          },
+          "bounds_source": "compiled",
+          "component_key": 3476115476,
+          "helpers": [
+            "gsp_tracker_speed_15_sel_get_info",
+            "gsp_tracker_speed_15_sel_get_visible",
+            "gsp_tracker_speed_15_sel_set_visible"
+          ],
+          "name": "speed_15_sel",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 60,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 1314,
+            "x2": 1410,
+            "y1": 330,
+            "y2": 386
+          },
+          "bounds_source": "compiled",
+          "component_key": 726747815,
+          "helpers": [
+            "gsp_tracker_speed_20_get_info"
+          ],
+          "name": "speed_20",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1326,
+            "x2": 1398,
+            "y1": 378,
+            "y2": 381
+          },
+          "bounds_source": "compiled",
+          "component_key": 2684993920,
+          "helpers": [
+            "gsp_tracker_speed_20_sel_get_info",
+            "gsp_tracker_speed_20_sel_get_visible",
+            "gsp_tracker_speed_20_sel_set_visible"
+          ],
+          "name": "speed_20_sel",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 61,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "container"
+        },
+        {
+          "bounds": {
+            "x1": 1522,
+            "x2": 1576,
+            "y1": 174,
+            "y2": 218
+          },
+          "bounds_source": "compiled",
+          "component_key": 3929052613,
+          "helpers": [
+            "gsp_tracker_ssn0_get_info",
+            "gsp_tracker_ssn0_get_visible",
+            "gsp_tracker_ssn0_set_visible"
+          ],
+          "name": "ssn0",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 62,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1522,
+            "x2": 1576,
+            "y1": 248,
+            "y2": 292
+          },
+          "bounds_source": "compiled",
+          "component_key": 3912274994,
+          "helpers": [
+            "gsp_tracker_ssn1_get_info",
+            "gsp_tracker_ssn1_get_visible",
+            "gsp_tracker_ssn1_set_visible"
+          ],
+          "name": "ssn1",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 63,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1522,
+            "x2": 1576,
+            "y1": 322,
+            "y2": 366
+          },
+          "bounds_source": "compiled",
+          "component_key": 3895497375,
+          "helpers": [
+            "gsp_tracker_ssn2_get_info",
+            "gsp_tracker_ssn2_get_visible",
+            "gsp_tracker_ssn2_set_visible"
+          ],
+          "name": "ssn2",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 64,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1522,
+            "x2": 1576,
+            "y1": 396,
+            "y2": 440
+          },
+          "bounds_source": "compiled",
+          "component_key": 3878719756,
+          "helpers": [
+            "gsp_tracker_ssn3_get_info",
+            "gsp_tracker_ssn3_get_visible",
+            "gsp_tracker_ssn3_set_visible"
+          ],
+          "name": "ssn3",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 65,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1522,
+            "x2": 1576,
+            "y1": 174,
+            "y2": 218
+          },
+          "bounds_source": "compiled",
+          "component_key": 3828239804,
+          "helpers": [
+            "gsp_tracker_sso0_get_info",
+            "gsp_tracker_sso0_get_visible",
+            "gsp_tracker_sso0_set_visible"
+          ],
+          "name": "sso0",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 66,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1522,
+            "x2": 1576,
+            "y1": 248,
+            "y2": 292
+          },
+          "bounds_source": "compiled",
+          "component_key": 3845017423,
+          "helpers": [
+            "gsp_tracker_sso1_get_info",
+            "gsp_tracker_sso1_get_visible",
+            "gsp_tracker_sso1_set_visible"
+          ],
+          "name": "sso1",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 67,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1522,
+            "x2": 1576,
+            "y1": 322,
+            "y2": 366
+          },
+          "bounds_source": "compiled",
+          "component_key": 3861795042,
+          "helpers": [
+            "gsp_tracker_sso2_get_info",
+            "gsp_tracker_sso2_get_visible",
+            "gsp_tracker_sso2_set_visible"
+          ],
+          "name": "sso2",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 68,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1522,
+            "x2": 1576,
+            "y1": 396,
+            "y2": 440
+          },
+          "bounds_source": "compiled",
+          "component_key": 3878572661,
+          "helpers": [
+            "gsp_tracker_sso3_get_info",
+            "gsp_tracker_sso3_get_visible",
+            "gsp_tracker_sso3_set_visible"
+          ],
+          "name": "sso3",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 1,
+              "method": "set_property",
+              "min": 0,
+              "property": "visible",
+              "value_kind": "bool"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 69,
+              "key": "visible",
+              "max": 1,
+              "min": 0,
+              "property_key": 1425709473,
+              "value_kind": "bool"
+            }
+          ],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2034,
+            "x2": 2108,
+            "y1": 94,
+            "y2": 142
+          },
+          "bounds_source": "compiled",
+          "component_key": 3163156801,
+          "helpers": [
+            "gsp_tracker_step_next_get_info"
+          ],
+          "name": "step_next",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 1950,
+            "x2": 2024,
+            "y1": 94,
+            "y2": 142
+          },
+          "bounds_source": "compiled",
+          "component_key": 2831593421,
+          "helpers": [
+            "gsp_tracker_step_prev_get_info"
+          ],
+          "name": "step_prev",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            }
+          ],
+          "properties": [],
+          "type": "button"
+        },
+        {
+          "bounds": {
+            "x1": 2230,
+            "x2": 2370,
+            "y1": 56,
+            "y2": 94
+          },
+          "bounds_source": "compiled",
+          "component_key": 3990936353,
+          "helpers": [
+            "gsp_tracker_step_value_get_info",
+            "gsp_tracker_step_value_get_text",
+            "gsp_tracker_step_value_set_text"
+          ],
+          "name": "step_value",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "text",
+              "value_kind": "text"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 70,
+              "key": "text",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 3185987134,
+              "value_kind": "text"
+            }
+          ],
+          "type": "label"
+        },
+        {
+          "bounds": {
+            "x1": 0,
+            "x2": 480,
+            "y1": 0,
+            "y2": 432
+          },
+          "bounds_source": "compiled",
+          "component_key": 1686963506,
+          "helpers": [
+            "gsp_tracker_waves_canvas_get_info",
+            "gsp_tracker_waves_canvas_get_resource",
+            "gsp_tracker_waves_canvas_set_resource"
+          ],
+          "name": "waves_canvas",
+          "operations": [
+            {
+              "method": "inspect_object"
+            },
+            {
+              "bounds_source": "compiled",
+              "method": "tap_object"
+            },
+            {
+              "max": 4294967295,
+              "method": "set_property",
+              "min": 0,
+              "property": "resource",
+              "value_kind": "resource"
+            }
+          ],
+          "properties": [
+            {
+              "bind_id": 71,
+              "key": "resource",
+              "max": 4294967295,
+              "min": 0,
+              "property_key": 702513141,
+              "value_kind": "resource"
+            }
+          ],
+          "type": "image"
+        }
+      ],
+      "scene_id": 0,
+      "screen": "tracker",
+      "stem": "tracker"
+    }
+  ],
+  "schema_version": 2
+}

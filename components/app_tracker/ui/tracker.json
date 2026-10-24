@@ -1,0 +1,1929 @@
+{
+  "screen": "tracker",
+  "w": 480,
+  "h": 480,
+  "screen_bg": "#0B0C0E",
+  "default_font_size": 13,
+  "swipe": false,
+  "objects": [
+    {
+      "type": "page_flow",
+      "parent": -1,
+      "name": "pages",
+      "x": 0,
+      "y": 0,
+      "w": 480,
+      "h": 480,
+      "page_count": 5,
+      "selected": 1,
+      "axis": "horizontal",
+      "cyclic": false,
+      "bar_height": 0,
+      "pages": [
+        "page_waves",
+        "page_pattern",
+        "page_playback",
+        "page_mix",
+        "page_order"
+      ]
+    },
+    {
+      "type": "layer",
+      "parent": 0,
+      "name": "page_waves",
+      "x": 0,
+      "y": 0,
+      "w": 480,
+      "h": 480,
+      "bg_color": "#0B0C0E"
+    },
+    {
+      "type": "image",
+      "parent_name": "page_waves",
+      "name": "waves_canvas",
+      "x": 0,
+      "y": 0,
+      "w": 480,
+      "h": 432,
+      "image": "assets/canvas_main.png",
+      "bind": "waves_canvas"
+    },
+    {
+      "type": "layer",
+      "parent": 0,
+      "name": "page_pattern",
+      "x": 480,
+      "y": 0,
+      "w": 480,
+      "h": 480,
+      "bg_color": "#0B0C0E"
+    },
+    {
+      "type": "image",
+      "parent_name": "page_pattern",
+      "name": "grid_canvas",
+      "x": 0,
+      "y": 0,
+      "w": 480,
+      "h": 432,
+      "image": "assets/canvas_grid.png",
+      "bind": "grid_canvas"
+    },
+    {
+      "type": "layer",
+      "parent": 0,
+      "name": "page_playback",
+      "x": 960,
+      "y": 0,
+      "w": 480,
+      "h": 480,
+      "bg_color": "#0B0C0E"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_playback",
+      "x": 250,
+      "y": 24,
+      "w": 200,
+      "h": 18,
+      "text": "ORD 00  PAT 00  ROW 00",
+      "font_size": 11,
+      "fg_color": "#8A8F98",
+      "text_align": "right",
+      "font": "fonts/DejaVuSans.ttf",
+      "name": "pb_pos",
+      "bind": "pb_pos",
+      "bind_target": "text"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_playback",
+      "name": "nav_hit",
+      "x": 30,
+      "y": 130,
+      "w": 136,
+      "h": 96,
+      "text": "",
+      "font_size": 12,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "nav_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "label",
+      "parent_name": "page_playback",
+      "x": 30,
+      "y": 156,
+      "w": 136,
+      "h": 44,
+      "text": "|<",
+      "font_size": 26,
+      "fg_color": "#F2F2F0",
+      "text_align": "center",
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "name": "nav_icon",
+      "bind": "nav_icon",
+      "bind_target": "text"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_playback",
+      "name": "pp_hit",
+      "x": 176,
+      "y": 130,
+      "w": 136,
+      "h": 96,
+      "text": "",
+      "font_size": 12,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pp_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "label",
+      "parent_name": "page_playback",
+      "x": 176,
+      "y": 156,
+      "w": 136,
+      "h": 44,
+      "text": ">",
+      "font_size": 32,
+      "fg_color": "#7CFF6B",
+      "text_align": "center",
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "name": "pp_play_text",
+      "bind": "pp_play_text",
+      "bind_target": "text"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_playback",
+      "x": 176,
+      "y": 156,
+      "w": 136,
+      "h": 44,
+      "text": "",
+      "font_size": 32,
+      "fg_color": "#FF4C01",
+      "text_align": "center",
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "name": "pp_pause_text",
+      "bind": "pp_pause_text",
+      "bind_target": "text"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_playback",
+      "name": "rec_btn",
+      "x": 322,
+      "y": 130,
+      "w": 128,
+      "h": 96,
+      "text": "O",
+      "font_size": 24,
+      "fg_color": "#55595F",
+      "bg_color": "#2A2D33",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "rec_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "enabled": false
+    },
+    {
+      "type": "label",
+      "parent_name": "page_playback",
+      "x": 310,
+      "y": 272,
+      "w": 140,
+      "h": 38,
+      "text": "1.00x",
+      "font_size": 28,
+      "fg_color": "#37D0FF",
+      "text_align": "right",
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "name": "pb_speed_value",
+      "bind": "pb_speed_value",
+      "bind_target": "text"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_playback",
+      "name": "speed_05",
+      "x": 30,
+      "y": 330,
+      "w": 100,
+      "h": 56,
+      "text": "0.5x",
+      "font_size": 15,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "speed_05_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "container",
+      "parent_name": "page_playback",
+      "x": 42,
+      "y": 378,
+      "w": 76,
+      "h": 3,
+      "bg_color": "#37D0FF",
+      "radius": 2,
+      "name": "speed_05_sel",
+      "bind": "speed_05_sel",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_playback",
+      "name": "speed_10",
+      "x": 138,
+      "y": 330,
+      "w": 100,
+      "h": 56,
+      "text": "1x",
+      "font_size": 15,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "speed_10_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "container",
+      "parent_name": "page_playback",
+      "x": 150,
+      "y": 378,
+      "w": 76,
+      "h": 3,
+      "bg_color": "#37D0FF",
+      "radius": 2,
+      "name": "speed_10_sel",
+      "bind": "speed_10_sel",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_playback",
+      "name": "speed_15",
+      "x": 246,
+      "y": 330,
+      "w": 100,
+      "h": 56,
+      "text": "1.5x",
+      "font_size": 15,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "speed_15_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "container",
+      "parent_name": "page_playback",
+      "x": 258,
+      "y": 378,
+      "w": 76,
+      "h": 3,
+      "bg_color": "#37D0FF",
+      "radius": 2,
+      "name": "speed_15_sel",
+      "bind": "speed_15_sel",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_playback",
+      "name": "speed_20",
+      "x": 354,
+      "y": 330,
+      "w": 96,
+      "h": 56,
+      "text": "2x",
+      "font_size": 15,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "speed_20_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "container",
+      "parent_name": "page_playback",
+      "x": 366,
+      "y": 378,
+      "w": 72,
+      "h": 3,
+      "bg_color": "#37D0FF",
+      "radius": 2,
+      "name": "speed_20_sel",
+      "bind": "speed_20_sel",
+      "bind_target": "visible"
+    },
+    {
+      "type": "layer",
+      "parent": 0,
+      "name": "page_mix",
+      "x": 1440,
+      "y": 0,
+      "w": 480,
+      "h": 480,
+      "bg_color": "#0B0C0E"
+    },
+    {
+      "type": "container",
+      "parent_name": "page_mix",
+      "name": "mix_view",
+      "x": 0,
+      "y": 150,
+      "w": 480,
+      "h": 292,
+      "bg_color": "#0B0C0E",
+      "clip_children": true
+    },
+    {
+      "type": "container",
+      "parent_name": "mix_view",
+      "name": "slot0",
+      "x": {
+        "default": 0,
+        "min": -480,
+        "max": 480
+      },
+      "y": {
+        "default": 0,
+        "min": -366,
+        "max": 292
+      },
+      "w": 480,
+      "h": 70,
+      "bg_color": "#14161A",
+      "radius": 8
+    },
+    {
+      "type": "label",
+      "parent_name": "slot0",
+      "x": 20,
+      "y": 4,
+      "w": 130,
+      "h": 18,
+      "text": "CH 00",
+      "font_size": 13,
+      "fg_color": "#F2F2F0",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "name": "slot0_name",
+      "bind": "slot0_name",
+      "bind_target": "text"
+    },
+    {
+      "type": "progress",
+      "parent_name": "slot0",
+      "name": "m0_g",
+      "x": 156,
+      "y": 7,
+      "w": 129,
+      "h": 14,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#3ADB6B",
+      "radius": 7
+    },
+    {
+      "type": "progress",
+      "parent_name": "slot0",
+      "name": "m0_y",
+      "x": 285,
+      "y": 7,
+      "w": 77,
+      "h": 14,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#FFD24A",
+      "radius": 7
+    },
+    {
+      "type": "progress",
+      "parent_name": "slot0",
+      "name": "m0_r",
+      "x": 362,
+      "y": 7,
+      "w": 52,
+      "h": 14,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#FF4C01",
+      "radius": 7
+    },
+    {
+      "type": "button",
+      "parent_name": "slot0",
+      "name": "smo0",
+      "x": 20,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "M",
+      "font_size": 13,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_mute0_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "smo0",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "slot0",
+      "name": "smn0",
+      "x": 20,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "M",
+      "font_size": 13,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#7CFF6B",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_mute0_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "smn0",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "slot0",
+      "name": "sso0",
+      "x": 82,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "S",
+      "font_size": 13,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_solo0_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "sso0",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "slot0",
+      "name": "ssn0",
+      "x": 82,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "S",
+      "font_size": 13,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_solo0_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "ssn0",
+      "bind_target": "visible"
+    },
+    {
+      "type": "slider",
+      "parent_name": "slot0",
+      "name": "sf0",
+      "x": 146,
+      "y": 24,
+      "w": 250,
+      "h": 44,
+      "min": 0,
+      "max": 120,
+      "value": 100,
+      "track_size": 14,
+      "radius": 14,
+      "bg_color": "#23262B",
+      "fg_color": "#37D0FF",
+      "knob_color": "#F2F2F0",
+      "callback": "slot_fader0_cb",
+      "events": [
+        {
+          "event": "value",
+          "action": "call",
+          "arg": 0
+        },
+        {
+          "event": "release",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "container",
+      "parent_name": "mix_view",
+      "name": "slot1",
+      "x": {
+        "default": 0,
+        "min": -480,
+        "max": 480
+      },
+      "y": {
+        "default": 74,
+        "min": -366,
+        "max": 292
+      },
+      "w": 480,
+      "h": 70,
+      "bg_color": "#14161A",
+      "radius": 8
+    },
+    {
+      "type": "label",
+      "parent_name": "slot1",
+      "x": 20,
+      "y": 4,
+      "w": 130,
+      "h": 18,
+      "text": "CH 01",
+      "font_size": 13,
+      "fg_color": "#F2F2F0",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "name": "slot1_name",
+      "bind": "slot1_name",
+      "bind_target": "text"
+    },
+    {
+      "type": "progress",
+      "parent_name": "slot1",
+      "name": "m1_g",
+      "x": 156,
+      "y": 7,
+      "w": 129,
+      "h": 14,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#3ADB6B",
+      "radius": 7
+    },
+    {
+      "type": "progress",
+      "parent_name": "slot1",
+      "name": "m1_y",
+      "x": 285,
+      "y": 7,
+      "w": 77,
+      "h": 14,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#FFD24A",
+      "radius": 7
+    },
+    {
+      "type": "progress",
+      "parent_name": "slot1",
+      "name": "m1_r",
+      "x": 362,
+      "y": 7,
+      "w": 52,
+      "h": 14,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#FF4C01",
+      "radius": 7
+    },
+    {
+      "type": "button",
+      "parent_name": "slot1",
+      "name": "smo1",
+      "x": 20,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "M",
+      "font_size": 13,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_mute1_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "smo1",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "slot1",
+      "name": "smn1",
+      "x": 20,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "M",
+      "font_size": 13,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#7CFF6B",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_mute1_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "smn1",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "slot1",
+      "name": "sso1",
+      "x": 82,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "S",
+      "font_size": 13,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_solo1_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "sso1",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "slot1",
+      "name": "ssn1",
+      "x": 82,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "S",
+      "font_size": 13,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_solo1_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "ssn1",
+      "bind_target": "visible"
+    },
+    {
+      "type": "slider",
+      "parent_name": "slot1",
+      "name": "sf1",
+      "x": 146,
+      "y": 24,
+      "w": 250,
+      "h": 44,
+      "min": 0,
+      "max": 120,
+      "value": 100,
+      "track_size": 14,
+      "radius": 14,
+      "bg_color": "#23262B",
+      "fg_color": "#37D0FF",
+      "knob_color": "#F2F2F0",
+      "callback": "slot_fader1_cb",
+      "events": [
+        {
+          "event": "value",
+          "action": "call",
+          "arg": 0
+        },
+        {
+          "event": "release",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "container",
+      "parent_name": "mix_view",
+      "name": "slot2",
+      "x": {
+        "default": 0,
+        "min": -480,
+        "max": 480
+      },
+      "y": {
+        "default": 148,
+        "min": -366,
+        "max": 292
+      },
+      "w": 480,
+      "h": 70,
+      "bg_color": "#14161A",
+      "radius": 8
+    },
+    {
+      "type": "label",
+      "parent_name": "slot2",
+      "x": 20,
+      "y": 4,
+      "w": 130,
+      "h": 18,
+      "text": "CH 02",
+      "font_size": 13,
+      "fg_color": "#F2F2F0",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "name": "slot2_name",
+      "bind": "slot2_name",
+      "bind_target": "text"
+    },
+    {
+      "type": "progress",
+      "parent_name": "slot2",
+      "name": "m2_g",
+      "x": 156,
+      "y": 7,
+      "w": 129,
+      "h": 14,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#3ADB6B",
+      "radius": 7
+    },
+    {
+      "type": "progress",
+      "parent_name": "slot2",
+      "name": "m2_y",
+      "x": 285,
+      "y": 7,
+      "w": 77,
+      "h": 14,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#FFD24A",
+      "radius": 7
+    },
+    {
+      "type": "progress",
+      "parent_name": "slot2",
+      "name": "m2_r",
+      "x": 362,
+      "y": 7,
+      "w": 52,
+      "h": 14,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#FF4C01",
+      "radius": 7
+    },
+    {
+      "type": "button",
+      "parent_name": "slot2",
+      "name": "smo2",
+      "x": 20,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "M",
+      "font_size": 13,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_mute2_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "smo2",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "slot2",
+      "name": "smn2",
+      "x": 20,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "M",
+      "font_size": 13,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#7CFF6B",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_mute2_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "smn2",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "slot2",
+      "name": "sso2",
+      "x": 82,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "S",
+      "font_size": 13,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_solo2_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "sso2",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "slot2",
+      "name": "ssn2",
+      "x": 82,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "S",
+      "font_size": 13,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_solo2_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "ssn2",
+      "bind_target": "visible"
+    },
+    {
+      "type": "slider",
+      "parent_name": "slot2",
+      "name": "sf2",
+      "x": 146,
+      "y": 24,
+      "w": 250,
+      "h": 44,
+      "min": 0,
+      "max": 120,
+      "value": 100,
+      "track_size": 14,
+      "radius": 14,
+      "bg_color": "#23262B",
+      "fg_color": "#37D0FF",
+      "knob_color": "#F2F2F0",
+      "callback": "slot_fader2_cb",
+      "events": [
+        {
+          "event": "value",
+          "action": "call",
+          "arg": 0
+        },
+        {
+          "event": "release",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "container",
+      "parent_name": "mix_view",
+      "name": "slot3",
+      "x": {
+        "default": 0,
+        "min": -480,
+        "max": 480
+      },
+      "y": {
+        "default": 222,
+        "min": -366,
+        "max": 292
+      },
+      "w": 480,
+      "h": 70,
+      "bg_color": "#14161A",
+      "radius": 8
+    },
+    {
+      "type": "label",
+      "parent_name": "slot3",
+      "x": 20,
+      "y": 4,
+      "w": 130,
+      "h": 18,
+      "text": "CH 03",
+      "font_size": 13,
+      "fg_color": "#F2F2F0",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "name": "slot3_name",
+      "bind": "slot3_name",
+      "bind_target": "text"
+    },
+    {
+      "type": "progress",
+      "parent_name": "slot3",
+      "name": "m3_g",
+      "x": 156,
+      "y": 7,
+      "w": 129,
+      "h": 14,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#3ADB6B",
+      "radius": 7
+    },
+    {
+      "type": "progress",
+      "parent_name": "slot3",
+      "name": "m3_y",
+      "x": 285,
+      "y": 7,
+      "w": 77,
+      "h": 14,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#FFD24A",
+      "radius": 7
+    },
+    {
+      "type": "progress",
+      "parent_name": "slot3",
+      "name": "m3_r",
+      "x": 362,
+      "y": 7,
+      "w": 52,
+      "h": 14,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#FF4C01",
+      "radius": 7
+    },
+    {
+      "type": "button",
+      "parent_name": "slot3",
+      "name": "smo3",
+      "x": 20,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "M",
+      "font_size": 13,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_mute3_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "smo3",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "slot3",
+      "name": "smn3",
+      "x": 20,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "M",
+      "font_size": 13,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#7CFF6B",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_mute3_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "smn3",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "slot3",
+      "name": "sso3",
+      "x": 82,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "S",
+      "font_size": 13,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_solo3_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "sso3",
+      "bind_target": "visible"
+    },
+    {
+      "type": "button",
+      "parent_name": "slot3",
+      "name": "ssn3",
+      "x": 82,
+      "y": 24,
+      "w": 54,
+      "h": 44,
+      "text": "S",
+      "font_size": 13,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#37D0FF",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "slot_solo3_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ],
+      "bind": "ssn3",
+      "bind_target": "visible"
+    },
+    {
+      "type": "slider",
+      "parent_name": "slot3",
+      "name": "sf3",
+      "x": 146,
+      "y": 24,
+      "w": 250,
+      "h": 44,
+      "min": 0,
+      "max": 120,
+      "value": 100,
+      "track_size": 14,
+      "radius": 14,
+      "bg_color": "#23262B",
+      "fg_color": "#37D0FF",
+      "knob_color": "#F2F2F0",
+      "callback": "slot_fader3_cb",
+      "events": [
+        {
+          "event": "value",
+          "action": "call",
+          "arg": 0
+        },
+        {
+          "event": "release",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "label",
+      "parent_name": "page_mix",
+      "x": 30,
+      "y": 8,
+      "w": 200,
+      "h": 18,
+      "text": "MASTER",
+      "font_size": 12,
+      "fg_color": "#8A8F98",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans.ttf"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_mix",
+      "x": 280,
+      "y": 6,
+      "w": 170,
+      "h": 26,
+      "text": "100",
+      "font_size": 20,
+      "fg_color": "#FF4C01",
+      "text_align": "right",
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "name": "master_value",
+      "bind": "master_value",
+      "bind_target": "text"
+    },
+    {
+      "type": "slider",
+      "parent_name": "page_mix",
+      "name": "master_fader",
+      "x": 30,
+      "y": 30,
+      "w": 420,
+      "h": 44,
+      "min": 0,
+      "max": 100,
+      "value": 100,
+      "track_size": 14,
+      "radius": 14,
+      "bg_color": "#23262B",
+      "fg_color": "#FF4C01",
+      "knob_color": "#F2F2F0",
+      "callback": "master_fader_cb",
+      "events": [
+        {
+          "event": "value",
+          "action": "call",
+          "arg": 0
+        },
+        {
+          "event": "release",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "container",
+      "parent_name": "page_mix",
+      "name": "clip_off",
+      "x": 30,
+      "y": 80,
+      "w": 46,
+      "h": 20,
+      "bg_color": "#23262B",
+      "radius": 3,
+      "bind": "clip_off",
+      "bind_target": "visible"
+    },
+    {
+      "type": "container",
+      "parent_name": "page_mix",
+      "name": "clip_on",
+      "x": 30,
+      "y": 80,
+      "w": 46,
+      "h": 20,
+      "bg_color": "#FF2D2D",
+      "radius": 3,
+      "bind": "clip_on",
+      "bind_target": "visible"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_mix",
+      "x": 30,
+      "y": 82,
+      "w": 46,
+      "h": 14,
+      "text": "CLIP",
+      "font_size": 8,
+      "fg_color": "#F2F2F0",
+      "text_align": "center",
+      "font": "fonts/DejaVuSans.ttf"
+    },
+    {
+      "type": "progress",
+      "parent_name": "page_mix",
+      "name": "lvl_g",
+      "x": 86,
+      "y": 80,
+      "w": 182,
+      "h": 20,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#3ADB6B",
+      "radius": 10
+    },
+    {
+      "type": "progress",
+      "parent_name": "page_mix",
+      "name": "lvl_y",
+      "x": 268,
+      "y": 80,
+      "w": 109,
+      "h": 20,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#FFD24A",
+      "radius": 10
+    },
+    {
+      "type": "progress",
+      "parent_name": "page_mix",
+      "name": "lvl_r",
+      "x": 377,
+      "y": 80,
+      "w": 73,
+      "h": 20,
+      "min": 0,
+      "max": 255,
+      "value": 0,
+      "bg_color": "#23262B",
+      "fg_color": "#FF4C01",
+      "radius": 10
+    },
+    {
+      "type": "container",
+      "parent_name": "page_mix",
+      "name": "lvl_tick_0",
+      "x": 86,
+      "y": 102,
+      "w": 1,
+      "h": 5,
+      "bg_color": "#3A3F47"
+    },
+    {
+      "type": "container",
+      "parent_name": "page_mix",
+      "name": "lvl_tick_1",
+      "x": 177,
+      "y": 102,
+      "w": 1,
+      "h": 5,
+      "bg_color": "#3A3F47"
+    },
+    {
+      "type": "container",
+      "parent_name": "page_mix",
+      "name": "lvl_tick_2",
+      "x": 268,
+      "y": 102,
+      "w": 1,
+      "h": 5,
+      "bg_color": "#3A3F47"
+    },
+    {
+      "type": "container",
+      "parent_name": "page_mix",
+      "name": "lvl_tick_3",
+      "x": 359,
+      "y": 102,
+      "w": 1,
+      "h": 5,
+      "bg_color": "#3A3F47"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_mix",
+      "x": 62,
+      "y": 110,
+      "w": 40,
+      "h": 12,
+      "text": "-48",
+      "font_size": 8,
+      "fg_color": "#8A8F98",
+      "text_align": "right",
+      "font": "fonts/DejaVuSans.ttf"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_mix",
+      "x": 153,
+      "y": 110,
+      "w": 40,
+      "h": 12,
+      "text": "-36",
+      "font_size": 8,
+      "fg_color": "#8A8F98",
+      "text_align": "right",
+      "font": "fonts/DejaVuSans.ttf"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_mix",
+      "x": 244,
+      "y": 110,
+      "w": 40,
+      "h": 12,
+      "text": "-24",
+      "font_size": 8,
+      "fg_color": "#8A8F98",
+      "text_align": "right",
+      "font": "fonts/DejaVuSans.ttf"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_mix",
+      "x": 335,
+      "y": 110,
+      "w": 40,
+      "h": 12,
+      "text": "-12",
+      "font_size": 8,
+      "fg_color": "#8A8F98",
+      "text_align": "right",
+      "font": "fonts/DejaVuSans.ttf"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_mix",
+      "x": 450,
+      "y": 110,
+      "w": 40,
+      "h": 12,
+      "text": "0",
+      "font_size": 8,
+      "fg_color": "#8A8F98",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans.ttf"
+    },
+    {
+      "type": "layer",
+      "parent": 0,
+      "name": "page_order",
+      "x": 1920,
+      "y": 0,
+      "w": 480,
+      "h": 480,
+      "bg_color": "#0B0C0E"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_order",
+      "x": 30,
+      "y": 20,
+      "w": 300,
+      "h": 30,
+      "text": "SEQUENCER",
+      "font_size": 22,
+      "fg_color": "#F2F2F0",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans-Bold.ttf"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_order",
+      "x": 280,
+      "y": 26,
+      "w": 170,
+      "h": 18,
+      "text": "16 PATTERNS",
+      "font_size": 11,
+      "fg_color": "#8A8F98",
+      "text_align": "right",
+      "font": "fonts/DejaVuSans.ttf"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_order",
+      "x": 30,
+      "y": 68,
+      "w": 200,
+      "h": 18,
+      "text": "ORDER STEP",
+      "font_size": 12,
+      "fg_color": "#8A8F98",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans.ttf"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_order",
+      "x": 310,
+      "y": 56,
+      "w": 140,
+      "h": 38,
+      "text": "12 / 44",
+      "font_size": 24,
+      "fg_color": "#FF4C01",
+      "text_align": "right",
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "name": "step_value",
+      "bind": "step_value",
+      "bind_target": "text"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "step_prev",
+      "x": 30,
+      "y": 94,
+      "w": 74,
+      "h": 48,
+      "text": "<",
+      "font_size": 20,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "step_prev_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "step_next",
+      "x": 114,
+      "y": 94,
+      "w": 74,
+      "h": 48,
+      "text": ">",
+      "font_size": 20,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "step_next_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "label",
+      "parent_name": "page_order",
+      "x": 30,
+      "y": 160,
+      "w": 200,
+      "h": 18,
+      "text": "PATTERN",
+      "font_size": 12,
+      "fg_color": "#8A8F98",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans.ttf"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_order",
+      "x": 310,
+      "y": 148,
+      "w": 140,
+      "h": 38,
+      "text": "0C",
+      "font_size": 24,
+      "fg_color": "#37D0FF",
+      "text_align": "right",
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "name": "pat_value",
+      "bind": "pat_value",
+      "bind_target": "text"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pat_prev",
+      "x": 30,
+      "y": 186,
+      "w": 74,
+      "h": 48,
+      "text": "<",
+      "font_size": 20,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pat_prev_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "pat_next",
+      "x": 114,
+      "y": 186,
+      "w": 74,
+      "h": 48,
+      "text": ">",
+      "font_size": 20,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "pat_next_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "apply_btn",
+      "x": 196,
+      "y": 186,
+      "w": 132,
+      "h": 48,
+      "text": "APPLY",
+      "font_size": 15,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "apply_pattern_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "label",
+      "parent_name": "page_order",
+      "x": 30,
+      "y": 250,
+      "w": 420,
+      "h": 110,
+      "text": "",
+      "font_size": 12,
+      "fg_color": "#F2F2F0",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans.ttf",
+      "name": "order_list",
+      "bind": "order_list",
+      "bind_target": "text"
+    },
+    {
+      "type": "label",
+      "parent_name": "page_order",
+      "x": 30,
+      "y": 366,
+      "w": 420,
+      "h": 18,
+      "text": "ORD 12  PAT 0C  ROW 27",
+      "font_size": 11,
+      "fg_color": "#8A8F98",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans.ttf",
+      "name": "seq_pos",
+      "bind": "seq_pos",
+      "bind_target": "text"
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "order_play",
+      "x": 30,
+      "y": 396,
+      "w": 136,
+      "h": 52,
+      "text": "PLAY",
+      "font_size": 15,
+      "fg_color": "#0B0C0E",
+      "bg_color": "#FF4C01",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "order_play_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "order_pause",
+      "x": 176,
+      "y": 396,
+      "w": 136,
+      "h": 52,
+      "text": "PAUSE",
+      "font_size": 15,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "order_pause_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "parent_name": "page_order",
+      "name": "order_restart",
+      "x": 322,
+      "y": 396,
+      "w": 128,
+      "h": 52,
+      "text": "RESTART",
+      "font_size": 15,
+      "fg_color": "#F2F2F0",
+      "bg_color": "#1B1E24",
+      "radius": 8,
+      "font": "fonts/DejaVuSans-Bold.ttf",
+      "callback": "order_restart_cb",
+      "events": [
+        {
+          "event": "click",
+          "action": "call",
+          "arg": 0
+        }
+      ]
+    },
+    {
+      "type": "label",
+      "parent_name": "page_order",
+      "x": 30,
+      "y": 454,
+      "w": 420,
+      "h": 14,
+      "text": "TAP < > TO EDIT ORDER \u00b7 APPLY WRITES PATTERN",
+      "font_size": 10,
+      "fg_color": "#4A5058",
+      "text_align": "left",
+      "font": "fonts/DejaVuSans.ttf"
+    },
+    {
+      "type": "container",
+      "parent": -1,
+      "x": 204,
+      "y": 456,
+      "w": 8,
+      "h": 8,
+      "bg_color": "#3A3F47",
+      "radius": 4,
+      "name": "dot_off_0"
+    },
+    {
+      "type": "container",
+      "parent": -1,
+      "x": 204,
+      "y": 456,
+      "w": 8,
+      "h": 8,
+      "bg_color": "#F2F2F0",
+      "radius": 4,
+      "name": "dot_on_0",
+      "bind": "dot_on_0",
+      "bind_target": "visible"
+    },
+    {
+      "type": "container",
+      "parent": -1,
+      "x": 220,
+      "y": 456,
+      "w": 8,
+      "h": 8,
+      "bg_color": "#3A3F47",
+      "radius": 4,
+      "name": "dot_off_1"
+    },
+    {
+      "type": "container",
+      "parent": -1,
+      "x": 220,
+      "y": 456,
+      "w": 8,
+      "h": 8,
+      "bg_color": "#F2F2F0",
+      "radius": 4,
+      "name": "dot_on_1",
+      "bind": "dot_on_1",
+      "bind_target": "visible"
+    },
+    {
+      "type": "container",
+      "parent": -1,
+      "x": 236,
+      "y": 456,
+      "w": 8,
+      "h": 8,
+      "bg_color": "#3A3F47",
+      "radius": 4,
+      "name": "dot_off_2"
+    },
+    {
+      "type": "container",
+      "parent": -1,
+      "x": 236,
+      "y": 456,
+      "w": 8,
+      "h": 8,
+      "bg_color": "#F2F2F0",
+      "radius": 4,
+      "name": "dot_on_2",
+      "bind": "dot_on_2",
+      "bind_target": "visible"
+    },
+    {
+      "type": "container",
+      "parent": -1,
+      "x": 252,
+      "y": 456,
+      "w": 8,
+      "h": 8,
+      "bg_color": "#3A3F47",
+      "radius": 4,
+      "name": "dot_off_3"
+    },
+    {
+      "type": "container",
+      "parent": -1,
+      "x": 252,
+      "y": 456,
+      "w": 8,
+      "h": 8,
+      "bg_color": "#F2F2F0",
+      "radius": 4,
+      "name": "dot_on_3",
+      "bind": "dot_on_3",
+      "bind_target": "visible"
+    },
+    {
+      "type": "container",
+      "parent": -1,
+      "x": 268,
+      "y": 456,
+      "w": 8,
+      "h": 8,
+      "bg_color": "#3A3F47",
+      "radius": 4,
+      "name": "dot_off_4"
+    },
+    {
+      "type": "container",
+      "parent": -1,
+      "x": 268,
+      "y": 456,
+      "w": 8,
+      "h": 8,
+      "bg_color": "#F2F2F0",
+      "radius": 4,
+      "name": "dot_on_4",
+      "bind": "dot_on_4",
+      "bind_target": "visible"
+    }
+  ]
+}
