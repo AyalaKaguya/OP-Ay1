@@ -3,7 +3,7 @@
 - source: `projects\aryx\components\app_tracker\ui\tracker.json`
 - gspc version: 0.6.1
 - profile: host_rgb565 (rgb565, resource_alignment=64, id=0x6942ba48)
-- content_id: 0x2530f7ba
+- content_id: 0xb100b7fb
 - screen: 480x480 scene_id=0
 
 ## Outputs
@@ -57,7 +57,7 @@ Registered images are addressable by this scene, including hidden controls and t
 
 ## Fonts
 
-- resource_id 0x6bdd6edc: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @22px
+- resource_id 0x908bcf8e: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @22px
 - resource_id 0x9ac39459: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans.ttf` @11px
 - resource_id 0xa6a13226: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @12px
 - resource_id 0x4cc5746: `\\?\C:\Users\ayala\Desktop\OP-Ay1\projects\aryx\components\app_tracker\ui\fonts\DejaVuSans-Bold.ttf` @26px

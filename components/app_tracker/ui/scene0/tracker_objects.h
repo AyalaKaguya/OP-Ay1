@@ -3569,612 +3569,612 @@ static const gsp_component_directory_t gsp_obj_directory_tracker = {
     .property_routes = gsp_obj_property_routes_tracker, .property_route_count = 24,
 };
 
-static const esp_gsp_visibility_target_t gsp_tracker_pages_visibility = { .scene_content_id = 623966138u, .bounds = {0,0,480,480}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pages_visibility = { .scene_content_id = 2969614331u, .bounds = {0,0,480,480}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pages_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pages_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_page_waves_visibility_slots[] = {125};
-static const esp_gsp_visibility_target_t gsp_tracker_page_waves_visibility = { .scene_content_id = 623966138u, .bounds = {0,0,480,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_waves_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_page_waves_visibility = { .scene_content_id = 2969614331u, .bounds = {0,0,480,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_waves_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_page_waves_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_page_waves_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_waves_canvas_visibility_slots[] = {125};
-static const esp_gsp_visibility_target_t gsp_tracker_waves_canvas_visibility = { .scene_content_id = 623966138u, .bounds = {0,0,480,432}, .group_ref = 1, .visible_slots = gsp_tracker_waves_canvas_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_waves_canvas_visibility = { .scene_content_id = 2969614331u, .bounds = {0,0,480,432}, .group_ref = 1, .visible_slots = gsp_tracker_waves_canvas_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_waves_canvas_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_waves_canvas_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_page_pattern_visibility_slots[] = {126};
-static const esp_gsp_visibility_target_t gsp_tracker_page_pattern_visibility = { .scene_content_id = 623966138u, .bounds = {480,0,960,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_pattern_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_page_pattern_visibility = { .scene_content_id = 2969614331u, .bounds = {480,0,960,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_pattern_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_page_pattern_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_page_pattern_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_grid_canvas_visibility_slots[] = {126};
-static const esp_gsp_visibility_target_t gsp_tracker_grid_canvas_visibility = { .scene_content_id = 623966138u, .bounds = {480,0,960,432}, .group_ref = 1, .visible_slots = gsp_tracker_grid_canvas_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_grid_canvas_visibility = { .scene_content_id = 2969614331u, .bounds = {480,0,960,432}, .group_ref = 1, .visible_slots = gsp_tracker_grid_canvas_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_grid_canvas_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_grid_canvas_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_page_playback_visibility_slots[] = {127};
-static const esp_gsp_visibility_target_t gsp_tracker_page_playback_visibility = { .scene_content_id = 623966138u, .bounds = {960,0,1440,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_playback_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_page_playback_visibility = { .scene_content_id = 2969614331u, .bounds = {960,0,1440,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_playback_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_page_playback_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_page_playback_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pb_pos_visibility_slots[] = {127};
-static const esp_gsp_visibility_target_t gsp_tracker_pb_pos_visibility = { .scene_content_id = 623966138u, .bounds = {1210,46,1410,64}, .group_ref = 1, .visible_slots = gsp_tracker_pb_pos_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pb_pos_visibility = { .scene_content_id = 2969614331u, .bounds = {1210,46,1410,64}, .group_ref = 1, .visible_slots = gsp_tracker_pb_pos_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pb_pos_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pb_pos_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_nav_hit_visibility_slots[] = {127};
-static const esp_gsp_visibility_target_t gsp_tracker_nav_hit_visibility = { .scene_content_id = 623966138u, .bounds = {990,130,1126,226}, .group_ref = 1, .visible_slots = gsp_tracker_nav_hit_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_nav_hit_visibility = { .scene_content_id = 2969614331u, .bounds = {990,130,1126,226}, .group_ref = 1, .visible_slots = gsp_tracker_nav_hit_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_nav_hit_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_nav_hit_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_nav_icon_visibility_slots[] = {127};
-static const esp_gsp_visibility_target_t gsp_tracker_nav_icon_visibility = { .scene_content_id = 623966138u, .bounds = {990,156,1126,200}, .group_ref = 1, .visible_slots = gsp_tracker_nav_icon_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_nav_icon_visibility = { .scene_content_id = 2969614331u, .bounds = {990,156,1126,200}, .group_ref = 1, .visible_slots = gsp_tracker_nav_icon_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_nav_icon_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_nav_icon_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pp_hit_visibility_slots[] = {127};
-static const esp_gsp_visibility_target_t gsp_tracker_pp_hit_visibility = { .scene_content_id = 623966138u, .bounds = {1136,130,1272,226}, .group_ref = 1, .visible_slots = gsp_tracker_pp_hit_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pp_hit_visibility = { .scene_content_id = 2969614331u, .bounds = {1136,130,1272,226}, .group_ref = 1, .visible_slots = gsp_tracker_pp_hit_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pp_hit_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pp_hit_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pp_play_text_visibility_slots[] = {127};
-static const esp_gsp_visibility_target_t gsp_tracker_pp_play_text_visibility = { .scene_content_id = 623966138u, .bounds = {1136,156,1272,200}, .group_ref = 1, .visible_slots = gsp_tracker_pp_play_text_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pp_play_text_visibility = { .scene_content_id = 2969614331u, .bounds = {1136,156,1272,200}, .group_ref = 1, .visible_slots = gsp_tracker_pp_play_text_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pp_play_text_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pp_play_text_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pp_pause_text_visibility_slots[] = {127};
-static const esp_gsp_visibility_target_t gsp_tracker_pp_pause_text_visibility = { .scene_content_id = 623966138u, .bounds = {1136,156,1272,200}, .group_ref = 1, .visible_slots = gsp_tracker_pp_pause_text_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pp_pause_text_visibility = { .scene_content_id = 2969614331u, .bounds = {1136,156,1272,200}, .group_ref = 1, .visible_slots = gsp_tracker_pp_pause_text_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pp_pause_text_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pp_pause_text_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_rec_btn_visibility_slots[] = {127};
-static const esp_gsp_visibility_target_t gsp_tracker_rec_btn_visibility = { .scene_content_id = 623966138u, .bounds = {1282,130,1410,226}, .group_ref = 1, .visible_slots = gsp_tracker_rec_btn_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_rec_btn_visibility = { .scene_content_id = 2969614331u, .bounds = {1282,130,1410,226}, .group_ref = 1, .visible_slots = gsp_tracker_rec_btn_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_rec_btn_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_rec_btn_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pb_speed_value_visibility_slots[] = {127};
-static const esp_gsp_visibility_target_t gsp_tracker_pb_speed_value_visibility = { .scene_content_id = 623966138u, .bounds = {1270,272,1410,310}, .group_ref = 1, .visible_slots = gsp_tracker_pb_speed_value_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pb_speed_value_visibility = { .scene_content_id = 2969614331u, .bounds = {1270,272,1410,310}, .group_ref = 1, .visible_slots = gsp_tracker_pb_speed_value_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pb_speed_value_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pb_speed_value_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_speed_05_visibility_slots[] = {127};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_05_visibility = { .scene_content_id = 623966138u, .bounds = {990,330,1090,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_05_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_speed_05_visibility = { .scene_content_id = 2969614331u, .bounds = {990,330,1090,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_05_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_05_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_05_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_speed_05_sel_visibility_slots[] = {128,127};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_05_sel_visibility = { .scene_content_id = 623966138u, .bounds = {1002,378,1078,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_05_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_speed_05_sel_visibility = { .scene_content_id = 2969614331u, .bounds = {1002,378,1078,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_05_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_05_sel_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_05_sel_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_speed_10_visibility_slots[] = {127};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_10_visibility = { .scene_content_id = 623966138u, .bounds = {1098,330,1198,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_10_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_speed_10_visibility = { .scene_content_id = 2969614331u, .bounds = {1098,330,1198,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_10_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_10_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_10_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_speed_10_sel_visibility_slots[] = {129,127};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_10_sel_visibility = { .scene_content_id = 623966138u, .bounds = {1110,378,1186,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_10_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_speed_10_sel_visibility = { .scene_content_id = 2969614331u, .bounds = {1110,378,1186,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_10_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_10_sel_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_10_sel_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_speed_15_visibility_slots[] = {127};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_15_visibility = { .scene_content_id = 623966138u, .bounds = {1206,330,1306,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_15_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_speed_15_visibility = { .scene_content_id = 2969614331u, .bounds = {1206,330,1306,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_15_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_15_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_15_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_speed_15_sel_visibility_slots[] = {130,127};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_15_sel_visibility = { .scene_content_id = 623966138u, .bounds = {1218,378,1294,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_15_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_speed_15_sel_visibility = { .scene_content_id = 2969614331u, .bounds = {1218,378,1294,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_15_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_15_sel_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_15_sel_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_speed_20_visibility_slots[] = {127};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_20_visibility = { .scene_content_id = 623966138u, .bounds = {1314,330,1410,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_20_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_speed_20_visibility = { .scene_content_id = 2969614331u, .bounds = {1314,330,1410,386}, .group_ref = 1, .visible_slots = gsp_tracker_speed_20_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_20_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_20_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_speed_20_sel_visibility_slots[] = {131,127};
-static const esp_gsp_visibility_target_t gsp_tracker_speed_20_sel_visibility = { .scene_content_id = 623966138u, .bounds = {1326,378,1398,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_20_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_speed_20_sel_visibility = { .scene_content_id = 2969614331u, .bounds = {1326,378,1398,381}, .group_ref = 1, .visible_slots = gsp_tracker_speed_20_sel_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_speed_20_sel_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_speed_20_sel_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_page_mix_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_page_mix_visibility = { .scene_content_id = 623966138u, .bounds = {1440,0,1920,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_mix_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_page_mix_visibility = { .scene_content_id = 2969614331u, .bounds = {1440,0,1920,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_mix_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_page_mix_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_page_mix_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_mix_view_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_mix_view_visibility = { .scene_content_id = 623966138u, .bounds = {1440,150,1920,442}, .group_ref = 1, .visible_slots = gsp_tracker_mix_view_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_mix_view_visibility = { .scene_content_id = 2969614331u, .bounds = {1440,150,1920,442}, .group_ref = 1, .visible_slots = gsp_tracker_mix_view_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_mix_view_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_mix_view_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_slot0_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_slot0_visibility = { .scene_content_id = 623966138u, .bounds = {1440,150,1920,220}, .group_ref = 3, .visible_slots = gsp_tracker_slot0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_slot0_visibility = { .scene_content_id = 2969614331u, .bounds = {1440,150,1920,220}, .group_ref = 3, .visible_slots = gsp_tracker_slot0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot0_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_slot0_name_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_slot0_name_visibility = { .scene_content_id = 623966138u, .bounds = {1460,154,1590,172}, .group_ref = 3, .visible_slots = gsp_tracker_slot0_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_slot0_name_visibility = { .scene_content_id = 2969614331u, .bounds = {1460,154,1590,172}, .group_ref = 3, .visible_slots = gsp_tracker_slot0_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot0_name_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot0_name_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_m0_g_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_m0_g_visibility = { .scene_content_id = 623966138u, .bounds = {1596,157,1790,171}, .group_ref = 3, .visible_slots = gsp_tracker_m0_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_m0_g_visibility = { .scene_content_id = 2969614331u, .bounds = {1596,157,1790,171}, .group_ref = 3, .visible_slots = gsp_tracker_m0_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m0_g_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m0_g_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_m0_y_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_m0_y_visibility = { .scene_content_id = 623966138u, .bounds = {1790,157,1838,171}, .group_ref = 3, .visible_slots = gsp_tracker_m0_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_m0_y_visibility = { .scene_content_id = 2969614331u, .bounds = {1790,157,1838,171}, .group_ref = 3, .visible_slots = gsp_tracker_m0_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m0_y_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m0_y_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_m0_r_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_m0_r_visibility = { .scene_content_id = 623966138u, .bounds = {1838,157,1854,171}, .group_ref = 3, .visible_slots = gsp_tracker_m0_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_m0_r_visibility = { .scene_content_id = 2969614331u, .bounds = {1838,157,1854,171}, .group_ref = 3, .visible_slots = gsp_tracker_m0_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m0_r_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m0_r_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_smo0_visibility_slots[] = {45,132};
-static const esp_gsp_visibility_target_t gsp_tracker_smo0_visibility = { .scene_content_id = 623966138u, .bounds = {1460,174,1514,218}, .group_ref = 3, .visible_slots = gsp_tracker_smo0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_smo0_visibility = { .scene_content_id = 2969614331u, .bounds = {1460,174,1514,218}, .group_ref = 3, .visible_slots = gsp_tracker_smo0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smo0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smo0_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_smn0_visibility_slots[] = {46,132};
-static const esp_gsp_visibility_target_t gsp_tracker_smn0_visibility = { .scene_content_id = 623966138u, .bounds = {1460,174,1514,218}, .group_ref = 3, .visible_slots = gsp_tracker_smn0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_smn0_visibility = { .scene_content_id = 2969614331u, .bounds = {1460,174,1514,218}, .group_ref = 3, .visible_slots = gsp_tracker_smn0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smn0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smn0_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_sso0_visibility_slots[] = {47,132};
-static const esp_gsp_visibility_target_t gsp_tracker_sso0_visibility = { .scene_content_id = 623966138u, .bounds = {1522,174,1576,218}, .group_ref = 3, .visible_slots = gsp_tracker_sso0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_sso0_visibility = { .scene_content_id = 2969614331u, .bounds = {1522,174,1576,218}, .group_ref = 3, .visible_slots = gsp_tracker_sso0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sso0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sso0_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_ssn0_visibility_slots[] = {48,132};
-static const esp_gsp_visibility_target_t gsp_tracker_ssn0_visibility = { .scene_content_id = 623966138u, .bounds = {1522,174,1576,218}, .group_ref = 3, .visible_slots = gsp_tracker_ssn0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_ssn0_visibility = { .scene_content_id = 2969614331u, .bounds = {1522,174,1576,218}, .group_ref = 3, .visible_slots = gsp_tracker_ssn0_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_ssn0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_ssn0_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_sf0_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_sf0_visibility = { .scene_content_id = 623966138u, .bounds = {1586,174,1836,218}, .group_ref = 3, .visible_slots = gsp_tracker_sf0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_sf0_visibility = { .scene_content_id = 2969614331u, .bounds = {1586,174,1836,218}, .group_ref = 3, .visible_slots = gsp_tracker_sf0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sf0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sf0_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_slot0_db_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_slot0_db_visibility = { .scene_content_id = 623966138u, .bounds = {1856,152,1916,170}, .group_ref = 3, .visible_slots = gsp_tracker_slot0_db_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_slot0_db_visibility = { .scene_content_id = 2969614331u, .bounds = {1856,152,1916,170}, .group_ref = 3, .visible_slots = gsp_tracker_slot0_db_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot0_db_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot0_db_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_slot1_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_slot1_visibility = { .scene_content_id = 623966138u, .bounds = {1440,224,1920,294}, .group_ref = 4, .visible_slots = gsp_tracker_slot1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_slot1_visibility = { .scene_content_id = 2969614331u, .bounds = {1440,224,1920,294}, .group_ref = 4, .visible_slots = gsp_tracker_slot1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot1_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_slot1_name_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_slot1_name_visibility = { .scene_content_id = 623966138u, .bounds = {1460,228,1590,246}, .group_ref = 4, .visible_slots = gsp_tracker_slot1_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_slot1_name_visibility = { .scene_content_id = 2969614331u, .bounds = {1460,228,1590,246}, .group_ref = 4, .visible_slots = gsp_tracker_slot1_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot1_name_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot1_name_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_m1_g_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_m1_g_visibility = { .scene_content_id = 623966138u, .bounds = {1596,231,1790,245}, .group_ref = 4, .visible_slots = gsp_tracker_m1_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_m1_g_visibility = { .scene_content_id = 2969614331u, .bounds = {1596,231,1790,245}, .group_ref = 4, .visible_slots = gsp_tracker_m1_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m1_g_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m1_g_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_m1_y_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_m1_y_visibility = { .scene_content_id = 623966138u, .bounds = {1790,231,1838,245}, .group_ref = 4, .visible_slots = gsp_tracker_m1_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_m1_y_visibility = { .scene_content_id = 2969614331u, .bounds = {1790,231,1838,245}, .group_ref = 4, .visible_slots = gsp_tracker_m1_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m1_y_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m1_y_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_m1_r_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_m1_r_visibility = { .scene_content_id = 623966138u, .bounds = {1838,231,1854,245}, .group_ref = 4, .visible_slots = gsp_tracker_m1_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_m1_r_visibility = { .scene_content_id = 2969614331u, .bounds = {1838,231,1854,245}, .group_ref = 4, .visible_slots = gsp_tracker_m1_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m1_r_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m1_r_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_smo1_visibility_slots[] = {49,132};
-static const esp_gsp_visibility_target_t gsp_tracker_smo1_visibility = { .scene_content_id = 623966138u, .bounds = {1460,248,1514,292}, .group_ref = 4, .visible_slots = gsp_tracker_smo1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_smo1_visibility = { .scene_content_id = 2969614331u, .bounds = {1460,248,1514,292}, .group_ref = 4, .visible_slots = gsp_tracker_smo1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smo1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smo1_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_smn1_visibility_slots[] = {50,132};
-static const esp_gsp_visibility_target_t gsp_tracker_smn1_visibility = { .scene_content_id = 623966138u, .bounds = {1460,248,1514,292}, .group_ref = 4, .visible_slots = gsp_tracker_smn1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_smn1_visibility = { .scene_content_id = 2969614331u, .bounds = {1460,248,1514,292}, .group_ref = 4, .visible_slots = gsp_tracker_smn1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smn1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smn1_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_sso1_visibility_slots[] = {51,132};
-static const esp_gsp_visibility_target_t gsp_tracker_sso1_visibility = { .scene_content_id = 623966138u, .bounds = {1522,248,1576,292}, .group_ref = 4, .visible_slots = gsp_tracker_sso1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_sso1_visibility = { .scene_content_id = 2969614331u, .bounds = {1522,248,1576,292}, .group_ref = 4, .visible_slots = gsp_tracker_sso1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sso1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sso1_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_ssn1_visibility_slots[] = {52,132};
-static const esp_gsp_visibility_target_t gsp_tracker_ssn1_visibility = { .scene_content_id = 623966138u, .bounds = {1522,248,1576,292}, .group_ref = 4, .visible_slots = gsp_tracker_ssn1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_ssn1_visibility = { .scene_content_id = 2969614331u, .bounds = {1522,248,1576,292}, .group_ref = 4, .visible_slots = gsp_tracker_ssn1_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_ssn1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_ssn1_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_sf1_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_sf1_visibility = { .scene_content_id = 623966138u, .bounds = {1586,248,1836,292}, .group_ref = 4, .visible_slots = gsp_tracker_sf1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_sf1_visibility = { .scene_content_id = 2969614331u, .bounds = {1586,248,1836,292}, .group_ref = 4, .visible_slots = gsp_tracker_sf1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sf1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sf1_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_slot1_db_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_slot1_db_visibility = { .scene_content_id = 623966138u, .bounds = {1856,226,1916,244}, .group_ref = 4, .visible_slots = gsp_tracker_slot1_db_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_slot1_db_visibility = { .scene_content_id = 2969614331u, .bounds = {1856,226,1916,244}, .group_ref = 4, .visible_slots = gsp_tracker_slot1_db_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot1_db_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot1_db_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_slot2_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_slot2_visibility = { .scene_content_id = 623966138u, .bounds = {1440,298,1920,368}, .group_ref = 5, .visible_slots = gsp_tracker_slot2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_slot2_visibility = { .scene_content_id = 2969614331u, .bounds = {1440,298,1920,368}, .group_ref = 5, .visible_slots = gsp_tracker_slot2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot2_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_slot2_name_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_slot2_name_visibility = { .scene_content_id = 623966138u, .bounds = {1460,302,1590,320}, .group_ref = 5, .visible_slots = gsp_tracker_slot2_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_slot2_name_visibility = { .scene_content_id = 2969614331u, .bounds = {1460,302,1590,320}, .group_ref = 5, .visible_slots = gsp_tracker_slot2_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot2_name_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot2_name_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_m2_g_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_m2_g_visibility = { .scene_content_id = 623966138u, .bounds = {1596,305,1790,319}, .group_ref = 5, .visible_slots = gsp_tracker_m2_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_m2_g_visibility = { .scene_content_id = 2969614331u, .bounds = {1596,305,1790,319}, .group_ref = 5, .visible_slots = gsp_tracker_m2_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m2_g_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m2_g_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_m2_y_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_m2_y_visibility = { .scene_content_id = 623966138u, .bounds = {1790,305,1838,319}, .group_ref = 5, .visible_slots = gsp_tracker_m2_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_m2_y_visibility = { .scene_content_id = 2969614331u, .bounds = {1790,305,1838,319}, .group_ref = 5, .visible_slots = gsp_tracker_m2_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m2_y_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m2_y_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_m2_r_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_m2_r_visibility = { .scene_content_id = 623966138u, .bounds = {1838,305,1854,319}, .group_ref = 5, .visible_slots = gsp_tracker_m2_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_m2_r_visibility = { .scene_content_id = 2969614331u, .bounds = {1838,305,1854,319}, .group_ref = 5, .visible_slots = gsp_tracker_m2_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m2_r_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m2_r_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_smo2_visibility_slots[] = {53,132};
-static const esp_gsp_visibility_target_t gsp_tracker_smo2_visibility = { .scene_content_id = 623966138u, .bounds = {1460,322,1514,366}, .group_ref = 5, .visible_slots = gsp_tracker_smo2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_smo2_visibility = { .scene_content_id = 2969614331u, .bounds = {1460,322,1514,366}, .group_ref = 5, .visible_slots = gsp_tracker_smo2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smo2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smo2_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_smn2_visibility_slots[] = {54,132};
-static const esp_gsp_visibility_target_t gsp_tracker_smn2_visibility = { .scene_content_id = 623966138u, .bounds = {1460,322,1514,366}, .group_ref = 5, .visible_slots = gsp_tracker_smn2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_smn2_visibility = { .scene_content_id = 2969614331u, .bounds = {1460,322,1514,366}, .group_ref = 5, .visible_slots = gsp_tracker_smn2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smn2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smn2_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_sso2_visibility_slots[] = {55,132};
-static const esp_gsp_visibility_target_t gsp_tracker_sso2_visibility = { .scene_content_id = 623966138u, .bounds = {1522,322,1576,366}, .group_ref = 5, .visible_slots = gsp_tracker_sso2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_sso2_visibility = { .scene_content_id = 2969614331u, .bounds = {1522,322,1576,366}, .group_ref = 5, .visible_slots = gsp_tracker_sso2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sso2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sso2_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_ssn2_visibility_slots[] = {56,132};
-static const esp_gsp_visibility_target_t gsp_tracker_ssn2_visibility = { .scene_content_id = 623966138u, .bounds = {1522,322,1576,366}, .group_ref = 5, .visible_slots = gsp_tracker_ssn2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_ssn2_visibility = { .scene_content_id = 2969614331u, .bounds = {1522,322,1576,366}, .group_ref = 5, .visible_slots = gsp_tracker_ssn2_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_ssn2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_ssn2_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_sf2_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_sf2_visibility = { .scene_content_id = 623966138u, .bounds = {1586,322,1836,366}, .group_ref = 5, .visible_slots = gsp_tracker_sf2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_sf2_visibility = { .scene_content_id = 2969614331u, .bounds = {1586,322,1836,366}, .group_ref = 5, .visible_slots = gsp_tracker_sf2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sf2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sf2_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_slot2_db_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_slot2_db_visibility = { .scene_content_id = 623966138u, .bounds = {1856,300,1916,318}, .group_ref = 5, .visible_slots = gsp_tracker_slot2_db_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_slot2_db_visibility = { .scene_content_id = 2969614331u, .bounds = {1856,300,1916,318}, .group_ref = 5, .visible_slots = gsp_tracker_slot2_db_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot2_db_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot2_db_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_slot3_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_slot3_visibility = { .scene_content_id = 623966138u, .bounds = {1440,372,1920,442}, .group_ref = 6, .visible_slots = gsp_tracker_slot3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_slot3_visibility = { .scene_content_id = 2969614331u, .bounds = {1440,372,1920,442}, .group_ref = 6, .visible_slots = gsp_tracker_slot3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot3_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_slot3_name_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_slot3_name_visibility = { .scene_content_id = 623966138u, .bounds = {1460,376,1590,394}, .group_ref = 6, .visible_slots = gsp_tracker_slot3_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_slot3_name_visibility = { .scene_content_id = 2969614331u, .bounds = {1460,376,1590,394}, .group_ref = 6, .visible_slots = gsp_tracker_slot3_name_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot3_name_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot3_name_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_m3_g_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_m3_g_visibility = { .scene_content_id = 623966138u, .bounds = {1596,379,1790,393}, .group_ref = 6, .visible_slots = gsp_tracker_m3_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_m3_g_visibility = { .scene_content_id = 2969614331u, .bounds = {1596,379,1790,393}, .group_ref = 6, .visible_slots = gsp_tracker_m3_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m3_g_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m3_g_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_m3_y_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_m3_y_visibility = { .scene_content_id = 623966138u, .bounds = {1790,379,1838,393}, .group_ref = 6, .visible_slots = gsp_tracker_m3_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_m3_y_visibility = { .scene_content_id = 2969614331u, .bounds = {1790,379,1838,393}, .group_ref = 6, .visible_slots = gsp_tracker_m3_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m3_y_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m3_y_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_m3_r_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_m3_r_visibility = { .scene_content_id = 623966138u, .bounds = {1838,379,1854,393}, .group_ref = 6, .visible_slots = gsp_tracker_m3_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_m3_r_visibility = { .scene_content_id = 2969614331u, .bounds = {1838,379,1854,393}, .group_ref = 6, .visible_slots = gsp_tracker_m3_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_m3_r_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_m3_r_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_smo3_visibility_slots[] = {57,132};
-static const esp_gsp_visibility_target_t gsp_tracker_smo3_visibility = { .scene_content_id = 623966138u, .bounds = {1460,396,1514,440}, .group_ref = 6, .visible_slots = gsp_tracker_smo3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_smo3_visibility = { .scene_content_id = 2969614331u, .bounds = {1460,396,1514,440}, .group_ref = 6, .visible_slots = gsp_tracker_smo3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smo3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smo3_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_smn3_visibility_slots[] = {58,132};
-static const esp_gsp_visibility_target_t gsp_tracker_smn3_visibility = { .scene_content_id = 623966138u, .bounds = {1460,396,1514,440}, .group_ref = 6, .visible_slots = gsp_tracker_smn3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_smn3_visibility = { .scene_content_id = 2969614331u, .bounds = {1460,396,1514,440}, .group_ref = 6, .visible_slots = gsp_tracker_smn3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_smn3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_smn3_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_sso3_visibility_slots[] = {59,132};
-static const esp_gsp_visibility_target_t gsp_tracker_sso3_visibility = { .scene_content_id = 623966138u, .bounds = {1522,396,1576,440}, .group_ref = 6, .visible_slots = gsp_tracker_sso3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_sso3_visibility = { .scene_content_id = 2969614331u, .bounds = {1522,396,1576,440}, .group_ref = 6, .visible_slots = gsp_tracker_sso3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sso3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sso3_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_ssn3_visibility_slots[] = {60,132};
-static const esp_gsp_visibility_target_t gsp_tracker_ssn3_visibility = { .scene_content_id = 623966138u, .bounds = {1522,396,1576,440}, .group_ref = 6, .visible_slots = gsp_tracker_ssn3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_ssn3_visibility = { .scene_content_id = 2969614331u, .bounds = {1522,396,1576,440}, .group_ref = 6, .visible_slots = gsp_tracker_ssn3_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_ssn3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_ssn3_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_sf3_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_sf3_visibility = { .scene_content_id = 623966138u, .bounds = {1586,396,1836,440}, .group_ref = 6, .visible_slots = gsp_tracker_sf3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_sf3_visibility = { .scene_content_id = 2969614331u, .bounds = {1586,396,1836,440}, .group_ref = 6, .visible_slots = gsp_tracker_sf3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_sf3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_sf3_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_slot3_db_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_slot3_db_visibility = { .scene_content_id = 623966138u, .bounds = {1856,374,1916,392}, .group_ref = 6, .visible_slots = gsp_tracker_slot3_db_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_slot3_db_visibility = { .scene_content_id = 2969614331u, .bounds = {1856,374,1916,392}, .group_ref = 6, .visible_slots = gsp_tracker_slot3_db_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_slot3_db_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_slot3_db_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_master_value_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_master_value_visibility = { .scene_content_id = 623966138u, .bounds = {1720,6,1890,32}, .group_ref = 1, .visible_slots = gsp_tracker_master_value_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_master_value_visibility = { .scene_content_id = 2969614331u, .bounds = {1720,6,1890,32}, .group_ref = 1, .visible_slots = gsp_tracker_master_value_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_master_value_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_master_value_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_master_fader_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_master_fader_visibility = { .scene_content_id = 623966138u, .bounds = {1470,30,1890,74}, .group_ref = 1, .visible_slots = gsp_tracker_master_fader_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_master_fader_visibility = { .scene_content_id = 2969614331u, .bounds = {1470,30,1890,74}, .group_ref = 1, .visible_slots = gsp_tracker_master_fader_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_master_fader_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_master_fader_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_clip_off_visibility_slots[] = {133,132};
-static const esp_gsp_visibility_target_t gsp_tracker_clip_off_visibility = { .scene_content_id = 623966138u, .bounds = {1470,80,1516,100}, .group_ref = 1, .visible_slots = gsp_tracker_clip_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_clip_off_visibility = { .scene_content_id = 2969614331u, .bounds = {1470,80,1516,100}, .group_ref = 1, .visible_slots = gsp_tracker_clip_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_clip_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_clip_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_clip_on_visibility_slots[] = {134,132};
-static const esp_gsp_visibility_target_t gsp_tracker_clip_on_visibility = { .scene_content_id = 623966138u, .bounds = {1470,80,1516,100}, .group_ref = 1, .visible_slots = gsp_tracker_clip_on_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_clip_on_visibility = { .scene_content_id = 2969614331u, .bounds = {1470,80,1516,100}, .group_ref = 1, .visible_slots = gsp_tracker_clip_on_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_clip_on_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_clip_on_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_lvl_g_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_g_visibility = { .scene_content_id = 623966138u, .bounds = {1526,80,1799,100}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_g_visibility = { .scene_content_id = 2969614331u, .bounds = {1526,80,1799,100}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_g_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_g_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_g_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_lvl_y_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_y_visibility = { .scene_content_id = 623966138u, .bounds = {1799,80,1867,100}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_y_visibility = { .scene_content_id = 2969614331u, .bounds = {1799,80,1867,100}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_y_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_y_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_y_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_lvl_r_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_r_visibility = { .scene_content_id = 623966138u, .bounds = {1867,80,1890,100}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_r_visibility = { .scene_content_id = 2969614331u, .bounds = {1867,80,1890,100}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_r_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_r_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_r_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_lvl_tick_0_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_0_visibility = { .scene_content_id = 623966138u, .bounds = {1526,102,1527,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_0_visibility = { .scene_content_id = 2969614331u, .bounds = {1526,102,1527,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_tick_0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_tick_0_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_lvl_tick_1_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_1_visibility = { .scene_content_id = 623966138u, .bounds = {1617,102,1618,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_1_visibility = { .scene_content_id = 2969614331u, .bounds = {1617,102,1618,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_tick_1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_tick_1_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_lvl_tick_2_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_2_visibility = { .scene_content_id = 623966138u, .bounds = {1708,102,1709,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_2_visibility = { .scene_content_id = 2969614331u, .bounds = {1708,102,1709,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_tick_2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_tick_2_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_lvl_tick_3_visibility_slots[] = {132};
-static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_3_visibility = { .scene_content_id = 623966138u, .bounds = {1799,102,1800,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_lvl_tick_3_visibility = { .scene_content_id = 2969614331u, .bounds = {1799,102,1800,107}, .group_ref = 1, .visible_slots = gsp_tracker_lvl_tick_3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_lvl_tick_3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_lvl_tick_3_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_page_order_visibility_slots[] = {135};
-static const esp_gsp_visibility_target_t gsp_tracker_page_order_visibility = { .scene_content_id = 623966138u, .bounds = {1920,0,2400,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_order_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_page_order_visibility = { .scene_content_id = 2969614331u, .bounds = {1920,0,2400,480}, .group_ref = 1, .visible_slots = gsp_tracker_page_order_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_page_order_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_page_order_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad0_dim_visibility_slots[] = {61,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad0_dim_visibility = { .scene_content_id = 623966138u, .bounds = {1937,50,2041,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad0_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad0_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,50,2041,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad0_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad0_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad0_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad0_off_visibility_slots[] = {62,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad0_off_visibility = { .scene_content_id = 623966138u, .bounds = {1937,50,2041,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad0_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad0_off_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,50,2041,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad0_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad0_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad0_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad0_play_visibility_slots[] = {63,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad0_play_visibility = { .scene_content_id = 623966138u, .bounds = {1937,50,2041,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad0_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad0_play_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,50,2041,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad0_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad0_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad0_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad0_next_visibility_slots[] = {64,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad0_next_visibility = { .scene_content_id = 623966138u, .bounds = {1937,50,2041,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad0_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad0_next_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,50,2041,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad0_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad0_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad0_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad1_dim_visibility_slots[] = {65,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad1_dim_visibility = { .scene_content_id = 623966138u, .bounds = {2051,50,2155,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad1_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad1_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,50,2155,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad1_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad1_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad1_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad1_off_visibility_slots[] = {66,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad1_off_visibility = { .scene_content_id = 623966138u, .bounds = {2051,50,2155,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad1_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad1_off_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,50,2155,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad1_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad1_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad1_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad1_play_visibility_slots[] = {67,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad1_play_visibility = { .scene_content_id = 623966138u, .bounds = {2051,50,2155,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad1_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad1_play_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,50,2155,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad1_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad1_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad1_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad1_next_visibility_slots[] = {68,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad1_next_visibility = { .scene_content_id = 623966138u, .bounds = {2051,50,2155,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad1_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad1_next_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,50,2155,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad1_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad1_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad1_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad2_dim_visibility_slots[] = {69,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad2_dim_visibility = { .scene_content_id = 623966138u, .bounds = {2165,50,2269,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad2_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad2_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,50,2269,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad2_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad2_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad2_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad2_off_visibility_slots[] = {70,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad2_off_visibility = { .scene_content_id = 623966138u, .bounds = {2165,50,2269,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad2_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad2_off_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,50,2269,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad2_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad2_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad2_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad2_play_visibility_slots[] = {71,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad2_play_visibility = { .scene_content_id = 623966138u, .bounds = {2165,50,2269,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad2_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad2_play_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,50,2269,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad2_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad2_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad2_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad2_next_visibility_slots[] = {72,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad2_next_visibility = { .scene_content_id = 623966138u, .bounds = {2165,50,2269,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad2_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad2_next_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,50,2269,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad2_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad2_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad2_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad3_dim_visibility_slots[] = {73,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad3_dim_visibility = { .scene_content_id = 623966138u, .bounds = {2279,50,2383,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad3_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad3_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,50,2383,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad3_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad3_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad3_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad3_off_visibility_slots[] = {74,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad3_off_visibility = { .scene_content_id = 623966138u, .bounds = {2279,50,2383,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad3_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad3_off_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,50,2383,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad3_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad3_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad3_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad3_play_visibility_slots[] = {75,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad3_play_visibility = { .scene_content_id = 623966138u, .bounds = {2279,50,2383,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad3_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad3_play_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,50,2383,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad3_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad3_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad3_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad3_next_visibility_slots[] = {76,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad3_next_visibility = { .scene_content_id = 623966138u, .bounds = {2279,50,2383,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad3_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad3_next_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,50,2383,140}, .group_ref = 1, .visible_slots = gsp_tracker_pad3_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad3_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad3_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad4_dim_visibility_slots[] = {77,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad4_dim_visibility = { .scene_content_id = 623966138u, .bounds = {1937,152,2041,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad4_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad4_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,152,2041,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad4_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad4_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad4_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad4_off_visibility_slots[] = {78,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad4_off_visibility = { .scene_content_id = 623966138u, .bounds = {1937,152,2041,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad4_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad4_off_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,152,2041,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad4_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad4_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad4_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad4_play_visibility_slots[] = {79,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad4_play_visibility = { .scene_content_id = 623966138u, .bounds = {1937,152,2041,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad4_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad4_play_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,152,2041,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad4_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad4_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad4_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad4_next_visibility_slots[] = {80,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad4_next_visibility = { .scene_content_id = 623966138u, .bounds = {1937,152,2041,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad4_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad4_next_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,152,2041,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad4_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad4_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad4_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad5_dim_visibility_slots[] = {81,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad5_dim_visibility = { .scene_content_id = 623966138u, .bounds = {2051,152,2155,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad5_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad5_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,152,2155,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad5_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad5_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad5_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad5_off_visibility_slots[] = {82,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad5_off_visibility = { .scene_content_id = 623966138u, .bounds = {2051,152,2155,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad5_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad5_off_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,152,2155,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad5_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad5_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad5_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad5_play_visibility_slots[] = {83,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad5_play_visibility = { .scene_content_id = 623966138u, .bounds = {2051,152,2155,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad5_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad5_play_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,152,2155,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad5_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad5_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad5_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad5_next_visibility_slots[] = {84,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad5_next_visibility = { .scene_content_id = 623966138u, .bounds = {2051,152,2155,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad5_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad5_next_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,152,2155,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad5_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad5_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad5_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad6_dim_visibility_slots[] = {85,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad6_dim_visibility = { .scene_content_id = 623966138u, .bounds = {2165,152,2269,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad6_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad6_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,152,2269,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad6_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad6_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad6_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad6_off_visibility_slots[] = {86,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad6_off_visibility = { .scene_content_id = 623966138u, .bounds = {2165,152,2269,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad6_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad6_off_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,152,2269,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad6_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad6_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad6_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad6_play_visibility_slots[] = {87,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad6_play_visibility = { .scene_content_id = 623966138u, .bounds = {2165,152,2269,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad6_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad6_play_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,152,2269,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad6_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad6_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad6_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad6_next_visibility_slots[] = {88,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad6_next_visibility = { .scene_content_id = 623966138u, .bounds = {2165,152,2269,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad6_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad6_next_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,152,2269,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad6_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad6_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad6_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad7_dim_visibility_slots[] = {89,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad7_dim_visibility = { .scene_content_id = 623966138u, .bounds = {2279,152,2383,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad7_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad7_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,152,2383,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad7_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad7_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad7_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad7_off_visibility_slots[] = {90,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad7_off_visibility = { .scene_content_id = 623966138u, .bounds = {2279,152,2383,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad7_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad7_off_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,152,2383,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad7_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad7_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad7_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad7_play_visibility_slots[] = {91,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad7_play_visibility = { .scene_content_id = 623966138u, .bounds = {2279,152,2383,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad7_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad7_play_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,152,2383,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad7_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad7_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad7_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad7_next_visibility_slots[] = {92,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad7_next_visibility = { .scene_content_id = 623966138u, .bounds = {2279,152,2383,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad7_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad7_next_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,152,2383,242}, .group_ref = 1, .visible_slots = gsp_tracker_pad7_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad7_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad7_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad8_dim_visibility_slots[] = {93,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad8_dim_visibility = { .scene_content_id = 623966138u, .bounds = {1937,254,2041,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad8_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad8_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,254,2041,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad8_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad8_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad8_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad8_off_visibility_slots[] = {94,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad8_off_visibility = { .scene_content_id = 623966138u, .bounds = {1937,254,2041,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad8_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad8_off_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,254,2041,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad8_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad8_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad8_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad8_play_visibility_slots[] = {95,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad8_play_visibility = { .scene_content_id = 623966138u, .bounds = {1937,254,2041,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad8_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad8_play_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,254,2041,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad8_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad8_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad8_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad8_next_visibility_slots[] = {96,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad8_next_visibility = { .scene_content_id = 623966138u, .bounds = {1937,254,2041,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad8_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad8_next_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,254,2041,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad8_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad8_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad8_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad9_dim_visibility_slots[] = {97,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad9_dim_visibility = { .scene_content_id = 623966138u, .bounds = {2051,254,2155,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad9_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad9_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,254,2155,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad9_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad9_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad9_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad9_off_visibility_slots[] = {98,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad9_off_visibility = { .scene_content_id = 623966138u, .bounds = {2051,254,2155,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad9_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad9_off_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,254,2155,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad9_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad9_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad9_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad9_play_visibility_slots[] = {99,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad9_play_visibility = { .scene_content_id = 623966138u, .bounds = {2051,254,2155,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad9_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad9_play_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,254,2155,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad9_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad9_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad9_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad9_next_visibility_slots[] = {100,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad9_next_visibility = { .scene_content_id = 623966138u, .bounds = {2051,254,2155,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad9_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad9_next_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,254,2155,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad9_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad9_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad9_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad10_dim_visibility_slots[] = {101,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad10_dim_visibility = { .scene_content_id = 623966138u, .bounds = {2165,254,2269,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad10_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad10_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,254,2269,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad10_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad10_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad10_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad10_off_visibility_slots[] = {102,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad10_off_visibility = { .scene_content_id = 623966138u, .bounds = {2165,254,2269,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad10_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad10_off_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,254,2269,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad10_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad10_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad10_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad10_play_visibility_slots[] = {103,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad10_play_visibility = { .scene_content_id = 623966138u, .bounds = {2165,254,2269,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad10_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad10_play_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,254,2269,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad10_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad10_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad10_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad10_next_visibility_slots[] = {104,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad10_next_visibility = { .scene_content_id = 623966138u, .bounds = {2165,254,2269,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad10_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad10_next_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,254,2269,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad10_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad10_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad10_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad11_dim_visibility_slots[] = {105,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad11_dim_visibility = { .scene_content_id = 623966138u, .bounds = {2279,254,2383,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad11_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad11_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,254,2383,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad11_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad11_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad11_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad11_off_visibility_slots[] = {106,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad11_off_visibility = { .scene_content_id = 623966138u, .bounds = {2279,254,2383,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad11_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad11_off_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,254,2383,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad11_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad11_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad11_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad11_play_visibility_slots[] = {107,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad11_play_visibility = { .scene_content_id = 623966138u, .bounds = {2279,254,2383,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad11_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad11_play_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,254,2383,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad11_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad11_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad11_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad11_next_visibility_slots[] = {108,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad11_next_visibility = { .scene_content_id = 623966138u, .bounds = {2279,254,2383,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad11_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad11_next_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,254,2383,344}, .group_ref = 1, .visible_slots = gsp_tracker_pad11_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad11_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad11_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad12_dim_visibility_slots[] = {109,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad12_dim_visibility = { .scene_content_id = 623966138u, .bounds = {1937,356,2041,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad12_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad12_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,356,2041,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad12_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad12_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad12_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad12_off_visibility_slots[] = {110,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad12_off_visibility = { .scene_content_id = 623966138u, .bounds = {1937,356,2041,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad12_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad12_off_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,356,2041,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad12_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad12_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad12_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad12_play_visibility_slots[] = {111,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad12_play_visibility = { .scene_content_id = 623966138u, .bounds = {1937,356,2041,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad12_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad12_play_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,356,2041,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad12_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad12_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad12_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad12_next_visibility_slots[] = {112,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad12_next_visibility = { .scene_content_id = 623966138u, .bounds = {1937,356,2041,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad12_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad12_next_visibility = { .scene_content_id = 2969614331u, .bounds = {1937,356,2041,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad12_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad12_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad12_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad13_dim_visibility_slots[] = {113,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad13_dim_visibility = { .scene_content_id = 623966138u, .bounds = {2051,356,2155,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad13_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad13_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,356,2155,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad13_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad13_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad13_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad13_off_visibility_slots[] = {114,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad13_off_visibility = { .scene_content_id = 623966138u, .bounds = {2051,356,2155,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad13_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad13_off_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,356,2155,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad13_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad13_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad13_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad13_play_visibility_slots[] = {115,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad13_play_visibility = { .scene_content_id = 623966138u, .bounds = {2051,356,2155,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad13_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad13_play_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,356,2155,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad13_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad13_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad13_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad13_next_visibility_slots[] = {116,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad13_next_visibility = { .scene_content_id = 623966138u, .bounds = {2051,356,2155,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad13_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad13_next_visibility = { .scene_content_id = 2969614331u, .bounds = {2051,356,2155,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad13_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad13_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad13_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad14_dim_visibility_slots[] = {117,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad14_dim_visibility = { .scene_content_id = 623966138u, .bounds = {2165,356,2269,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad14_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad14_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,356,2269,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad14_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad14_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad14_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad14_off_visibility_slots[] = {118,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad14_off_visibility = { .scene_content_id = 623966138u, .bounds = {2165,356,2269,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad14_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad14_off_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,356,2269,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad14_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad14_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad14_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad14_play_visibility_slots[] = {119,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad14_play_visibility = { .scene_content_id = 623966138u, .bounds = {2165,356,2269,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad14_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad14_play_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,356,2269,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad14_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad14_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad14_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad14_next_visibility_slots[] = {120,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad14_next_visibility = { .scene_content_id = 623966138u, .bounds = {2165,356,2269,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad14_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad14_next_visibility = { .scene_content_id = 2969614331u, .bounds = {2165,356,2269,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad14_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad14_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad14_next_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad15_dim_visibility_slots[] = {121,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad15_dim_visibility = { .scene_content_id = 623966138u, .bounds = {2279,356,2383,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad15_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad15_dim_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,356,2383,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad15_dim_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad15_dim_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad15_dim_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad15_off_visibility_slots[] = {122,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad15_off_visibility = { .scene_content_id = 623966138u, .bounds = {2279,356,2383,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad15_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad15_off_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,356,2383,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad15_off_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad15_off_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad15_off_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad15_play_visibility_slots[] = {123,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad15_play_visibility = { .scene_content_id = 623966138u, .bounds = {2279,356,2383,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad15_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad15_play_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,356,2383,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad15_play_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad15_play_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad15_play_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_pad15_next_visibility_slots[] = {124,135};
-static const esp_gsp_visibility_target_t gsp_tracker_pad15_next_visibility = { .scene_content_id = 623966138u, .bounds = {2279,356,2383,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad15_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_pad15_next_visibility = { .scene_content_id = 2969614331u, .bounds = {2279,356,2383,446}, .group_ref = 1, .visible_slots = gsp_tracker_pad15_next_visibility_slots, .visible_slot_count = 2, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_pad15_next_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_pad15_next_visibility, out_visible); }
 
-static const esp_gsp_visibility_target_t gsp_tracker_dot_off_0_visibility = { .scene_content_id = 623966138u, .bounds = {204,456,212,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_off_0_visibility = { .scene_content_id = 2969614331u, .bounds = {204,456,212,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_off_0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_off_0_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_dot_on_0_visibility_slots[] = {136};
-static const esp_gsp_visibility_target_t gsp_tracker_dot_on_0_visibility = { .scene_content_id = 623966138u, .bounds = {204,456,212,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_on_0_visibility = { .scene_content_id = 2969614331u, .bounds = {204,456,212,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_0_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_on_0_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_on_0_visibility, out_visible); }
 
-static const esp_gsp_visibility_target_t gsp_tracker_dot_off_1_visibility = { .scene_content_id = 623966138u, .bounds = {220,456,228,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_off_1_visibility = { .scene_content_id = 2969614331u, .bounds = {220,456,228,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_off_1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_off_1_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_dot_on_1_visibility_slots[] = {137};
-static const esp_gsp_visibility_target_t gsp_tracker_dot_on_1_visibility = { .scene_content_id = 623966138u, .bounds = {220,456,228,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_on_1_visibility = { .scene_content_id = 2969614331u, .bounds = {220,456,228,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_1_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_on_1_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_on_1_visibility, out_visible); }
 
-static const esp_gsp_visibility_target_t gsp_tracker_dot_off_2_visibility = { .scene_content_id = 623966138u, .bounds = {236,456,244,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_off_2_visibility = { .scene_content_id = 2969614331u, .bounds = {236,456,244,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_off_2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_off_2_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_dot_on_2_visibility_slots[] = {138};
-static const esp_gsp_visibility_target_t gsp_tracker_dot_on_2_visibility = { .scene_content_id = 623966138u, .bounds = {236,456,244,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_on_2_visibility = { .scene_content_id = 2969614331u, .bounds = {236,456,244,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_2_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_on_2_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_on_2_visibility, out_visible); }
 
-static const esp_gsp_visibility_target_t gsp_tracker_dot_off_3_visibility = { .scene_content_id = 623966138u, .bounds = {252,456,260,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_off_3_visibility = { .scene_content_id = 2969614331u, .bounds = {252,456,260,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_off_3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_off_3_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_dot_on_3_visibility_slots[] = {139};
-static const esp_gsp_visibility_target_t gsp_tracker_dot_on_3_visibility = { .scene_content_id = 623966138u, .bounds = {252,456,260,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_on_3_visibility = { .scene_content_id = 2969614331u, .bounds = {252,456,260,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_3_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_on_3_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_on_3_visibility, out_visible); }
 
-static const esp_gsp_visibility_target_t gsp_tracker_dot_off_4_visibility = { .scene_content_id = 623966138u, .bounds = {268,456,276,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_off_4_visibility = { .scene_content_id = 2969614331u, .bounds = {268,456,276,464}, .group_ref = 0, .visible_slots = NULL, .visible_slot_count = 0, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_off_4_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_off_4_visibility, out_visible); }
 
 static const uint16_t gsp_tracker_dot_on_4_visibility_slots[] = {140};
-static const esp_gsp_visibility_target_t gsp_tracker_dot_on_4_visibility = { .scene_content_id = 623966138u, .bounds = {268,456,276,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_4_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
+static const esp_gsp_visibility_target_t gsp_tracker_dot_on_4_visibility = { .scene_content_id = 2969614331u, .bounds = {268,456,276,464}, .group_ref = 0, .visible_slots = gsp_tracker_dot_on_4_visibility_slots, .visible_slot_count = 1, .width_slot_ref = 0, .height_slot_ref = 0, .width_min = 0, .width_max = 0, .height_min = 0, .height_max = 0 };
 static inline esp_err_t gsp_tracker_dot_on_4_get_effective_visible(esp_gsp_handle_t gsp, bool *out_visible) { return esp_gsp_query_visibility(gsp, &gsp_tracker_dot_on_4_visibility, out_visible); }

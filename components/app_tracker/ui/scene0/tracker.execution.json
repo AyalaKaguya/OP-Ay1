@@ -1,13 +1,13 @@
 {
   "calibration": null,
-  "content_id": "0x2530f7ba",
+  "content_id": "0xb100b7fb",
   "decision_quality": "conservative_uncalibrated",
   "fonts": [
     {
-      "asset_id": "0x6bdd6edc",
-      "charset": " ?ABCDEKLNPRSTY",
+      "asset_id": "0x908bcf8e",
+      "charset": " ?ABCDEIKLNOPSTY",
       "encoded_bytes": 5056,
-      "glyph_count": 15,
+      "glyph_count": 16,
       "link": "embedded",
       "size_px": 22,
       "source": "\\\\?\\C:\\Users\\ayala\\Desktop\\OP-Ay1\\projects\\aryx\\components\\app_tracker\\ui\\fonts\\DejaVuSans-Bold.ttf"
