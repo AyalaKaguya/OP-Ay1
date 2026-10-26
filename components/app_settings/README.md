@@ -76,8 +76,8 @@ classifier's last applied angle, not the attempted angle.
 The board-axis mapping is centralized in `app_settings.c`: positive Y is 0°,
 positive X is 90°, negative Y is 180° and negative X is 270°. The Y mapping was
 corrected after physical AUTO feedback on 2026-10-27. The complete four-direction
-mounting convention still needs confirmation on the product board; host gravity
-tests establish the policy, not sensor mounting or physical touch.
+AUTO behavior and orientation lock were then confirmed on the product board by
+the user. Host gravity tests additionally establish dwell and rejection policy.
 Changing mounting convention must update the portable cardinal test with it.
 No magnetometer, gyro integration or sensor-fusion service is required.
 

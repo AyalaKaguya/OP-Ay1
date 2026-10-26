@@ -85,6 +85,11 @@ parsers and synth with the native adapter. Hardware acceptance additionally
 requires actual keyboard enumeration/notes/sustain/hotplug, both role directions,
 Iris return, DMA-safe reboot and preservation of the retained Vibe Mode contract.
 
+The emergency reset checks cover a stable Host owner. Planned product restart
+must first complete normal `app_usb_midi_shutdown()` / Vendor handoff. Concurrent
+USB installation/HAL initialization and forced restart remain unvalidated;
+source-level guard tests do not establish that overlapping hardware case.
+
 The same runner also compiles `tests/midi_host_lifecycle.c` around the real
 production owner with fake USB/FreeRTOS backends. It checks staged startup
 rollback, ownership transfer order, receive/transmit routing, TX overflow panic,
