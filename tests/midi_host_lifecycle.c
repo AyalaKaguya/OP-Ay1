@@ -19,6 +19,8 @@ struct fake_device { int marker; };
 static struct fake_client client_instance;
 static struct fake_device device_instance;
 static bool iris_enabled = true;
+static bool iris_pending;
+static bool bus_clock_enabled;
 static bool host_installed;
 static bool client_registered;
 static bool device_open;
@@ -39,6 +41,8 @@ static bool cancel_rx;
 static bool cancel_tx;
 static uint64_t clock_us;
 static unsigned shutdown_steps;
+static unsigned shutdown_routes;
+static unsigned resume_attempts;
 static void (*registered_shutdown)(void);
 static float scratch[1024];
 static const uint8_t configuration[] = {
@@ -124,15 +128,33 @@ void usb_dwc_ll_gahbcfg_dis_global_intr(void *hardware)
     CHECK(hardware != NULL && shutdown_steps == 0); ++shutdown_steps;
 }
 void usb_utmi_ll_reset_register(void) { CHECK(shutdown_steps == 1); ++shutdown_steps; }
-void usb_utmi_ll_enable_bus_clock(bool enabled) { CHECK(!enabled && shutdown_steps == 2); ++shutdown_steps; }
+void usb_utmi_ll_enable_bus_clock(bool enabled) { (void)enabled; CHECK(false); }
+bool _usb_utmi_ll_bus_clock_is_enabled(void) { return bus_clock_enabled; }
+void esp_rom_route_intr_matrix(int cpu, uint32_t source, uint32_t interrupt)
+{
+    CHECK(cpu >= 0 && cpu < 2 && source == ETS_USB_OTGHS_INTR_SOURCE && interrupt == ETS_INVALID_INUM);
+    ++shutdown_routes;
+}
 
 esp_err_t esp_iris_usb_set_enabled(bool enabled, uint32_t timeout_ms)
 {
     CHECK(timeout_ms == 2000);
     CHECK(!host_installed); /* Owner may never resume Iris over a Host stack. */
+    if (enabled) { ++resume_attempts; }
+    if (iris_pending) { return ESP_ERR_INVALID_STATE; }
     if (fail_stage == -1 && !enabled) { return ESP_ERR_TIMEOUT; }
+    if (fail_stage == -3 && !enabled) { iris_pending = true; return ESP_ERR_TIMEOUT; }
     if (fail_stage == -2 && enabled) { return ESP_ERR_NO_MEM; }
     iris_enabled = enabled;
+    return ESP_OK;
+}
+esp_err_t esp_iris_usb_get_status(esp_iris_usb_status_t *status)
+{
+    CHECK(status != NULL);
+    status->enabled = iris_enabled;
+    status->transition_pending = iris_pending;
+    status->phy_released = !iris_enabled && !iris_pending;
+    status->last_error = ESP_OK;
     return ESP_OK;
 }
 esp_err_t usb_host_install(const usb_host_config_t *config)
@@ -140,12 +162,14 @@ esp_err_t usb_host_install(const usb_host_config_t *config)
     CHECK(!iris_enabled && !host_installed && config->peripheral_map == 1);
     if (fail_next()) { return ESP_ERR_NO_MEM; }
     host_installed = true;
+    bus_clock_enabled = true;
     return ESP_OK;
 }
 esp_err_t usb_host_uninstall(void)
 {
     CHECK(host_installed && !device_open && !client_registered && !live_transfers);
     host_installed = false;
+    bus_clock_enabled = false;
     return ESP_OK;
 }
 esp_err_t usb_host_lib_handle_events(TickType_t wait, uint32_t *events)
@@ -363,13 +387,49 @@ static void test_warm_reset_and_resume_failure(app_note_router_t *router)
     CHECK(!host_installed && !iris_enabled && usb->status.actual_mode == APP_USB_MODE_NONE);
     CHECK(usb->status.last_error == ESP_ERR_NO_MEM);
     fail_stage = 0;
+    vTaskDelay(50); settle_vendor_recovery(usb);
+    CHECK(iris_enabled && !usb->vendor_recovery_pending);
     transition(usb, APP_USB_MODE_VENDOR); CHECK(iris_enabled);
     transition(usb, APP_USB_MODE_MIDI_HOST);
     CHECK(registered_shutdown != NULL); registered_shutdown();
-    CHECK(shutdown_steps == 3 && !atomic_load(&s_host_hardware_active));
-    registered_shutdown(); CHECK(shutdown_steps == 3);
+    CHECK(shutdown_steps == 2 && shutdown_routes == 2 && bus_clock_enabled &&
+          !atomic_load(&s_host_hardware_active) && atomic_load(&s_shutdown_requested));
+    service_receive(usb); service_transmit(usb);
+    registered_shutdown(); CHECK(shutdown_steps == 2 && shutdown_routes == 2);
+    atomic_store(&s_shutdown_requested, false); /* Simulate a fresh CPU boot for the next test. */
     destroy_owner(usb);
     puts("midi host: truthful resume failure and bounded S31 DMA shutdown PASS");
+}
+
+static void test_late_pause_recovery(app_note_router_t *router)
+{
+    install_stage = 0; fail_stage = -3;
+    app_usb_midi_t *usb = create_owner(router);
+    const unsigned attempts_before = resume_attempts;
+    transition(usb, APP_USB_MODE_MIDI_HOST);
+    CHECK(iris_pending && !host_installed && usb->vendor_recovery_pending);
+    CHECK(usb->status.actual_mode == APP_USB_MODE_NONE && usb->status.last_error == ESP_ERR_TIMEOUT);
+    vTaskDelay(100); settle_vendor_recovery(usb);
+    CHECK(resume_attempts == attempts_before && usb->vendor_recovery_pending);
+    /* Iris finishes the previously timed-out pause after the request already
+     * returned. No user gesture is required to recover management USB. */
+    iris_pending = false; iris_enabled = false; fail_stage = 0;
+    vTaskDelay(100); settle_vendor_recovery(usb);
+    CHECK(iris_enabled && !host_installed && !usb->vendor_recovery_pending);
+    CHECK(usb->status.actual_mode == APP_USB_MODE_VENDOR &&
+          usb->status.last_error == ESP_ERR_TIMEOUT && usb->status.state == APP_USB_STATE_ERROR);
+    destroy_owner(usb);
+    puts("midi host: executing pause timeout settles and restores Vendor automatically PASS");
+}
+
+static void test_clock_off_shutdown_window(void)
+{
+    bus_clock_enabled = false; shutdown_steps = 0; shutdown_routes = 0;
+    atomic_store(&s_host_hardware_active, true);
+    host_emergency_shutdown();
+    CHECK(shutdown_steps == 0 && shutdown_routes == 2);
+    atomic_store(&s_shutdown_requested, false);
+    puts("midi host: startup/teardown clock-off shutdown skips unsafe MMIO PASS");
 }
 
 int main(void)
@@ -379,7 +439,9 @@ int main(void)
     CHECK(synth != NULL && router != NULL);
     test_failures(router);
     test_data_and_teardown(router, synth);
+    test_late_pause_recovery(router);
     test_warm_reset_and_resume_failure(router);
+    test_clock_off_shutdown_window();
     app_note_router_destroy(router); app_synth_destroy(synth);
     puts("midi production host lifecycle tests: PASS");
     return 0;

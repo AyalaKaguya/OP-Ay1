@@ -11,10 +11,14 @@
 
 #include "esp_intr_alloc.h"
 #include "esp_iris.h"
+#include "esp_rom_sys.h"
 #include "esp_system.h"
 #include "esp_timer.h"
 #include "hal/usb_dwc_ll.h"
 #include "hal/usb_utmi_ll.h"
+#include "soc/interrupts.h"
+#include "soc/soc.h"
+#include "soc/soc_caps.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
@@ -29,19 +33,28 @@
 #define USB_TX_CAPACITY 64U
 #define USB_CLIENT_EVENT_CAPACITY 8U
 
-/* One physical S31 controller, hence one product owner. These two flags are
+/* One physical S31 controller, hence one product owner. These atomic flags are
  * the only shutdown-shared state; the callback never dereferences an instance. */
 static atomic_bool s_owner_claimed;
 static atomic_bool s_host_hardware_active;
+static atomic_bool s_shutdown_requested;
 
 static void host_emergency_shutdown(void)
 {
+    atomic_store_explicit(&s_shutdown_requested, true, memory_order_release);
     if (atomic_exchange_explicit(&s_host_hardware_active, false, memory_order_acq_rel)) {
         /* The pinned S31 CPU reset does not reset HS DMA. Do not wait, allocate
          * or free here: a normal role transition uses complete Host teardown. */
-        usb_dwc_ll_gahbcfg_dis_global_intr(USB_DWC_LL_GET_HW(0));
-        usb_utmi_ll_reset_register();
-        usb_utmi_ll_enable_bus_clock(false);
+        for (int core = 0; core < SOC_CPU_CORES_NUM; ++core) {
+            esp_rom_route_intr_matrix(core, ETS_USB_OTGHS_INTR_SOURCE, ETS_INVALID_INUM);
+        }
+        if (_usb_utmi_ll_bus_clock_is_enabled()) {
+            usb_dwc_ll_gahbcfg_dis_global_intr(USB_DWC_LL_GET_HW(0));
+            usb_utmi_ll_reset_register();
+            /* esp_restart invokes hooks before pausing the other core. An
+             * already pending/entered HCD ISR may still read its MMIO, so
+             * leave the reset controller clocked until the CPU reset. */
+        }
     }
 }
 
@@ -73,6 +86,9 @@ struct app_usb_midi {
     bool tx_inflight;
     bool rx_completed;
     bool tx_completed;
+    bool vendor_recovery_pending;
+    uint64_t vendor_retry_ms;
+    esp_err_t vendor_recovery_error;
     usb_transfer_t *receive;
     usb_transfer_t *transmit;
 };
@@ -113,7 +129,8 @@ static void received_count(app_usb_midi_t *usb, unsigned valid, unsigned invalid
 static bool queue_transmit(void *context, const uint8_t bytes[4])
 {
     app_usb_midi_t *usb = context;
-    if (!atomic_load_explicit(&usb->transmit_ready, memory_order_acquire)) {
+    if (!atomic_load_explicit(&usb->transmit_ready, memory_order_acquire) ||
+            atomic_load_explicit(&s_shutdown_requested, memory_order_acquire)) {
         return true; /* Vendor/no OUT endpoint: no external note was started. */
     }
     midi_packet_t packet;
@@ -155,11 +172,15 @@ static void transmit_complete(usb_transfer_t *transfer)
 
 static void pump_events(app_usb_midi_t *usb, TickType_t wait)
 {
+    if (atomic_load_explicit(&s_shutdown_requested, memory_order_acquire)) {
+        return;
+    }
     if (usb->library_installed) {
         uint32_t events = 0;
         (void)usb_host_lib_handle_events(0, &events);
     }
-    if (usb->client != NULL) {
+    if (usb->client != NULL &&
+            !atomic_load_explicit(&s_shutdown_requested, memory_order_acquire)) {
         (void)usb_host_client_handle_events(usb->client, wait);
     } else if (wait) {
         vTaskDelay(wait);
@@ -179,6 +200,9 @@ static void clear_device_status(app_usb_midi_t *usb)
 
 static esp_err_t submit_transmit(app_usb_midi_t *usb, unsigned bytes)
 {
+    if (atomic_load_explicit(&s_shutdown_requested, memory_order_acquire)) {
+        return ESP_ERR_INVALID_STATE;
+    }
     usb->transmit->num_bytes = bytes;
     usb->transmit->device_handle = usb->device;
     usb->transmit->bEndpointAddress = usb->interface.endpoint_out;
@@ -264,6 +288,9 @@ static esp_err_t close_device(app_usb_midi_t *usb, uint64_t deadline)
 
 static esp_err_t stop_host(app_usb_midi_t *usb)
 {
+    if (atomic_load_explicit(&s_shutdown_requested, memory_order_acquire)) {
+        return ESP_ERR_INVALID_STATE;
+    }
     if (!usb->library_installed) {
         return ESP_OK;
     }
@@ -316,6 +343,9 @@ static esp_err_t stop_host(app_usb_midi_t *usb)
 
 static esp_err_t start_host(app_usb_midi_t *usb)
 {
+    if (atomic_load_explicit(&s_shutdown_requested, memory_order_acquire)) {
+        return ESP_ERR_INVALID_STATE;
+    }
     const usb_host_config_t host_config = {
         .skip_phy_setup = false,
         .intr_flags = ESP_INTR_FLAG_LOWMED,
@@ -342,6 +372,9 @@ static esp_err_t start_host(app_usb_midi_t *usb)
 
 static esp_err_t open_candidate(app_usb_midi_t *usb)
 {
+    if (atomic_load_explicit(&s_shutdown_requested, memory_order_acquire)) {
+        return ESP_ERR_INVALID_STATE;
+    }
     const uint8_t address = usb->candidate_address;
     usb->candidate_address = 0;
     esp_err_t result = usb_host_device_open(usb->client, address, &usb->device);
@@ -392,7 +425,8 @@ static esp_err_t open_candidate(app_usb_midi_t *usb)
 
 static void service_receive(app_usb_midi_t *usb)
 {
-    if (usb->receive == NULL || usb->closing || usb->gone) {
+    if (usb->receive == NULL || usb->closing || usb->gone ||
+            atomic_load_explicit(&s_shutdown_requested, memory_order_acquire)) {
         return;
     }
     if (usb->rx_completed) {
@@ -414,7 +448,8 @@ static void service_receive(app_usb_midi_t *usb)
                                             bytes, &counts);
         received_count(usb, counts.accepted, counts.dropped);
     }
-    if (!usb->rx_inflight) {
+    if (!usb->rx_inflight &&
+            !atomic_load_explicit(&s_shutdown_requested, memory_order_acquire)) {
         usb->receive->num_bytes = usb->interface.in_packet_bytes;
         usb->receive->device_handle = usb->device;
         usb->receive->bEndpointAddress = usb->interface.endpoint_in;
@@ -431,7 +466,8 @@ static void service_receive(app_usb_midi_t *usb)
 
 static void service_transmit(app_usb_midi_t *usb)
 {
-    if (usb->transmit == NULL || usb->closing || usb->gone || usb->tx_inflight) {
+    if (usb->transmit == NULL || usb->closing || usb->gone || usb->tx_inflight ||
+            atomic_load_explicit(&s_shutdown_requested, memory_order_acquire)) {
         return;
     }
     if (usb->tx_completed) {
@@ -464,8 +500,48 @@ static void service_transmit(app_usb_midi_t *usb)
     }
 }
 
+static void settle_vendor_recovery(app_usb_midi_t *usb)
+{
+    if (!usb->vendor_recovery_pending || usb->library_installed ||
+            atomic_load_explicit(&s_shutdown_requested, memory_order_acquire) ||
+            milliseconds() < usb->vendor_retry_ms) {
+        return;
+    }
+    usb->vendor_retry_ms = milliseconds() + 50U;
+    esp_iris_usb_status_t iris;
+    const esp_err_t observed = esp_iris_usb_get_status(&iris);
+    if (observed != ESP_OK || iris.transition_pending) {
+        return; /* A timed-out pause may still be executing; never steal PHY. */
+    }
+    const esp_err_t resumed = iris.enabled && !iris.phy_released ? ESP_OK :
+        esp_iris_usb_set_enabled(true, USB_TRANSITION_MS);
+    if (resumed == ESP_OK) {
+        usb->vendor_recovery_pending = false;
+        set_state(usb, APP_USB_MODE_VENDOR, APP_USB_STATE_ERROR,
+                    usb->vendor_recovery_error);
+    }
+}
+
+static void schedule_vendor_recovery(app_usb_midi_t *usb, esp_err_t error)
+{
+    usb->vendor_recovery_pending = true;
+    usb->vendor_recovery_error = error;
+    usb->vendor_retry_ms = 0;
+    esp_iris_usb_status_t iris;
+    const esp_err_t observed = esp_iris_usb_get_status(&iris);
+    const bool vendor_confirmed = observed == ESP_OK && !iris.transition_pending &&
+                                  iris.enabled && !iris.phy_released;
+    set_state(usb, vendor_confirmed ? APP_USB_MODE_VENDOR : APP_USB_MODE_NONE,
+                APP_USB_STATE_ERROR, error);
+    settle_vendor_recovery(usb);
+}
+
 static void transition(app_usb_midi_t *usb, app_usb_mode_t target)
 {
+    if (atomic_load_explicit(&s_shutdown_requested, memory_order_acquire)) {
+        return;
+    }
+    usb->vendor_recovery_pending = false;
     set_state(usb, usb->library_installed ? APP_USB_MODE_MIDI_HOST : APP_USB_MODE_VENDOR,
                 APP_USB_STATE_SWITCHING, ESP_OK);
     if (target == APP_USB_MODE_MIDI_HOST) {
@@ -485,9 +561,7 @@ static void transition(app_usb_midi_t *usb, app_usb_mode_t target)
          * call TinyUSB uninstall or touch Iris private state from this app. */
         const esp_err_t paused = esp_iris_usb_set_enabled(false, USB_TRANSITION_MS);
         if (paused != ESP_OK) {
-            const esp_err_t resumed = esp_iris_usb_set_enabled(true, USB_TRANSITION_MS);
-            set_state(usb, resumed == ESP_OK ? APP_USB_MODE_VENDOR : APP_USB_MODE_NONE,
-                        APP_USB_STATE_ERROR, paused);
+            schedule_vendor_recovery(usb, paused);
             return;
         }
         const esp_err_t result = start_host(usb);
@@ -501,6 +575,9 @@ static void transition(app_usb_midi_t *usb, app_usb_mode_t target)
         set_state(usb, usb->library_installed ? APP_USB_MODE_MIDI_HOST :
                     restored == ESP_OK ? APP_USB_MODE_VENDOR : APP_USB_MODE_NONE,
                     APP_USB_STATE_ERROR, result);
+        if (!usb->library_installed && restored != ESP_OK) {
+            schedule_vendor_recovery(usb, result);
+        }
     } else {
         const esp_err_t stopped = stop_host(usb);
         if (stopped != ESP_OK) {
@@ -510,6 +587,9 @@ static void transition(app_usb_midi_t *usb, app_usb_mode_t target)
         const esp_err_t resumed = esp_iris_usb_set_enabled(true, USB_TRANSITION_MS);
         set_state(usb, resumed == ESP_OK ? APP_USB_MODE_VENDOR : APP_USB_MODE_NONE,
                     resumed == ESP_OK ? APP_USB_STATE_VENDOR : APP_USB_STATE_ERROR, resumed);
+        if (resumed != ESP_OK) {
+            schedule_vendor_recovery(usb, resumed);
+        }
     }
 }
 
@@ -518,6 +598,12 @@ static void owner_task(void *context)
     app_usb_midi_t *usb = context;
     unsigned completed_request = 0;
     for (;;) {
+        if (atomic_load_explicit(&s_shutdown_requested, memory_order_acquire)) {
+            /* Terminal restart state: do not dispatch events or submit again
+             * after emergency DMA reset. The CPU reset ends all lifetimes. */
+            vTaskDelay(pdMS_TO_TICKS(USB_EVENT_WAIT_MS));
+            continue;
+        }
         const bool stopping = atomic_load_explicit(&usb->stopping, memory_order_acquire);
         const unsigned request = atomic_load_explicit(&usb->request_sequence, memory_order_acquire);
         if (request != completed_request || stopping) {
@@ -534,6 +620,7 @@ static void owner_task(void *context)
                 vTaskDelete(NULL);
             }
         }
+        settle_vendor_recovery(usb);
         if (usb->library_installed) {
             pump_events(usb, pdMS_TO_TICKS(USB_EVENT_WAIT_MS));
             if (usb->gone) {

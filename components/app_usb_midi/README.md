@@ -52,12 +52,20 @@ panic, halts/flushes transfers and pumps all completion callbacks before freeing
 buffers. It releases interfaces, closes devices, deregisters the client, waits
 for all devices to be freed, uninstalls Host, then resumes Iris USB. No in-flight
 transfer or callback context is freed on timeout. Transition failures attempt
-Vendor rollback and expose the actual result. A repeated request can retry.
+Vendor rollback and expose the actual result. If an Iris pause times out while
+executing, the owner observes its public pending status and waits for settlement,
+then automatically restores Vendor. It never starts Host based on a timed-out
+pause or requires another user gesture to recover the management port. Original
+errors remain visible, and a repeated mode request can retry.
 USB disconnect and protocol re-handshake during a role change are expected.
 
 The pinned S31 CPU reset does not reset HS DMA. A small shutdown handler checks
-the controller ownership flag, disables its global interrupts, resets UTMI/OTG
-and disables its bus clock without waiting or freeing. Normal transitions use
+the controller ownership flag, disconnects its CPU interrupt source routes,
+checks the always-on clock status, then disables global interrupts and resets
+UTMI/OTG without waiting or freeing. It deliberately leaves the reset controller
+clocked until CPU reset so an already entered/pending HCD ISR can safely finish
+reading reset MMIO. A terminal shutdown flag prevents further event dispatch,
+role changes and transfer submission. Normal transitions use
 the complete Host lifecycle, not that emergency reset. When Iris owns USB, its
 own shutdown handler remains responsible for quiescence.
 
@@ -81,6 +89,7 @@ The same runner also compiles `tests/midi_host_lifecycle.c` around the real
 production owner with fake USB/FreeRTOS backends. It checks staged startup
 rollback, ownership transfer order, receive/transmit routing, TX overflow panic,
 in-flight teardown timeouts (buffers stay allocated), successful retry, truthful
-Iris-resume failure and bounded S31 shutdown ordering. Those deterministic host
+Iris-resume failure, late executing-pause timeout recovery, clock-off shutdown
+windows and bounded S31 shutdown ordering. Those deterministic host
 checks do not substitute for compilation against the pinned official Host Library
 or physical USB-role acceptance.

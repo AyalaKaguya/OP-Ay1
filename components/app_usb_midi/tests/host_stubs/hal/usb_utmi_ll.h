@@ -3,3 +3,4 @@
 #include <stdbool.h>
 void usb_utmi_ll_reset_register(void);
 void usb_utmi_ll_enable_bus_clock(bool enabled);
+bool _usb_utmi_ll_bus_clock_is_enabled(void);
