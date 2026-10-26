@@ -36,7 +36,7 @@ bool app_usb_midi_parse_configuration(const uint8_t *bytes, size_t size,
 {
     if (bytes == NULL || interface_out == NULL || size < 9 ||
             size > APP_USB_MIDI_MAX_CONFIG_BYTES || bytes[0] < 9 ||
-            bytes[1] != DESC_CONFIGURATION) {
+            bytes[1] != DESC_CONFIGURATION || bytes[4] == 0) {
         return false;
     }
     const size_t total = read_u16(bytes + 2);
@@ -58,7 +58,7 @@ bool app_usb_midi_parse_configuration(const uint8_t *bytes, size_t size,
         const unsigned length = descriptor[0];
         const unsigned type = descriptor[1];
         if (type == DESC_INTERFACE) {
-            if (length < 9) {
+            if (length < 9 || descriptor[2] >= bytes[4]) {
                 return false;
             }
             if (midi && !finish_interface(&candidate, header_seen,
