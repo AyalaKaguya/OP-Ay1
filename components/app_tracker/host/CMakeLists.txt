@@ -17,7 +17,7 @@ add_subdirectory("${ESP_GSP_COMPONENT_DIR}/tools/sim_bridge" sim_bridge)
 gsp_add_backend(op_ay1_backend
     SOURCES
         ../tracker_font.c ../tracker_graphics.c ../tracker_render.c
-        ../tracker_pages.c ../tracker_model.c ../tracker_synth.c ../tracker_ui.c ../tracker_settings.c
+        ../tracker_pages.c ../tracker_model.c ../tracker_synth.c ../tracker_ui.c ../tracker_settings.c ../tracker_transition.c
         ../../app_tracker_engine/tracker_engine.c
         ../../app_tracker_engine/tracker_module.c
         ../../app_tracker_engine/tracker_mixer.c

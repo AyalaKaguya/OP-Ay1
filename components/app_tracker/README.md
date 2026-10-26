@@ -10,7 +10,8 @@ directory, not beside the source.
 ## Responsibilities and dependencies
 
 - `tracker_ui.c` adapts the public GSP Canvas/input/timer API and owns two
-  reusable 480x480 frames plus scope scratch. It publishes only complete frames.
+  reusable 480x480 frames, one shared transition snapshot and scope scratch.
+  It publishes only complete frames and allocates nothing during animation.
 - `tracker_model.c` owns transport, mixer mute/solo, pad selection, input
   capture, navigation, parameter retry and the render snapshots.
 - `tracker_graphics.c` contains the shared palette, exact 5x7 glyph drawing,
@@ -139,8 +140,9 @@ Opening or cancelling input releases only touch-owned notes through
 `app_note_router`; external MIDI holds and song playback continue.
 
 The UI borrows `app_settings`, `app_usb_midi` and the note router. Their owners
-outlive the controller and its callbacks. `read_settings`, `request_settings`
-and `interaction_busy` hooks run on the UI thread and must not block. Requests
+outlive the controller and its callbacks. `read_settings`, `request_settings`,
+`request_idle`, `record_activity` and `interaction_busy` hooks run on the UI
+thread and must not block. Requests
 are retained until a published hardware snapshot acknowledges their complete
 brightness/angle/lock intent; an old snapshot cannot undo a pending action.
 Actual applied settings remain distinct from an in-flight slider request.
@@ -153,7 +155,8 @@ no OTG power entry. MIDI IO explicitly confirms that the PC USB management
 connection will disconnect; Vendor returns the controller to ESP-Iris.
 
 Read-only `0x2101/3` takes an empty payload and returns the menu/confirmation
-state, applied brightness/rotation/lock, battery validity/staleness/SOC/mV/mA,
+state, preferred/effective brightness, dim/off seconds and actual idle phase,
+rotation/lock, battery validity/staleness/SOC/mV/mA,
 charge state, IMU availability, display error/busy and actual USB owner/state,
 connection and packet/error counters. It has the same 50 ms publication and
 live-identity requirements as `0x2101/1`. It does not change settings or invent

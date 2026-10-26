@@ -7,10 +7,15 @@
 
 #include "tracker_graphics.h"
 
-#define MENU_BOTTOM 412
+#define MENU_BOTTOM TRACKER_SETTINGS_PANEL_HEIGHT
 #define MENU_TOP_GESTURE 32
 #define MENU_OPEN_TRAVEL 42
 #define MENU_TAP_SLOP 12
+
+static const uint32_t dim_seconds[] = {0, 15, 30, 60, 120, 300};
+static const uint32_t off_seconds[] = {0, 30, 60, 120, 300, 600};
+static const char *const dim_labels[] = {"OFF", "15S", "30S", "1M", "2M", "5M"};
+static const char *const off_labels[] = {"OFF", "30S", "1M", "2M", "5M", "10M"};
 
 static bool inside(int x, int y, int left, int top, int w, int h)
 {
@@ -41,6 +46,14 @@ void tracker_settings_receive_display(tracker_settings_t *s, const app_settings_
         s->requested_rotation = next->rotation;
         s->requested_locked = next->rotation_locked;
     }
+    if (s->awaiting_idle && next->dim_after_s == s->requested_dim_s &&
+            next->off_after_s == s->requested_off_s) {
+        s->awaiting_idle = false;
+    }
+    if (!s->awaiting_idle && !s->idle_request) {
+        s->requested_dim_s = next->dim_after_s;
+        s->requested_off_s = next->off_after_s;
+    }
 }
 
 static void brightness(tracker_settings_t *s, int x)
@@ -70,21 +83,43 @@ static void tap(tracker_settings_t *s, int x, int y)
     }
     if (inside(x, y, 420, 0, 60, 44) || y >= MENU_BOTTOM) {
         s->open = false;
-    } else if (inside(x, y, 278, 155, 172, 44)) {
+        return;
+    }
+    if (s->timeouts_open) {
+        if (inside(x, y, 0, 0, 180, 44)) {
+            s->timeouts_open = false;
+            return;
+        }
+        for (unsigned i = 0; i < 6; ++i) {
+            const int left = 30 + (int)(i % 3) * 143;
+            const int row = (int)(i / 3) * 48;
+            if (inside(x, y, left, 136 + row, 134, 40)) {
+                s->requested_dim_s = dim_seconds[i];
+                s->idle_request = true;
+            } else if (inside(x, y, left, 270 + row, 134, 40)) {
+                s->requested_off_s = off_seconds[i];
+                s->idle_request = true;
+            }
+        }
+        return;
+    }
+    if (inside(x, y, 24, 154, 432, 32)) {
+        s->timeouts_open = true;
+    } else if (inside(x, y, 278, 187, 172, 44)) {
         s->requested_locked = !s->requested_locked;
         s->display_request = true;
-    } else if (inside(x, y, 30, 211, 420, 44)) {
+    } else if (inside(x, y, 30, 243, 420, 44)) {
         const int column = (x - 30) / 107;
         if ((x - 30) % 107 < 99 && column < 4) {
             s->requested_rotation = column * 90;
             s->requested_locked = true;
             s->display_request = true;
         }
-    } else if (inside(x, y, 30, 319, 206, 44)) {
+    } else if (inside(x, y, 30, 351, 206, 44)) {
         if (s->usb.actual_mode != APP_USB_MODE_MIDI_HOST) {
             s->usb_confirm = true;
         }
-    } else if (inside(x, y, 244, 319, 206, 44)) {
+    } else if (inside(x, y, 244, 351, 206, 44)) {
         s->requested_usb = APP_USB_MODE_VENDOR;
         s->usb_request = true;
     }
@@ -114,7 +149,8 @@ bool tracker_settings_pointer(tracker_settings_t *s, int x, int y,
         s->start_x = x;
         s->start_y = y;
         s->moved = false;
-        s->brightness_drag = s->open && !s->usb_confirm && inside(x, y, 25, 112, 430, 36);
+        s->brightness_drag = s->open && !s->usb_confirm && !s->timeouts_open &&
+                             inside(x, y, 25, 112, 430, 36);
         if (s->brightness_drag) {
             brightness(s, x);
         }
@@ -131,6 +167,7 @@ bool tracker_settings_pointer(tracker_settings_t *s, int x, int y,
     if (s->top_candidate && dy >= MENU_OPEN_TRAVEL && dy > abs(dx) * 2) {
         s->top_candidate = false;
         s->open = true;
+        s->timeouts_open = false;
         if (out_opened) {
             *out_opened = true;
         }
@@ -172,11 +209,35 @@ static void button(tracker_graphics_t *g, int x, int y, int w, int h,
     tracker_gfx_button(g, x, y, w, h, label, active ? color : C_MUTED, active);
 }
 
+static void render_timeouts(tracker_graphics_t *g, const tracker_settings_t *s)
+{
+    tracker_gfx_text(g, 30, 14, 1, C_CYAN, "< BACK");
+    tracker_gfx_text(g, 132, 14, 2, C_TEXT, "DISPLAY TIMERS");
+    tracker_gfx_text(g, 30, 64, 1, C_MUTED, "IDLE DISPLAY / AUDIO KEEPS PLAYING");
+    tracker_gfx_text(g, 30, 85, 1, C_MUTED, "OFF DISABLES EACH TIMER");
+    tracker_gfx_text(g, 30, 116, 1, C_TEXT, "DIM AFTER");
+    tracker_gfx_text(g, 30, 250, 1, C_TEXT, "SCREEN OFF AFTER");
+    for (unsigned i = 0; i < 6; ++i) {
+        const int left = 30 + (int)(i % 3) * 143;
+        const int row = (int)(i / 3) * 48;
+        button(g, left, 136 + row, 134, 40, dim_labels[i],
+               s->requested_dim_s == dim_seconds[i], C_CYAN);
+        button(g, left, 270 + row, 134, 40, off_labels[i],
+               s->requested_off_s == off_seconds[i], C_CYAN);
+    }
+    tracker_gfx_text(g, 30, 382, 1, C_MUTED, "DIM TO 10% / TOUCH TO RESTORE");
+    tracker_gfx_text(g, 30, 403, 1, C_MUTED, "FIRST TOUCH WAKES WITHOUT PLAYING");
+}
+
 void tracker_settings_render(uint16_t *frame, const tracker_settings_t *s)
 {
-    if (!s->open) {
-        return;
+    if (s->open) {
+        tracker_settings_render_panel(frame, s);
     }
+}
+
+void tracker_settings_render_panel(uint16_t *frame, const tracker_settings_t *s)
+{
     /* Dim the live page, then draw actual controls rather than a concept bitmap. */
     for (unsigned i = 0; i < 480U * 480U; ++i) {
         const unsigned p = frame[i];
@@ -189,10 +250,18 @@ void tracker_settings_render(uint16_t *frame, const tracker_settings_t *s)
     tracker_gfx_clip(&g, 0, 0, 480, 480);
     tracker_gfx_rect(&g, 0, 0, 480, MENU_BOTTOM, C_BG);
     tracker_gfx_rect(&g, 0, 0, 480, 40, C_PANEL);
-    tracker_gfx_text(&g, 30, 14, 2, C_TEXT, "QUICK SETTINGS");
+    if (s->timeouts_open) {
+        render_timeouts(&g, s);
+    } else {
+        tracker_gfx_text(&g, 30, 14, 2, C_TEXT, "QUICK SETTINGS");
+    }
     tracker_gfx_line(&g, 435, 14, 445, 24, C_MUTED);
     tracker_gfx_line(&g, 445, 14, 435, 24, C_MUTED);
     tracker_gfx_rect(&g, 16, 40, 448, 1, C_BORDER);
+    if (s->timeouts_open) {
+        tracker_gfx_rect(&g, 202, MENU_BOTTOM - 8, 76, 3, C_MUTED);
+        return;
+    }
     const bool battery = s->display.battery_valid && !s->display.battery_stale;
     const uint16_t battery_color = battery && s->display.battery_percent <= 15 ? C_ACCENT :
                                    battery && s->display.charge == APP_SETTINGS_CHARGE_CHARGING ? C_GREEN : C_MUTED;
@@ -223,19 +292,22 @@ void tracker_settings_render(uint16_t *frame, const tracker_settings_t *s)
     tracker_gfx_text_right(&g, 450, 97, 2, C_TEXT, text);
     tracker_gfx_slider(&g, 32, 127, 416, (shown_brightness - 5) / 95.0f, C_CYAN, false);
     tracker_gfx_rect(&g, 16, 153, 448, 1, C_BORDER);
-    tracker_gfx_text(&g, 30, 173, 1, C_MUTED, "ROTATION");
-    button(&g, 278, 161, 172, 38, s->display.rotation_locked ? "LOCKED" : "AUTO", true,
+    tracker_gfx_text(&g, 30, 165, 1, C_TEXT, "DISPLAY TIMEOUTS");
+    tracker_gfx_text_right(&g, 450, 165, 1, C_CYAN, ">");
+    tracker_gfx_rect(&g, 16, 185, 448, 1, C_BORDER);
+    tracker_gfx_text(&g, 30, 205, 1, C_MUTED, "ROTATION");
+    button(&g, 278, 193, 172, 38, s->display.rotation_locked ? "LOCKED" : "AUTO", true,
            s->display.rotation_locked ? C_ACCENT : C_CYAN);
     static const char *const angles[] = {"0", "90", "180", "270"};
     for (int i = 0; i < 4; ++i) {
-        button(&g, 30 + 107 * i, 211, 99, 44, angles[i], s->display.rotation == i * 90, C_CYAN);
+        button(&g, 30 + 107 * i, 243, 99, 44, angles[i], s->display.rotation == i * 90, C_CYAN);
     }
-    tracker_gfx_text(&g, 30, 267, 1, C_MUTED, s->display.last_error ? "DISPLAY / SENSOR ERROR" :
+    tracker_gfx_text(&g, 30, 299, 1, C_MUTED, s->display.last_error ? "DISPLAY / SENSOR ERROR" :
                      s->display.busy || s->awaiting_display || s->display_request ? "APPLYING..." : "TAP ANGLE TO LOCK / AUTO TO FOLLOW");
-    tracker_gfx_rect(&g, 16, 285, 448, 1, C_BORDER);
-    tracker_gfx_text(&g, 30, 301, 1, C_MUTED, "USB MODE");
-    button(&g, 30, 319, 206, 44, "MIDI IO", s->usb.actual_mode == APP_USB_MODE_MIDI_HOST, C_CYAN);
-    button(&g, 244, 319, 206, 44, "VENDOR", s->usb.actual_mode == APP_USB_MODE_VENDOR, C_CYAN);
+    tracker_gfx_rect(&g, 16, 317, 448, 1, C_BORDER);
+    tracker_gfx_text(&g, 30, 333, 1, C_MUTED, "USB MODE");
+    button(&g, 30, 351, 206, 44, "MIDI IO", s->usb.actual_mode == APP_USB_MODE_MIDI_HOST, C_CYAN);
+    button(&g, 244, 351, 206, 44, "VENDOR", s->usb.actual_mode == APP_USB_MODE_VENDOR, C_CYAN);
     const char *usb_text = "DEVICE / ESP-IRIS MANAGEMENT";
     if (s->usb.state == APP_USB_STATE_SWITCHING) {
         usb_text = "SWITCHING USB...";
@@ -246,9 +318,9 @@ void tracker_settings_render(uint16_t *frame, const tracker_settings_t *s)
     } else if (s->usb.state == APP_USB_STATE_ERROR) {
         usb_text = "USB ERROR / TRY VENDOR";
     }
-    tracker_gfx_text(&g, 30, 376, 1, s->usb.state == APP_USB_STATE_ERROR ? C_ACCENT : C_MUTED, usb_text);
-    tracker_gfx_rect(&g, 16, 395, 448, 1, C_BORDER);
-    tracker_gfx_rect(&g, 202, 404, 76, 3, C_MUTED);
+    tracker_gfx_text(&g, 30, 408, 1, s->usb.state == APP_USB_STATE_ERROR ? C_ACCENT : C_MUTED, usb_text);
+    tracker_gfx_rect(&g, 16, 427, 448, 1, C_BORDER);
+    tracker_gfx_rect(&g, 202, 436, 76, 3, C_MUTED);
     if (s->usb_confirm) {
         tracker_gfx_rect(&g, 16, 130, 448, 180, C_PANEL);
         tracker_gfx_outline(&g, 16, 130, 448, 180, C_CYAN);

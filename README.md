@@ -71,6 +71,11 @@ drawer for battery status, brightness, automatic/manual rotation and USB
 MIDI Host / Vendor selection. The [settings implementation record](docs/global-settings-plan.zh-CN.md)
 tracks its own build and device acceptance separately from the earlier release.
 
+`codex/display-idle-motion` extends that drawer with independently configurable
+idle dimming and display-off timers, both disabled by default. Pages slide and
+the drawer opens/closes with short transitions. See the
+[display timeout and animation record](docs/display-idle-motion.zh-CN.md).
+
 ## USB Host product exception
 
 In this application's normal mode, MIDI IO temporarily assigns the S31 USB

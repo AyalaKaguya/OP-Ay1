@@ -21,6 +21,9 @@ typedef struct {
     void (*shutdown)(void *context);
     bool (*read_settings)(void *context, app_settings_snapshot_t *snapshot);
     bool (*request_settings)(void *context, int brightness, int rotation, bool locked);
+    bool (*request_idle)(void *context, uint32_t dim_after_s, uint32_t off_after_s);
+    /* Record real input. True consumes a screen-off wake gesture through up. */
+    bool (*record_activity)(void *context);
     void (*interaction_busy)(void *context, bool busy);
 } app_tracker_hooks_t;
 
@@ -30,6 +33,7 @@ typedef struct {
     app_audio_bus_t *audio_bus;
     app_note_router_t *note_router;
     app_usb_midi_t *usb_midi;
+    bool visualize_display_power; /* Native preview only; device uses panel power. */
     app_tracker_hooks_t hooks;
 } app_tracker_config_t;
 
@@ -50,6 +54,9 @@ typedef struct {
     uint32_t active_voices;
     float synth_peak;
     uint64_t rendered_frames;
+    uint16_t transition_progress;
+    bool page_animating;
+    bool menu_animating;
     esp_gsp_err_t last_error;
 } app_tracker_snapshot_t;
 
@@ -58,6 +65,7 @@ typedef struct {
     app_usb_midi_status_t usb;
     bool menu_open;
     bool confirmation_open;
+    bool timeouts_open;
 } app_tracker_settings_snapshot_t;
 
 /* Sources are borrowed. Callbacks and read belong to the UI thread.

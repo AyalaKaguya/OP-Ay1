@@ -16,6 +16,8 @@ static struct {
     app_note_router_t *router;
     app_usb_midi_t *usb;
     app_settings_snapshot_t settings;
+    app_settings_idle_t idle;
+    bool idle_busy;
     host_audio_t *audio;
     uint8_t *module;
     void *audio_timer;
@@ -26,8 +28,40 @@ static struct {
 static bool read_settings(void *context, app_settings_snapshot_t *snapshot)
 {
     (void)context;
+    app_settings_idle_target_t target;
+    app_settings_idle_evaluate(&backend.idle, gsp_sim_bridge_time_ms(), backend.idle_busy,
+                               backend.settings.brightness, &target);
+    backend.settings.effective_brightness = target.effective_brightness;
+    backend.settings.dimmed = target.dimmed;
+    backend.settings.screen_off = target.screen_off;
     *snapshot = backend.settings;
     return true;
+}
+
+static bool request_idle(void *context, uint32_t dim_after_s, uint32_t off_after_s)
+{
+    (void)context;
+    if (!app_settings_idle_configure(&backend.idle, dim_after_s, off_after_s, gsp_sim_bridge_time_ms())) {
+        return false;
+    }
+    backend.settings.dim_after_s = dim_after_s;
+    backend.settings.off_after_s = off_after_s;
+    return true;
+}
+
+static bool record_activity(void *context)
+{
+    (void)context;
+    app_settings_snapshot_t before;
+    (void)read_settings(NULL, &before);
+    app_settings_idle_record_activity(&backend.idle, gsp_sim_bridge_time_ms());
+    return before.screen_off;
+}
+
+static void interaction_busy(void *context, bool busy)
+{
+    (void)context;
+    backend.idle_busy = busy;
 }
 
 static bool request_settings(void *context, int brightness, int rotation, bool locked)
@@ -72,7 +106,7 @@ static void report_state(esp_gsp_handle_t ui, void *context)
                 "\"note\":%d,\"tab\":%d,\"preset\":%d,\"playing\":%s,"
                 "\"launched\":%d,\"pending\":%d,\"stop\":%s,\"voices\":%u,"
                 "\"peak\":%.6f,\"frames\":%llu,\"gain\":[%d,%d,%d,%d],"
-                "\"mute\":[%d,%d,%d,%d],\"solo\":[%d,%d,%d,%d],\"error\":%d}\n",
+                "\"mute\":[%d,%d,%d,%d],\"solo\":[%d,%d,%d,%d],\"error\":%d,\"page_motion\":%d,\"menu_motion\":%d,\"progress\":%u}\n",
                 (unsigned long long)gsp_sim_bridge_time_ms(), s.page, s.volume,
                 s.mix_scroll, s.held_note, s.synth_tab, s.preset,
                 s.playing ? "true" : "false", s.launched_pattern,
@@ -81,7 +115,8 @@ static void report_state(esp_gsp_handle_t ui, void *context)
                 (unsigned long long)s.rendered_frames,
                 s.gain_steps[0], s.gain_steps[1], s.gain_steps[2], s.gain_steps[3],
                 s.muted[0], s.muted[1], s.muted[2], s.muted[3],
-                s.soloed[0], s.soloed[1], s.soloed[2], s.soloed[3], s.last_error);
+                s.soloed[0], s.soloed[1], s.soloed[2], s.soloed[3], s.last_error,
+                s.page_animating, s.menu_animating, (unsigned)s.transition_progress);
         fflush(backend.state_log);
     }
     app_tracker_settings_snapshot_t q;
@@ -90,8 +125,10 @@ static void report_state(esp_gsp_handle_t ui, void *context)
         if (path && *path) {
             FILE *file = fopen(path, "a");
             if (file) {
-                fprintf(file, "{\"open\":%d,\"confirm\":%d,\"brightness\":%d,\"rotation\":%d,\"locked\":%d,\"usb_mode\":%d,\"usb_state\":%d,\"usb_error\":%ld}\n",
-                        q.menu_open, q.confirmation_open, q.display.brightness, q.display.rotation,
+                fprintf(file, "{\"open\":%d,\"confirm\":%d,\"timeouts\":%d,\"brightness\":%d,\"effective\":%d,\"dim_s\":%lu,\"off_s\":%lu,\"dimmed\":%d,\"screen_off\":%d,\"rotation\":%d,\"locked\":%d,\"usb_mode\":%d,\"usb_state\":%d,\"usb_error\":%ld}\n",
+                        q.menu_open, q.confirmation_open, q.timeouts_open, q.display.brightness, q.display.effective_brightness,
+                        (unsigned long)q.display.dim_after_s, (unsigned long)q.display.off_after_s,
+                        q.display.dimmed, q.display.screen_off, q.display.rotation,
                         q.display.rotation_locked, q.usb.actual_mode, q.usb.state, (long)q.usb.last_error);
                 fclose(file);
             }
@@ -142,6 +179,7 @@ esp_gsp_err_t gsp_bridge_app_init(esp_gsp_handle_t ui)
         return ESP_GSP_ERR_NO_MEM;
     }
     app_settings_snapshot_defaults(&backend.settings);
+    app_settings_idle_init(&backend.idle, gsp_sim_bridge_time_ms());
     const char *state_path = getenv("OP_AY1_SIM_STATE_LOG");
     if (state_path && *state_path) {
         backend.state_log = fopen(state_path, "w");
@@ -152,9 +190,12 @@ esp_gsp_err_t gsp_bridge_app_init(esp_gsp_handle_t ui)
     const app_tracker_config_t config = {
         .tracker = backend.tracker, .synth = backend.synth, .audio_bus = backend.bus,
         .note_router = backend.router, .usb_midi = backend.usb,
+        .visualize_display_power = true,
         .hooks = {
             .time_ms = clock_ms, .set_volume = set_volume,
-            .read_settings = read_settings, .request_settings = request_settings
+            .read_settings = read_settings, .request_settings = request_settings,
+            .request_idle = request_idle, .record_activity = record_activity,
+            .interaction_busy = interaction_busy,
         },
     };
     const esp_gsp_err_t result = app_tracker_create(ui, &config, &backend.controller);

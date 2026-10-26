@@ -154,6 +154,18 @@ static bool request_settings(void *context, int brightness, int rotation, bool l
            app_settings_request_lock(device->settings, locked) == ESP_OK;
 }
 
+static bool request_idle(void *context, uint32_t dim_after_s, uint32_t off_after_s)
+{
+    tracker_device_t *device = context;
+    return device->settings && app_settings_request_idle(device->settings, dim_after_s, off_after_s) == ESP_OK;
+}
+
+static bool record_activity(void *context)
+{
+    tracker_device_t *device = context;
+    return device->settings && app_settings_record_activity(device->settings);
+}
+
 static void interaction_busy(void *context, bool busy)
 {
     tracker_device_t *device = context;
@@ -180,11 +192,14 @@ static esp_err_t settings_rpc(const esp_iris_rpc_request_t *request,
      * snapshots on the small RPC task stack. */
     const app_tracker_settings_snapshot_t *s = &device->settings_snapshot;
     const int count = snprintf((char *)response, capacity,
-                               "{\"open\":%d,\"confirm\":%d,\"brightness\":%d,\"rotation\":%d,\"locked\":%d,"
+                               "{\"open\":%d,\"confirm\":%d,\"timeouts\":%d,\"brightness\":%d,\"effective\":%d,\"dim_s\":%lu,\"off_s\":%lu,\"dimmed\":%d,\"screen_off\":%d,\"rotation\":%d,\"locked\":%d,"
                                "\"battery_valid\":%d,\"battery_stale\":%d,\"battery_percent\":%d,\"voltage_mv\":%d,"
                                "\"current_ma\":%d,\"charge\":%d,\"imu\":%d,\"display_error\":%d,\"busy\":%d,"
                                "\"usb_mode\":%d,\"usb_state\":%d,\"connected\":%d,\"rx\":%lu,\"tx\":%lu,\"usb_error\":%ld}",
-                               s->menu_open, s->confirmation_open, s->display.brightness, s->display.rotation,
+                               s->menu_open, s->confirmation_open, s->timeouts_open, s->display.brightness,
+                               s->display.effective_brightness, (unsigned long)s->display.dim_after_s,
+                               (unsigned long)s->display.off_after_s, s->display.dimmed, s->display.screen_off,
+                               s->display.rotation,
                                s->display.rotation_locked, s->display.battery_valid, s->display.battery_stale,
                                s->display.battery_percent, s->display.voltage_mv, s->display.current_ma, s->display.charge,
                                s->display.imu_available, s->display.last_error, s->display.busy, s->usb.actual_mode,
@@ -296,6 +311,7 @@ static esp_err_t audition_rpc(const esp_iris_rpc_request_t *request,
     if (xQueueSend(device->audition_queue, &command, 0) != pdTRUE) {
         return ESP_ERR_TIMEOUT;
     }
+    (void)record_activity(device);
     memcpy(response, data, 8);
     *response_size = 8;
     return ESP_OK;
@@ -326,6 +342,7 @@ static void ai_short(void *button, void *context)
 {
     (void)button;
     tracker_device_t *device = context;
+    (void)record_activity(device);
     atomic_fetch_or_explicit(&device->transport_requests, 1U, memory_order_release);
 }
 
@@ -333,6 +350,7 @@ static void ai_long(void *button, void *context)
 {
     (void)button;
     tracker_device_t *device = context;
+    (void)record_activity(device);
     atomic_fetch_or_explicit(&device->transport_requests, 2U, memory_order_release);
 }
 
@@ -392,7 +410,8 @@ esp_err_t app_tracker_start_workstation(esp_gsp_handle_t ui, tracker_engine_t *e
             .context = device, .allocate_frame = allocate_frame,
             .free_frame = free_frame, .time_ms = time_ms, .set_volume = set_volume,
             .heartbeat = heartbeat, .shutdown = shutdown, .read_settings = read_settings,
-            .request_settings = request_settings, .interaction_busy = interaction_busy
+            .request_settings = request_settings, .interaction_busy = interaction_busy,
+            .request_idle = request_idle, .record_activity = record_activity,
         },
     };
     const esp_err_t result = app_tracker_create(ui, &config, out_handle);
