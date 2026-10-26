@@ -191,7 +191,9 @@ static void publish(app_settings_t *s, uint64_t now)
                       s->current.brightness != atomic_load_explicit(&s->requested_brightness, memory_order_relaxed) ||
                       !s->brightness_applied || s->current.effective_brightness !=
                       s->idle_target.effective_brightness ||
-                      s->current.screen_off != s->idle_target.screen_off;
+                      s->current.screen_off != s->idle_target.screen_off ||
+                      (!s->idle_target.screen_off &&
+                       atomic_load_explicit(&s->off_wake_required, memory_order_acquire));
     const bool stale = s->battery_seen && now - s->current.battery_updated_ms >= BATTERY_STALE_MS;
     s->current.battery_stale = stale;
     s->current.battery_valid = s->battery_seen && !stale && s->battery_error == ESP_OK;
