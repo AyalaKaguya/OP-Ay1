@@ -76,3 +76,11 @@ owner. `python tools/test_midi.py` compiles the real router, packet/descriptor
 parsers and synth with the native adapter. Hardware acceptance additionally
 requires actual keyboard enumeration/notes/sustain/hotplug, both role directions,
 Iris return, DMA-safe reboot and preservation of the retained Vibe Mode contract.
+
+The same runner also compiles `tests/midi_host_lifecycle.c` around the real
+production owner with fake USB/FreeRTOS backends. It checks staged startup
+rollback, ownership transfer order, receive/transmit routing, TX overflow panic,
+in-flight teardown timeouts (buffers stay allocated), successful retry, truthful
+Iris-resume failure and bounded S31 shutdown ordering. Those deterministic host
+checks do not substitute for compilation against the pinned official Host Library
+or physical USB-role acceptance.
