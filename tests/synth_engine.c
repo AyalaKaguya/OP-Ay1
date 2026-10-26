@@ -326,6 +326,68 @@ static void test_source_headroom(void)
     app_synth_destroy(synth);
 }
 
+static void test_preset_performance_levels(void)
+{
+    const int roots[] = {48, 60, 72};
+    const int intervals[] = {0, 4, 7, 11};
+    float *buffer = calloc(TEST_BLOCK * 2U, sizeof(*buffer));
+    assert(buffer != NULL);
+    for (int preset = 0; preset < APP_SYNTH_PATCH_COUNT; ++preset) {
+        for (unsigned root = 0; root < sizeof(roots) / sizeof(roots[0]); ++root) {
+            app_synth_t *synth = app_synth_create(TEST_RATE);
+            assert(synth != NULL);
+            assert(app_synth_set_patch_id(synth, (app_synth_patch_id_t)preset));
+            render_silence(synth, TEST_RATE / 2U);
+            assert(app_synth_note_on(synth, roots[root], 0.8f));
+            render_silence(synth, TEST_RATE * 2U);
+            double sum = 0.0;
+            size_t measured = 0;
+            while (measured < TEST_RATE * 2U) {
+                size_t frames = TEST_RATE * 2U - measured;
+                if (frames > TEST_BLOCK) {
+                    frames = TEST_BLOCK;
+                }
+                app_synth_render(synth, buffer, frames);
+                sum += energy(buffer, frames) * (double)frames;
+                measured += frames;
+            }
+            const double rms = sqrt(sum / (double)measured);
+            /* A normal one-finger voice must be usable at codec unity. The
+             * old 0.18 normalization fails this level floor for every preset. */
+            assert(rms > 0.060 && rms < 0.2);
+            app_synth_destroy(synth);
+
+            synth = app_synth_create(TEST_RATE);
+            assert(synth != NULL);
+            assert(app_synth_set_patch_id(synth, (app_synth_patch_id_t)preset));
+            render_silence(synth, TEST_RATE / 2U);
+            for (unsigned key = 0; key < 4; ++key) {
+                assert(app_synth_note_on(synth, roots[root] + intervals[key], 1.0f));
+            }
+            float peak = 0.0f;
+            size_t produced = 0;
+            while (produced < TEST_RATE * 10U) {
+                size_t frames = TEST_RATE * 10U - produced;
+                if (frames > TEST_BLOCK) {
+                    frames = TEST_BLOCK;
+                }
+                app_synth_render(synth, buffer, frames);
+                for (size_t sample = 0; sample < frames * 2U; ++sample) {
+                    assert(isfinite(buffer[sample]));
+                    peak = fmaxf(peak, fabsf(buffer[sample]));
+                }
+                produced += frames;
+            }
+            assert(peak < 1.0f);
+            printf("preset level: %s C%d single RMS %.4f / full-velocity chord peak %.4f\n",
+                   app_synth_preset_name((app_synth_patch_id_t)preset),
+                   roots[root] / 12 - 1, rms, (double)peak);
+            app_synth_destroy(synth);
+        }
+    }
+    free(buffer);
+}
+
 static void test_envelope(void)
 {
     app_synth_t *synth = sine_synth();
@@ -552,6 +614,7 @@ int main(int argc, char **argv)
     test_queue_emergency_and_steal();
     test_envelope();
     test_source_headroom();
+    test_preset_performance_levels();
     test_concurrent_commands();
     test_failed_snapshots_preserve_output();
     if (argc > 1) {

@@ -11,7 +11,9 @@
 #define SYNTH_TABLE_COUNT 4U
 #define SYNTH_CONTROL_INTERVAL 32U
 #define SYNTH_SMOOTH_SECONDS 0.010f
-#define SYNTH_VOICE_GAIN 0.18f
+/* Four preset voices at full velocity retain headroom; the former 0.18 scale
+ * left a single performance voice too quiet even at maximum codec volume. */
+#define SYNTH_VOICE_GAIN 0.36f
 #define SYNTH_ENV_EPSILON 0.00001f
 #define SYNTH_MIN_RATE 8000.0f
 #define SYNTH_MAX_RATE 192000.0f

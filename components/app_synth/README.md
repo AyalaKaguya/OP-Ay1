@@ -9,6 +9,15 @@ The product rate is 48 kHz. Creation accepts 8–192 kHz, allocates the instance
 and its fixed buffers once, and returns NULL for invalid rates or allocation
 failure. Rendering never allocates, waits, logs, or calls board APIs.
 
+The performance normalization is 0.36 per voice, before patch gain, velocity,
+envelope, filter and equal-power pan. It is fixed rather than changing with
+active voice count, so adding a chord does not turn down already-held notes.
+The original 0.18 scale was 6.02 dB quieter and left normal single-note playing
+too quiet at codec unity. Default preset single-note levels and full-velocity
+four-note chords are covered by native regression tests. Extreme edits and a
+simultaneous S3M mix can still exceed full scale; final clipping belongs to the
+audio bus and its master meter.
+
 The engine provides polyBLEP saw and square, triangle and sine, a generated
 four-position wavetable with phase/position interpolation, a topology-preserving
 two-pole low-pass, ADSR, and per-voice sine LFO modulation of pitch, cutoff or
