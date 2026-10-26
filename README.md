@@ -108,5 +108,12 @@ bootloader and partition layout.
 
 ## License
 
-Apache-2.0, see [LICENSE](LICENSE). Third-party dependencies (ESP-IDF, ESP-GSP,
-BSP, ESP-Iris, …) keep their own licenses and are not vendored here.
+Application code is Apache-2.0, see [LICENSE](LICENSE). Third-party dependencies
+(ESP-IDF, ESP-GSP, BSP, ESP-Iris, …) keep their own licenses and are not vendored
+here.
+
+**Bundled music:** `main/assets/aryx.s3m` is © 1995 Karsten Koch (all rights
+reserved). ModArchive only licenses it for unmodified, unbundled redistribution;
+embedding it in a firmware image distributed to others requires the author's
+written permission. See [docs/store/licensing-aryx.md](docs/store/licensing-aryx.md)
+for the evidence and the pending permission request.

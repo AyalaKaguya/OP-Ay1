@@ -70,7 +70,9 @@ OP-Ay1 是一台围绕一首内置模块音乐 **ARYX（`aryx.s3m`）** 打造�
 ## 许可与致谢
 
 - 应用代码：Apache-2.0（见仓库 `LICENSE`）。
-- 内置曲目 `aryx.s3m`：**授权信息待作者确认后补充**。
+- 内置曲目 `aryx.s3m`：© 1995 **Karsten Koch**，版权归作者所有。该曲目在
+  ModArchive 仅按“原样、未打包”分发；**打包进固件分发需要作者书面许可**，
+  当前尚未取得（见 `docs/store/licensing-aryx.md`）。取得许可后在此写明授权方式。
 - 依赖：ESP-IDF、ESP-GSP、BSP、ESP-Iris 等保留各自许可，本仓库不内置其源码。
 
 ---

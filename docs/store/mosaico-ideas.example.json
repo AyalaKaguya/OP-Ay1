@@ -11,7 +11,7 @@
       "混音台",
       "ESP-Mosaico"
     ],
-    "license": "Code: Apache-2.0. Bundled music: aryx.s3m (license to be confirmed).",
+    "license": "Code: Apache-2.0. Music: aryx.s3m (c) 1995 Karsten Koch - written permission required before bundling; see docs/store/licensing-aryx.md.",
     "external_links": [
       {
         "label": "GitHub",

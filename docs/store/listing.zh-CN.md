@@ -34,7 +34,8 @@
 
 **License 字段**（≤500 字符，确认曲目授权后再上传）：
 
-> 代码：Apache-2.0（见仓库 LICENSE）。内置曲目 aryx.s3m：<?>。
+> 代码：Apache-2.0（见仓库 LICENSE）。内置曲目 aryx.s3m © 1995 Karsten Koch，
+> 版权归作者所有；打包分发需作者书面许可（当前待确认）。
 
 **Changelog v1.0.0**
 

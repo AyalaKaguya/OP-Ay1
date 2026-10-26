@@ -88,10 +88,10 @@ project upload         → 在 mosaico.ai 创建/更新【草稿】，返回 dra
 
 ## 7. 发布前必须确认（风险项）
 
-1. **内置曲目 `aryx.s3m` 的授权**：平台要求 `license` 真实；代码为 Apache-2.0，但曲目版权与再分发许可未确认。选项：
-   - 若你有权分发：在 `license` 与 README 中写明（如 “Music: aryx.s3m, © … / CC BY 4.0”）；
-   - 若无权：首版换成自制曲目，或先从发布包中移除并明确说明。
-   **这是上传前的阻塞项。**
+1. **内置曲目 `aryx.s3m` 的授权（已核查：阻塞项）**：作者为 **Karsten Koch**（1995，ModArchive MD5 与本文件一致）。仅存在 ModArchive「未修改、未打包」的分发许可，明确不覆盖打包进应用/固件；Aminet 归档也不构成授权。证据与处置建议见 [licensing-aryx.md](licensing-aryx.md)。选项：
+   - 取得作者书面许可：在 `license` 与 README 中写明（如 “Music: aryx.s3m © 1995 Karsten Koch, used with permission (date)”）；
+   - 或替换为 PD/CC0/CC-BY 曲目、自制曲目；
+   **未解决前不得上传商店，也不建议继续分发含该曲目的 `v1.0.0` 固件。**
 2. **中文设备展示字体**：`device.presentations.zh-CN.font` 需要包含中文字形的字体。建议使用 OFL 授权的 Noto Sans SC（下载到本地生成字形子集，不提交到仓库）；不要用系统微软雅黑等不可再分发的字体做嵌入。
 3. **账号登录**：需你本人完成浏览器设备授权。
 4. **首版定位**：只宣称“播放器 + 混音/片段监听”，不要写成已具备合成器/采样器/音序器；路线图另行说明。
