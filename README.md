@@ -1,119 +1,127 @@
 # OP-Ay1
 
-A handheld tracker / music workstation prototype for the **ESP-Mosaico** board
-(ESP32-S31, 480×480 CO5300 display, ES8311 audio, CST9220 touch).
+A handheld tracker and music workstation for **ESP-Mosaico**: native synthesis,
+S3M playback and a pixel UI on a 480×480 touch display.
 
-It plays the built-in `aryx.s3m` module through a portable C S3M engine (48 kHz
-stereo), and drives a five-page GSP interface: waveform scope, pattern view,
-transport, a mixer, and a 4×4 section-pad launcher.
+**Current development:** [codex/synthesizer](https://github.com/AyalaKaguya/OP-Ay1/tree/codex/synthesizer)
+contains the six-page UI and four-voice synthesizer described below. The existing
+[v1.0.0 release](https://github.com/AyalaKaguya/OP-Ay1/releases/tag/v1.0.0)
+is the earlier five-page tracker player; its downloadable firmware has not been replaced.
 
-![OP-Ay1 pattern view](docs/images/pattern.png)
+![OP-Ay1 six-page device UI](docs/images/overview.png)
 
-## Features
+*Device captures · ESP-Mosaico · 2026-10-26. These are running firmware screenshots.*
 
-- **Portable S3M engine** – decoder, sequencer and mixer in plain C; no ESP-IDF
-  dependency except a priority-inheriting task lock. Handles speed/tempo effects,
-  portamento, volume slides, sample loops, panning and per-channel gain.
-- **Live monitoring** – per-channel peak meters, 2048-sample waveform scopes and
-  a master meter with clip detection.
-- **Mixer page** – dBFS-calibrated meters (green ≤ −12 dB, yellow ≤ −3 dB), a
-  scrollable channel list, dB faders with readout, and mute/solo with the usual
-  cascade behaviour.
-- **Section pads (clip launcher)** – 4×4 pads: a tap loops that pattern, a second
-  tap queues the next pad (blinking in tempo) and it takes over on the next
-  pattern boundary; tapping the playing pad queues a stop that closes after the
-  current pattern. During song playback the current and upcoming patterns are
-  shown.
-- **Robustness** – priority-inheriting engine mutex, UI stall watchdog (panic +
-  self-recovering reboot), task watchdog, larger ISR stack and a retained
-  pre-crash log ring readable through ESP-Iris.
+## What it does
 
-| PATTERN | MIX |
+- **Four-voice synthesizer** — subtractive and built-in wavetable synthesis;
+  saw, square, triangle and sine waves; a low-pass filter, ADSR and LFO per voice.
+  INIT, BASS, LEAD and PAD presets can be edited while playing.
+- **Touch performance** — hold a key, slide between notes and release into the
+  envelope tail. Octave controls and PANIC stay within reach. Synth notes remain
+  playable while the song is paused.
+- **S3M player** — a portable C decoder, sequencer and mixer at 48 kHz stereo,
+  with tempo/speed effects, sample loops, panning and per-channel gain.
+- **Shared audio output** — tracker and synth mix through one floating-point bus;
+  final saturation, master metering and clip detection happen at the output.
+- **Mixer** — dB faders, dBFS meters, mute/solo and a scrollable channel list.
+  The master volume controls the onboard codec separately from digital source gain.
+- **Section Pads** — a 4×4 Pattern launcher with queued switches and stops at
+  Pattern boundaries. The playing and upcoming patterns have distinct feedback.
+- **Shared native UI** — device and GSP simulator run the same C interaction
+  model and renderers. Scopes and Pattern view keep their original tracker look;
+  Playback, Mixer and Pads now use the same bitmap font and grid.
+
+Hardware: **ESP32-S31**, **CO5300 480×480 display**, **ES8311 audio** and
+**CST9220 touch** on the ESP-Mosaico board.
+
+## Six pages
+
+| WAVES | PATTERN |
 |---|---|
-| ![Pattern view](docs/images/pattern.png) | ![Mixer](docs/images/mix.png) |
+| ![Live channel waveforms](docs/images/waves.png) | ![Tracker Pattern view](docs/images/pattern.png) |
 
-| SECTION PADS | PLAYBACK |
+| PLAYBACK | MIXER |
 |---|---|
-| ![Section pads](docs/images/pads.png) | ![Playback](docs/images/playback.png) |
+| ![Song transport and speed](docs/images/playback.png) | ![Mixer with channel solo](docs/images/mix.png) |
 
-| WAVES | |
+| SECTION PADS | SYNTH |
 |---|---|
-| ![Waveforms](docs/images/waves.png) | |
+| ![Playing Pattern on the section pads](docs/images/pads.png) | ![Synth playing C4](docs/images/synth.png) |
+
+The Mixer capture shows solo while the song is paused, so its meters are zero.
+The Pad capture shows the state after a Pattern switch has completed.
 
 ## Controls
 
-- **Section pads** – tap to play a pattern in a loop; tap another to queue it;
-  tap the playing pad to queue a stop (tap again to cancel).
-- **Mix** – drag vertically in the list to scroll (start in the right-hand gutter
-  to avoid the faders). Fader law: 100 = 0 dB, 120 = +6 dB, 50 = −15 dB, 0 = mute.
-- **Playback** – play/pause are immediate; restart rewinds the song and leaves pad
-  mode; speed presets are 0.5× / 1× / 1.5× / 2×.
-- **Hardware AI button** – short press play/pause, long press rewind.
+- **Navigation:** tap a bottom page dot or swipe outside captured controls.
+- **Playback:** play/pause is immediate; RESTART pauses and rewinds the song.
+  Speed presets are 0.5×, 1×, 1.5× and 2×.
+- **Mixer:** drag a fader horizontally; drag the list vertically to scroll.
+  Use the right gutter to scroll without touching faders. Gain steps:
+  100 = 0 dB, 120 = +6 dB, 50 = −15 dB, 0 = silent.
+- **Section Pads:** tap a Pad to loop its Pattern; tap another to queue a switch.
+  Tap the playing Pad to queue a stop, then tap again to cancel it.
+- **Synth:** choose a preset and OSC / FILTER / ENV / LFO tab, adjust parameters,
+  then hold or slide across the keyboard. PANIC clears voices. Edits stay in RAM.
+- **AI button:** short press toggles song playback; long press pauses and rewinds.
 
-## Roadmap
+## Build and preview
 
-### Software
+This repository is the application. Place it at `projects/OP-Ay1` inside an
+ESP-Mosaico workspace with its pinned BSP and utility submodules initialized.
+Activate the workspace's exact ESP-IDF checkout before building:
 
-- [ ] **Synthesizer** – add a native voice engine (subtractive / wavetable) next to
-      S3M playback, with filter, envelope and LFO per voice.
-- [ ] **Sampler** – record/import samples, slice and map them to the section pads,
-      with per-pad gain and pitch.
-- [ ] **Sequencer** – step/clip sequencing, pattern chaining and a proper song mode
-      on top of the current order-list player.
-- [ ] Expand the module/track limits and add MIDI-over-USB input.
+- Target: `esp32s31`.
+- ESP-IDF: `7b9cc1ac79f865983f59bb8ff3ff43eb74ff1dbe`.
+- ESP-GSP: `1.5.1`; GSPC: `0.6.1`.
 
-### Hardware
-
-- [ ] **External DAC** – I2S DAC output for higher-quality audio than the on-board
-      codec path.
-- [ ] **Faders** – physical channel faders wired to the mixer page.
-- [ ] **Keyboard** – a key/pad matrix for note entry and performance.
-
-## Build and install
-
-Requirements: the workspace's ESP-Mosaico toolchain (ESP-IDF 6.2 dev, GSP 1.5.1,
-`gspc` 0.6.1) and a device running the retained Recovery image.
+From the workspace root, select the current development source and use the
+product CLI for installation and native preview:
 
 ```sh
-# build + install from source
+git -C projects/OP-Ay1 switch codex/synthesizer
 python mosaico.py iris system-update --project projects/OP-Ay1
-
-# or install a released ESP-Iris bundle
-python mosaico.py iris system-update --bundle OP-Ay1-1.0.0.irisfw
+python mosaico.py project sim --project projects/OP-Ay1 --interactive
 ```
 
-Prebuilt bundles are attached to [GitHub Releases](https://github.com/AyalaKaguya/OP-Ay1/releases).
+Installation uses retained **Vibe Mode** and an ESP-Iris `.irisfw` System Update
+bundle. Native preview requires a host C compiler. For code-only updates,
+`app-update` is available when the full partition table and resources match.
 
-`app-update` can be used for code-only iterations while the partition table is
-unchanged. The release artifact is the **ESP-Iris system-update bundle**
-(`.irisfw`), not a full-flash image: the retained Recovery image owns the
-bootloader and partition layout.
+Run the portable checks from the application directory:
 
-## Structure
+```sh
+python tools/test_synth.py
+python tools/test_audio.py
+python tools/test_ui_renderer.py
+python tools/test_ui_interaction.py
+```
 
-- `main` – composition root: Recovery support, engine, audio, display and GSP.
-- `components/tracker_engine` – portable S3M decoder / sequencer / mixer.
-- `components/app_audio` – DSP task, chunk ring and I2S writer.
-- `components/app_tracker` – GSP scene controller, canvas renderers, mix page and
-  section pads; `ui/` holds the authored scene and packed bundle.
-- `components/app_display` – BSP-to-GSP display setup.
-- `main/assets/aryx.s3m` – built-in song (12 patterns, 12 channels).
+See the [UI and simulator contract](https://github.com/AyalaKaguya/OP-Ay1/blob/codex/synthesizer/components/app_tracker/README.md)
+and [device verification record](https://github.com/AyalaKaguya/OP-Ay1/blob/codex/synthesizer/docs/implementation-validation.zh-CN.md)
+for ownership, test coverage and evidence. Native regression tests, simulator
+input checks and real-device installation/playback checks have passed; the
+single-note synth level was increased by 6 dB after listening feedback.
 
-## Known limitations
+## Limits and next steps
 
-- The bundled module has 12 patterns and 12 channels, so pads 0C–0F are dim and
-  mixer rows 0C–0F are inert.
-- A horizontal swipe inside the mixer list pages the scene; vertical drags scroll.
-- The old order-list editor has been replaced by the section-pad launcher.
+- Touch input currently supports one pointer. Four DSP voices do not imply
+  independent multitouch chord input.
+- Patch persistence, sample recording/import, a step sequencer and USB MIDI
+  are future work. Section Pads currently launch Patterns rather than edit steps.
+- The bundled song has 12 Patterns and 12 channels; Pad and mixer slots 0C–0F are empty.
+- Long-duration maximum-load stability and browser focus-loss cancellation remain
+  outside the completed checks. Occasional waveform-page timing spikes are
+  documented in the verification record.
+- External DAC output, physical faders and a keyboard matrix remain hardware goals.
 
 ## License
 
-Application code is Apache-2.0, see [LICENSE](LICENSE). Third-party dependencies
-(ESP-IDF, ESP-GSP, BSP, ESP-Iris, …) keep their own licenses and are not vendored
-here.
+Application code is **Apache-2.0**; see [LICENSE](LICENSE). Dependencies keep
+their own licenses.
 
-**Bundled music:** `main/assets/aryx.s3m` is © 1995 Karsten Koch (all rights
-reserved). ModArchive only licenses it for unmodified, unbundled redistribution;
-embedding it in a firmware image distributed to others requires the author's
-written permission. See [docs/store/licensing-aryx.md](docs/store/licensing-aryx.md)
-for the evidence and the pending permission request.
+**Bundled music:** `main/assets/aryx.s3m` is © 1995 Karsten Koch, all rights
+reserved. ModArchive permits unmodified, unbundled redistribution; embedding
+it in distributed firmware requires the author's written permission. See
+[the licensing record](docs/store/licensing-aryx.md) for evidence and release constraints.
