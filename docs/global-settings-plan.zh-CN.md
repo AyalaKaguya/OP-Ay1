@@ -119,7 +119,7 @@ runner 报告 1 项 warning，完整日志保留在应用 `.codex-runs/idf-low-n
 `codex/global-settings` 分支，当前未推送这次新功能。
 
 设备 `4553502d4952495301001c2904d088f4` 首次安装后读取到亮度 70%、电池 100%、
-4173 mV、FULL、IMU 可用、display/USB error 均为 0。这是当时读数，不代表以后一直不变。
+4173 mV、IDLE、IMU 可用、display/USB error 均为 0。这是当时读数，不代表以后一直不变。
 用户发现 AUTO 的 0°/180° 反向，已校正 Y 轴映射并更新方向回归；
 用户随后确认四方向 AUTO 和锁定均正常。
 

@@ -50,8 +50,8 @@ UI 在启动时增加一张 480×480 RGB565 缓冲，约 450 KiB；设备使用�
 证据在应用 `.codex-runs/idle-motion-sim/`，原生构建日志为
 `.codex-runs/idle-motion-native-build.log`。
 
-固定 SDK 构建 `20261027-004348-build-40320` 返回 OK，应用 1632608 字节，
+固定 SDK 最终构建 `20261027-005016-build-64400` 返回 OK，应用 1632608 字节，
 runner 报告 1 项 warning。完整日志在
-`.codex-runs/idf-low-noise-build/20261027-004348-build-40320/raw.log`。
+`.codex-runs/idf-low-noise-build/20261027-005016-build-64400/raw.log`。
 这轮没有修改 MIDI 源码，也未将本轮显示／动画变更刷入设备；
 真实 Display Off 的 TE 行为、物理唤醒和满负载动画性能仍需真机验收。
