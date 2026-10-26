@@ -180,6 +180,28 @@ static void independent_synth(void)
     tracker_engine_destroy(tracker);
 }
 
+static void tracker_transient_meter(void)
+{
+    make_fixture(1);
+    fixture[0x11f] = 0; /* Sixteen positive samples, then silence (no loop). */
+    tracker_engine_t *tracker = tracker_engine_create(fixture, sizeof(fixture));
+    CHECK(tracker != NULL);
+    if (tracker == NULL) {
+        return;
+    }
+    app_audio_bus_t *bus = app_audio_bus_create(tracker, NULL);
+    CHECK(bus != NULL);
+    if (bus != NULL) {
+        tracker_engine_play(tracker);
+        app_audio_bus_render(bus, output, 512);
+        CHECK(output[0] > 0 && output[1022] == 0 && output[1023] == 0);
+        CHECK(tracker_engine_channel_level(tracker, 0) > 0);
+        CHECK(tracker_engine_master_level(tracker) > 0);
+    }
+    app_audio_bus_destroy(bus);
+    tracker_engine_destroy(tracker);
+}
+
 int main(void)
 {
     CHECK(app_audio_bus_create(NULL, NULL) == NULL);
@@ -189,6 +211,7 @@ int main(void)
     float_and_saturation();
     legacy_and_chunk_equivalence();
     independent_synth();
+    tracker_transient_meter();
     printf("audio bus: %s (%d failures)\n", failures == 0 ? "PASS" : "FAIL", failures);
     return failures == 0 ? 0 : 1;
 }

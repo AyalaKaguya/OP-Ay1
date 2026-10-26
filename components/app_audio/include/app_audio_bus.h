@@ -8,6 +8,7 @@
 #include "tracker_engine.h"
 
 #define APP_AUDIO_SAMPLE_RATE 48000
+#define APP_AUDIO_BLOCK_FRAMES 512
 #define APP_AUDIO_SCOPE_SAMPLES 2048
 
 typedef struct app_audio_bus app_audio_bus_t;

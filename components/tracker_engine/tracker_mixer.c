@@ -50,7 +50,8 @@ static void mix_frame(tracker_mixer_t *mixer, const tracker_module_t *module,
                               mixer->channel_solo[channel]);
         if (!audible || voice->sample == NULL || voice->step <= 0.0f) {
             write_wave(mixer, channel, 0.0f);
-            mixer->channel_peak[channel] = 0.0f;
+            /* The engine resets peaks at block start. A voice ending inside
+             * this block must not erase its earlier transient from the meter. */
             continue;
         }
 

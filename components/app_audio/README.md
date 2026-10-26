@@ -26,12 +26,18 @@ exist; failure rollback cannot interrupt a renderer holding a source lock.
 ## Rendering and controls
 
 Exactly one audio caller owns `app_audio_bus_render`. It renders source blocks
-into instance-owned scratch buffers of 128 frames, samples each source gain once
+into instance-owned scratch buffers, samples each source gain once
 per public render call, adds the sources, then saturates once into interleaved
 `int16_t` stereo. There is no render-time allocation. Source gains are finite
 values from 0 to 2, initialized to 1. Invalid gain/source requests return false.
 A zero source gain still advances the source's transport/envelopes. Nonfinite
 source output becomes silence for that stereo frame and latches the clip flag.
+Tracker renders in 512-frame device blocks so its source-local channel meters
+retain transients from the whole block. Synth rendering and output/history
+copies use 128-frame slices for prompt command consumption and short monitoring
+locks. Larger host render requests use several 512-frame source blocks; tracker
+meters then describe the final source block, while bus meters cover the complete
+request. All scratch memory belongs to the bus instance, never the task stack.
 
 Tracker play/pause and `app_audio_play/pause` control the tracker only. The audio
 tasks continue to render so synth notes remain playable with the tracker paused.
@@ -71,7 +77,8 @@ Build `tests/audio_bus_test.c`, `app_audio_bus.c`, the three `tracker_engine`
 implementation files and the `app_synth` implementation files with their public
 include directories, C11 atomics, and the platform math library where needed.
 The test generates its own S3M fixture and verifies unclipped source output,
-legacy output equivalence, gain before final clipping, master clip consumption,
+legacy output equivalence, gain before final clipping, transient source meters,
+master clip consumption,
 scope ordering, chunk equivalence, and synth playback while the tracker pauses.
 
 Build `tests/audio_init_test.c` and `app_audio.c` separately, placing

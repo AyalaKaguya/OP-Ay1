@@ -18,7 +18,7 @@ struct app_audio_bus {
     tracker_engine_t *tracker;
     app_synth_t *synth;
     atomic_uint gain[APP_AUDIO_SOURCE_COUNT];
-    float tracker_samples[BUS_RENDER_FRAMES * 2];
+    float tracker_samples[APP_AUDIO_BLOCK_FRAMES * 2];
     float synth_samples[BUS_RENDER_FRAMES * 2];
     int16_t scope[APP_AUDIO_SCOPE_SAMPLES];
     unsigned scope_head;
@@ -114,43 +114,51 @@ void app_audio_bus_render(app_audio_bus_t *bus, int16_t *stereo, int frames)
     float peak = 0.0f;
     bool clipped = false;
     for (int offset = 0; offset < frames;) {
-        const int count = frames - offset < BUS_RENDER_FRAMES
-                              ? frames - offset : BUS_RENDER_FRAMES;
-        memset(bus->tracker_samples, 0, (size_t)count * 2 * sizeof(float));
-        memset(bus->synth_samples, 0, (size_t)count * 2 * sizeof(float));
+        const int block = frames - offset < APP_AUDIO_BLOCK_FRAMES
+                              ? frames - offset : APP_AUDIO_BLOCK_FRAMES;
+        memset(bus->tracker_samples, 0, (size_t)block * 2 * sizeof(float));
         if (bus->tracker != NULL) {
-            tracker_engine_render_float(bus->tracker, bus->tracker_samples, count);
+            /* Tracker clears its source meters per render call. Render a full
+             * device block so an early transient survives the later silence. */
+            tracker_engine_render_float(bus->tracker, bus->tracker_samples, block);
         }
-        if (bus->synth != NULL) {
-            app_synth_render(bus->synth, bus->synth_samples, count);
-        }
-        /* Only this short output/history copy shares a lock with the UI; source
-         * renderers never run under the monitoring lock. */
-        monitor_lock(bus);
-        for (int frame = 0; frame < count; ++frame) {
-            const int sample = frame * 2;
-            float left = bus->tracker_samples[sample] * tracker_gain +
-                         bus->synth_samples[sample] * synth_gain;
-            float right = bus->tracker_samples[sample + 1] * tracker_gain +
-                          bus->synth_samples[sample + 1] * synth_gain;
-            if (!isfinite(left) || !isfinite(right)) {
-                left = 0.0f;
-                right = 0.0f;
-                clipped = true;
+        for (int position = 0; position < block;) {
+            const int count = block - position < BUS_RENDER_FRAMES
+                                  ? block - position : BUS_RENDER_FRAMES;
+            memset(bus->synth_samples, 0, (size_t)count * 2 * sizeof(float));
+            if (bus->synth != NULL) {
+                app_synth_render(bus->synth, bus->synth_samples, count);
             }
-            const float frame_peak = fmaxf(fabsf(left), fabsf(right));
-            peak = fmaxf(peak, frame_peak);
-            clipped = clipped || frame_peak >= 1.0f;
-            const int16_t output_left = to_sample(left);
-            const int16_t output_right = to_sample(right);
-            stereo[(offset + frame) * 2] = output_left;
-            stereo[(offset + frame) * 2 + 1] = output_right;
-            bus->scope[bus->scope_head] =
-                (int16_t)(((int32_t)output_left + output_right) / 2);
-            bus->scope_head = (bus->scope_head + 1) % APP_AUDIO_SCOPE_SAMPLES;
+            /* Only this short output/history copy shares a lock with the UI;
+             * source renderers never run under the monitoring lock. */
+            monitor_lock(bus);
+            for (int frame = 0; frame < count; ++frame) {
+                const int sample = frame * 2;
+                const int tracker_sample = (position + frame) * 2;
+                float left = bus->tracker_samples[tracker_sample] * tracker_gain +
+                             bus->synth_samples[sample] * synth_gain;
+                float right = bus->tracker_samples[tracker_sample + 1] * tracker_gain +
+                              bus->synth_samples[sample + 1] * synth_gain;
+                if (!isfinite(left) || !isfinite(right)) {
+                    left = 0.0f;
+                    right = 0.0f;
+                    clipped = true;
+                }
+                const float frame_peak = fmaxf(fabsf(left), fabsf(right));
+                peak = fmaxf(peak, frame_peak);
+                clipped = clipped || frame_peak >= 1.0f;
+                const int16_t output_left = to_sample(left);
+                const int16_t output_right = to_sample(right);
+                stereo[(offset + position + frame) * 2] = output_left;
+                stereo[(offset + position + frame) * 2 + 1] = output_right;
+                bus->scope[bus->scope_head] =
+                    (int16_t)(((int32_t)output_left + output_right) / 2);
+                bus->scope_head = (bus->scope_head + 1) % APP_AUDIO_SCOPE_SAMPLES;
+            }
+            monitor_unlock(bus);
+            position += count;
         }
-        monitor_unlock(bus);
-        offset += count;
+        offset += block;
     }
     monitor_lock(bus);
     bus->status.master_peak = peak;
