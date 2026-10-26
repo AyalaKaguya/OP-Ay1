@@ -11,7 +11,9 @@
     fprintf(stderr, "ui_owner_lifecycle:%d: %s\n", __LINE__, #condition); exit(1); \
 } } while (0)
 
-struct gsp_ui_core { int marker; };
+struct gsp_ui_core {
+    int marker;
+};
 static struct gsp_ui_core fake_ui;
 static esp_gsp_canvas_draw_cb_t canvas_callback;
 static void *canvas_context;
@@ -51,7 +53,9 @@ esp_gsp_err_t esp_gsp_canvas_set_draw_cb(esp_gsp_handle_t ui, uint16_t bind,
 {
     (void)bind;
     CHECK(ui == &fake_ui);
-    if (current_fixture->fail_gsp_stage == 1) return ESP_GSP_ERR_NO_MEM;
+    if (current_fixture->fail_gsp_stage == 1) {
+        return ESP_GSP_ERR_NO_MEM;
+    }
     canvas_callback = callback;
     canvas_context = context;
     return ESP_GSP_OK;
@@ -69,17 +73,21 @@ esp_gsp_err_t esp_gsp_set_pointer_observer(esp_gsp_handle_t ui,
                                            void *context)
 {
     CHECK(ui == &fake_ui);
-    if (callback && current_fixture->fail_gsp_stage == 2) return ESP_GSP_ERR_NO_MEM;
+    if (callback && current_fixture->fail_gsp_stage == 2) {
+        return ESP_GSP_ERR_NO_MEM;
+    }
     pointer_callback = callback;
     pointer_context = context;
     return ESP_GSP_OK;
 }
 
 void *esp_gsp_timer_create(esp_gsp_handle_t ui, uint32_t period,
-                            esp_gsp_timer_cb_t callback, void *context)
+                           esp_gsp_timer_cb_t callback, void *context)
 {
     CHECK(ui == &fake_ui && period == 50);
-    if (current_fixture->fail_gsp_stage == 3) return NULL;
+    if (current_fixture->fail_gsp_stage == 3) {
+        return NULL;
+    }
     timer_callback = callback;
     timer_context = context;
     return &fake_timer;
@@ -97,7 +105,9 @@ esp_gsp_err_t esp_gsp_canvas_stop(esp_gsp_handle_t ui, uint16_t bind)
 {
     (void)bind;
     CHECK(ui == &fake_ui);
-    if (current_fixture->fail_stop) return ESP_GSP_ERR_INVALID_STATE;
+    if (current_fixture->fail_stop) {
+        return ESP_GSP_ERR_INVALID_STATE;
+    }
     canvas_callback = NULL;
     canvas_context = NULL;
     return ESP_GSP_OK;
@@ -109,7 +119,9 @@ static void *allocate_frame(void *context, size_t bytes)
     CHECK(bytes == 480U * 480U * sizeof(uint16_t));
     CHECK(f->allocation_calls < 3);
     const unsigned slot = f->allocation_calls++;
-    if (f->allocation_calls == f->fail_allocation) return NULL;
+    if (f->allocation_calls == f->fail_allocation) {
+        return NULL;
+    }
     f->allocated[slot] = malloc(bytes);
     CHECK(f->allocated[slot] != NULL);
     memset(f->allocated[slot], 0xcd, bytes);
@@ -134,7 +146,10 @@ static void free_frame(void *context, void *frame)
     ++f->free_calls;
 }
 
-static uint64_t clock_ms(void *context) { return ((fixture_t *)context)->clock_ms; }
+static uint64_t clock_ms(void *context)
+{
+    return ((fixture_t *)context)->clock_ms;
+}
 static bool read_settings(void *context, app_settings_snapshot_t *out)
 {
     *out = ((fixture_t *)context)->display;
@@ -150,7 +165,10 @@ static bool record_activity(void *context)
     f->display.effective_brightness = f->display.brightness;
     return waking;
 }
-static void interaction_busy(void *context, bool busy) { ((fixture_t *)context)->busy = busy; }
+static void interaction_busy(void *context, bool busy)
+{
+    ((fixture_t *)context)->busy = busy;
+}
 
 static fixture_t *fixture_create(const uint8_t *module, size_t size)
 {
@@ -169,8 +187,9 @@ static fixture_t *fixture_create(const uint8_t *module, size_t size)
         .tracker = f->tracker, .synth = f->synth, .audio_bus = f->bus,
         .note_router = f->router,
         .hooks = {.context = f, .allocate_frame = allocate_frame, .free_frame = free_frame,
-                   .time_ms = clock_ms, .read_settings = read_settings,
-                   .record_activity = record_activity, .interaction_busy = interaction_busy},
+                  .time_ms = clock_ms, .read_settings = read_settings,
+                  .record_activity = record_activity, .interaction_busy = interaction_busy
+                 },
     };
     current_fixture = f;
     return f;

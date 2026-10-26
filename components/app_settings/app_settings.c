@@ -49,14 +49,14 @@ void app_settings_idle_record_activity(app_settings_idle_t *idle, uint64_t now_m
 }
 
 bool app_settings_idle_configure(app_settings_idle_t *idle, uint32_t dim_after_s,
-                                  uint32_t off_after_s, uint64_t now_ms)
+                                 uint32_t off_after_s, uint64_t now_ms)
 {
     if (idle == NULL || dim_after_s > APP_SETTINGS_IDLE_MAX_SECONDS ||
-        off_after_s > APP_SETTINGS_IDLE_MAX_SECONDS) {
+            off_after_s > APP_SETTINGS_IDLE_MAX_SECONDS) {
         return false;
     }
     if (!idle->initialized || idle->dim_after_s != dim_after_s ||
-        idle->off_after_s != off_after_s) {
+            idle->off_after_s != off_after_s) {
         idle->dim_after_s = dim_after_s;
         idle->off_after_s = off_after_s;
         app_settings_idle_record_activity(idle, now_ms);
@@ -65,8 +65,8 @@ bool app_settings_idle_configure(app_settings_idle_t *idle, uint32_t dim_after_s
 }
 
 void app_settings_idle_evaluate(app_settings_idle_t *idle, uint64_t now_ms,
-                                 bool interaction_busy, int preferred_brightness,
-                                 app_settings_idle_target_t *out_target)
+                                bool interaction_busy, int preferred_brightness,
+                                app_settings_idle_target_t *out_target)
 {
     if (idle == NULL || out_target == NULL) {
         return;
@@ -74,7 +74,7 @@ void app_settings_idle_evaluate(app_settings_idle_t *idle, uint64_t now_ms,
     const int preference = preferred_brightness < 0 ? 0
                            : preferred_brightness > 100 ? 100 : preferred_brightness;
     if (!idle->initialized || now_ms < idle->last_evaluation_ms ||
-        now_ms < idle->last_activity_ms || interaction_busy) {
+            now_ms < idle->last_activity_ms || interaction_busy) {
         app_settings_idle_record_activity(idle, now_ms);
     }
     idle->last_evaluation_ms = now_ms;
@@ -86,8 +86,8 @@ void app_settings_idle_evaluate(app_settings_idle_t *idle, uint64_t now_ms,
     *out_target = (app_settings_idle_target_t) {
         .effective_brightness = off ? 0 : dim && preference > APP_SETTINGS_IDLE_DIM_PERCENT
                                 ? APP_SETTINGS_IDLE_DIM_PERCENT : preference,
-        .dimmed = dim,
-        .screen_off = off,
+                                .dimmed = dim,
+                                .screen_off = off,
     };
 }
 

@@ -62,11 +62,11 @@ typedef struct {
  * independent and screen-off wins when both have elapsed. */
 void app_settings_idle_init(app_settings_idle_t *idle, uint64_t now_ms);
 bool app_settings_idle_configure(app_settings_idle_t *idle, uint32_t dim_after_s,
-                                  uint32_t off_after_s, uint64_t now_ms);
+                                 uint32_t off_after_s, uint64_t now_ms);
 void app_settings_idle_record_activity(app_settings_idle_t *idle, uint64_t now_ms);
 void app_settings_idle_evaluate(app_settings_idle_t *idle, uint64_t now_ms,
-                                 bool interaction_busy, int preferred_brightness,
-                                 app_settings_idle_target_t *out_target);
+                                bool interaction_busy, int preferred_brightness,
+                                app_settings_idle_target_t *out_target);
 
 /* Portable, single-owner orientation classifier. Device and host tests use
  * the same gravity/motion rejection, hysteresis and stable dwell timing. */

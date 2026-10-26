@@ -24,15 +24,15 @@ typedef struct {
 
 void tracker_transition_init(tracker_transition_t *transition, uint16_t value);
 void tracker_transition_begin(tracker_transition_t *transition,
-                                uint16_t from, uint16_t to,
-                                uint64_t now_ms, uint32_t duration_ms);
+                              uint16_t from, uint16_t to,
+                              uint64_t now_ms, uint32_t duration_ms);
 uint16_t tracker_transition_sample(tracker_transition_t *transition,
-                                     uint64_t now_ms);
+                                   uint64_t now_ms);
 /* Samples the old motion first, then starts from that exact current value.
  * A page change also needs the caller to capture the displayed composite as
  * its old image, then begin a fresh 0..FULL slide. */
 void tracker_transition_retarget(tracker_transition_t *transition, uint16_t to,
-                                   uint64_t now_ms, uint32_t duration_ms);
+                                 uint64_t now_ms, uint32_t duration_ms);
 /* Nearest integer pixels for normalized progress; extent<=0 returns zero. */
 int tracker_transition_pixels(uint16_t value, int extent);
 
@@ -43,11 +43,11 @@ int tracker_transition_pixels(uint16_t value, int extent);
  * Other partial image overlaps are not supported. Invalid arguments return
  * false without writes. Copies use row memmove/memcpy, no pixel blending. */
 bool tracker_transition_slide_rgb565(uint16_t *dest,
-                                       const uint16_t *old_frame,
-                                       const uint16_t *new_frame,
-                                       int width, int frame_height,
-                                       int viewport_height, uint16_t progress,
-                                       int direction);
+                                     const uint16_t *old_frame,
+                                     const uint16_t *new_frame,
+                                     int width, int frame_height,
+                                     int viewport_height, uint16_t progress,
+                                     int direction);
 
 /* Slides the menu panel down from y=-panel_height to y=0. full_menu contains
  * the completely rendered panel in its top panel_height rows. base_frame is
@@ -57,9 +57,9 @@ bool tracker_transition_slide_rgb565(uint16_t *dest,
  * Rows >=viewport_height stay untouched. Zero panel height is valid (dim only).
  * Only exact dest/full_menu aliasing is supported; dest/base must be distinct. */
 bool tracker_transition_reveal_top_rgb565(uint16_t *dest,
-                                            const uint16_t *base_frame,
-                                            const uint16_t *full_menu,
-                                            int width, int frame_height,
-                                            int viewport_height, int panel_height,
-                                            uint16_t open_amount,
-                                            uint8_t max_dim);
+                                          const uint16_t *base_frame,
+                                          const uint16_t *full_menu,
+                                          int width, int frame_height,
+                                          int viewport_height, int panel_height,
+                                          uint16_t open_amount,
+                                          uint8_t max_dim);

@@ -142,7 +142,7 @@ static void test_timing(void)
 }
 
 static void slide_case(images_t *images, int viewport, uint16_t progress,
-                        int direction, bool alias)
+                       int direction, bool alias)
 {
     const size_t width = (size_t)images->width;
     const size_t shift = (size_t)tracker_transition_pixels(progress, images->width);
@@ -152,8 +152,8 @@ static void slide_case(images_t *images, int viewport, uint16_t progress,
     }
     uint16_t *dest = alias ? images->next : images->out;
     CHECK(tracker_transition_slide_rgb565(dest, images->old, images->next,
-                                            images->width, images->height,
-                                            viewport, progress, direction));
+                                          images->width, images->height,
+                                          viewport, progress, direction));
     for (int y = 0; y < images->height; ++y) {
         for (int x = 0; x < images->width; ++x) {
             const size_t index = (size_t)y * width + (size_t)x;
@@ -163,11 +163,11 @@ static void slide_case(images_t *images, int viewport, uint16_t progress,
             } else if (direction > 0) {
                 const size_t source_x = (size_t)x + shift;
                 expected = source_x < width ? old_pixel((size_t)y * width + source_x)
-                    : new_pixel((size_t)y * width + source_x - width);
+                           : new_pixel((size_t)y * width + source_x - width);
             } else {
                 expected = (size_t)x < shift
-                    ? new_pixel((size_t)y * width + width - shift + (size_t)x)
-                    : old_pixel((size_t)y * width + (size_t)x - shift);
+                           ? new_pixel((size_t)y * width + width - shift + (size_t)x)
+                           : old_pixel((size_t)y * width + (size_t)x - shift);
             }
             CHECK(dest[index] == expected);
             if (!alias) {
@@ -212,7 +212,7 @@ static uint16_t expected_dim(uint16_t pixel, unsigned dark)
 }
 
 static void drawer_case(images_t *images, int viewport, int panel_height,
-                         uint16_t progress, uint8_t dim, bool alias)
+                        uint16_t progress, uint8_t dim, bool alias)
 {
     const size_t width = (size_t)images->width;
     const int shown = tracker_transition_pixels(progress, panel_height);
@@ -223,16 +223,16 @@ static void drawer_case(images_t *images, int viewport, int panel_height,
     }
     uint16_t *dest = alias ? images->next : images->out;
     CHECK(tracker_transition_reveal_top_rgb565(dest, images->old, images->next,
-                                                images->width, images->height,
-                                                viewport, panel_height, progress, dim));
+                                               images->width, images->height,
+                                               viewport, panel_height, progress, dim));
     for (int y = 0; y < images->height; ++y) {
         for (int x = 0; x < images->width; ++x) {
             const size_t index = (size_t)y * width + (size_t)x;
             const uint16_t expected = y >= viewport
-                ? alias ? new_pixel(index) : GUARD_VALUE
-                : y < shown
-                    ? new_pixel(((size_t)panel_height - (size_t)shown + (size_t)y) * width + (size_t)x)
-                    : expected_dim(old_pixel(index), dark);
+                                      ? alias ? new_pixel(index) : GUARD_VALUE
+                                      : y < shown
+                                      ? new_pixel(((size_t)panel_height - (size_t)shown + (size_t)y) * width + (size_t)x)
+                                      : expected_dim(old_pixel(index), dark);
             CHECK(dest[index] == expected);
         }
     }
@@ -268,7 +268,7 @@ static void test_retarget_capture_and_invalid(void)
     /* A second navigation captures what was actually displayed, rather than
      * jumping back to either original page before its new slide begins. */
     CHECK(tracker_transition_slide_rgb565(images->next, images->snapshot,
-                                            images->next, 480, 480, 432, 0, -1));
+                                          images->next, 480, 480, 432, 0, -1));
     CHECK(memcmp(images->next, images->snapshot, 480U * 432U * sizeof(uint16_t)) == 0);
     memcpy(images->snapshot, images->out, images->count * sizeof(uint16_t));
     CHECK(!tracker_transition_slide_rgb565(NULL, images->old, images->next, 480, 480, 432, 0, 1));
@@ -277,9 +277,9 @@ static void test_retarget_capture_and_invalid(void)
     CHECK(!tracker_transition_slide_rgb565(images->out, images->old, images->next, 480, 480, 432, 0, 0));
     CHECK(!tracker_transition_slide_rgb565(images->old, images->old, images->next, 480, 480, 432, 0, 1));
     CHECK(!tracker_transition_reveal_top_rgb565(images->out, images->old, images->next,
-                                                 480, 480, 432, 433, 0, 192));
+                                                480, 480, 432, 433, 0, 192));
     CHECK(!tracker_transition_reveal_top_rgb565(images->old, images->old, images->next,
-                                                 480, 480, 432, 420, 0, 192));
+                                                480, 480, 432, 420, 0, 192));
     CHECK(memcmp(images->out, images->snapshot, images->count * sizeof(uint16_t)) == 0);
     images_destroy(images);
     puts("ui transitions: rapid page retarget capture and invalid/no-write contracts PASS");

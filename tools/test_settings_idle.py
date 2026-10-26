@@ -30,11 +30,29 @@ def main() -> int:
         include = ROOT / "components/app_settings/include"
         sources = [str(ROOT / "tests/settings_idle.c"), str(ROOT / "components/app_settings/app_settings.c")]
         if compiler.name.lower() in ("cl", "cl.exe", "clang-cl", "clang-cl.exe"):
-            command = [str(compiler), "/nologo", "/std:c11", "/W4", "/WX", "/I" + str(include),
-                       *sources, "/Fe:" + str(output)]
+            command = [
+                str(compiler),
+                "/nologo",
+                "/std:c11",
+                "/W4",
+                "/WX",
+                "/I" + str(include),
+                *sources,
+                "/Fe:" + str(output),
+            ]
         else:
-            command = [str(compiler), "-std=c11", "-Wall", "-Wextra", "-Werror", "-I" + str(include),
-                       *sources, "-lm", "-o", str(output)]
+            command = [
+                str(compiler),
+                "-std=c11",
+                "-Wall",
+                "-Wextra",
+                "-Werror",
+                "-I" + str(include),
+                *sources,
+                "-lm",
+                "-o",
+                str(output),
+            ]
         subprocess.run(command, cwd=build, env=env, check=True, timeout=60)
         subprocess.run([str(output)], cwd=build, env=env, check=True, timeout=10)
         return 0

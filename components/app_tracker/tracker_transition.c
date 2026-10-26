@@ -15,8 +15,8 @@ void tracker_transition_init(tracker_transition_t *transition, uint16_t value)
 }
 
 void tracker_transition_begin(tracker_transition_t *transition,
-                                uint16_t from, uint16_t to,
-                                uint64_t now_ms, uint32_t duration_ms)
+                              uint16_t from, uint16_t to,
+                              uint64_t now_ms, uint32_t duration_ms)
 {
     if (transition == NULL) {
         return;
@@ -24,7 +24,7 @@ void tracker_transition_begin(tracker_transition_t *transition,
     transition->start_ms = now_ms;
     transition->last_ms = now_ms;
     transition->duration_ms = duration_ms > TRACKER_TRANSITION_MAX_MS
-                                 ? TRACKER_TRANSITION_MAX_MS : duration_ms;
+                              ? TRACKER_TRANSITION_MAX_MS : duration_ms;
     transition->from = from;
     transition->to = to;
     transition->active = from != to && duration_ms != 0;
@@ -32,7 +32,7 @@ void tracker_transition_begin(tracker_transition_t *transition,
 }
 
 uint16_t tracker_transition_sample(tracker_transition_t *transition,
-                                     uint64_t now_ms)
+                                   uint64_t now_ms)
 {
     if (transition == NULL) {
         return 0;
@@ -54,17 +54,17 @@ uint16_t tracker_transition_sample(tracker_transition_t *transition,
     const uint64_t remaining = full - linear;
     const uint64_t denominator = full * full;
     const uint64_t eased = full -
-        (remaining * remaining * remaining + denominator / 2U) / denominator;
+                           (remaining * remaining * remaining + denominator / 2U) / denominator;
     const int delta = (int)transition->to - (int)transition->from;
     const unsigned distance = (unsigned)(delta < 0 ? -delta : delta);
     const unsigned moved = (unsigned)(((uint64_t)distance * eased + full / 2U) / full);
     transition->current = (uint16_t)(delta < 0
-        ? (unsigned)transition->from - moved : (unsigned)transition->from + moved);
+                                     ? (unsigned)transition->from - moved : (unsigned)transition->from + moved);
     return transition->current;
 }
 
 void tracker_transition_retarget(tracker_transition_t *transition, uint16_t to,
-                                   uint64_t now_ms, uint32_t duration_ms)
+                                 uint64_t now_ms, uint32_t duration_ms)
 {
     if (transition == NULL) {
         return;
@@ -91,11 +91,11 @@ static bool valid_frame(int width, int frame_height, int viewport_height)
 }
 
 bool tracker_transition_slide_rgb565(uint16_t *dest,
-                                       const uint16_t *old_frame,
-                                       const uint16_t *new_frame,
-                                       int width, int frame_height,
-                                       int viewport_height, uint16_t progress,
-                                       int direction)
+                                     const uint16_t *old_frame,
+                                     const uint16_t *new_frame,
+                                     int width, int frame_height,
+                                     int viewport_height, uint16_t progress,
+                                     int direction)
 {
     if (dest == NULL || old_frame == NULL || new_frame == NULL ||
             dest == old_frame || direction == 0 ||
@@ -133,12 +133,12 @@ static uint16_t dim_pixel(uint16_t pixel, unsigned keep)
 }
 
 bool tracker_transition_reveal_top_rgb565(uint16_t *dest,
-                                            const uint16_t *base_frame,
-                                            const uint16_t *full_menu,
-                                            int width, int frame_height,
-                                            int viewport_height, int panel_height,
-                                            uint16_t open_amount,
-                                            uint8_t max_dim)
+                                          const uint16_t *base_frame,
+                                          const uint16_t *full_menu,
+                                          int width, int frame_height,
+                                          int viewport_height, int panel_height,
+                                          uint16_t open_amount,
+                                          uint8_t max_dim)
 {
     if (dest == NULL || base_frame == NULL || full_menu == NULL ||
             dest == base_frame || !valid_frame(width, frame_height, viewport_height) ||
@@ -155,7 +155,7 @@ bool tracker_transition_reveal_top_rgb565(uint16_t *dest,
     const size_t tail_pixels = ((size_t)viewport_height - shown) * line_pixels;
     if (dark == 0) {
         memcpy(dest + shown_pixels, base_frame + shown_pixels,
-                 tail_pixels * sizeof(uint16_t));
+               tail_pixels * sizeof(uint16_t));
     } else {
         const unsigned keep = 256U - dark;
         for (size_t index = shown_pixels;

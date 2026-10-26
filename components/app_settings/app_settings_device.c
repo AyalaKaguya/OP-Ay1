@@ -141,8 +141,8 @@ static void load_preferences(app_settings_t *s)
     const esp_err_t dim_error = nvs_get_u32(s->storage, "dim_s", &dim_s);
     const esp_err_t off_error = nvs_get_u32(s->storage, "off_s", &off_s);
     if ((dim_error != ESP_OK && dim_error != ESP_ERR_NVS_NOT_FOUND) ||
-        (off_error != ESP_OK && off_error != ESP_ERR_NVS_NOT_FOUND) ||
-        dim_s > APP_SETTINGS_IDLE_MAX_SECONDS || off_s > APP_SETTINGS_IDLE_MAX_SECONDS) {
+            (off_error != ESP_OK && off_error != ESP_ERR_NVS_NOT_FOUND) ||
+            dim_s > APP_SETTINGS_IDLE_MAX_SECONDS || off_s > APP_SETTINGS_IDLE_MAX_SECONDS) {
         s->storage_error = ESP_ERR_INVALID_STATE;
         return;
     }
@@ -302,7 +302,7 @@ static void apply_display(app_settings_t *s, uint64_t now)
             }
         }
         if (result == ESP_OK && (!s->brightness_applied ||
-            s->current.effective_brightness != s->idle_target.effective_brightness)) {
+                                 s->current.effective_brightness != s->idle_target.effective_brightness)) {
             result = bsp_display_brightness_set(s->idle_target.effective_brightness);
             if (result == ESP_OK) {
                 s->current.effective_brightness = s->idle_target.effective_brightness;
@@ -313,9 +313,9 @@ static void apply_display(app_settings_t *s, uint64_t now)
             s->current.dimmed = s->idle_target.dimmed;
         }
         if (result == ESP_OK && s->pending_rotation >= 0 &&
-            !atomic_load_explicit(&s->interaction_busy, memory_order_acquire)) {
+                !atomic_load_explicit(&s->interaction_busy, memory_order_acquire)) {
             result = esp_display_presenter_set_rotation(s->presenter,
-                             (esp_display_present_rotation_t)s->pending_rotation);
+                                                        (esp_display_present_rotation_t)s->pending_rotation);
             if (result == ESP_OK) {
                 s->current.rotation = s->pending_rotation;
                 s->pending_rotation = -1;
@@ -334,7 +334,7 @@ static void apply_display(app_settings_t *s, uint64_t now)
         s->display_error = ESP_OK;
         s->display_retry_ms = now + SENSOR_PERIOD_MS;
         if (!s->current.screen_off && !s->idle_target.screen_off &&
-            s->current.effective_brightness == s->current.brightness) {
+                s->current.effective_brightness == s->current.brightness) {
             atomic_store_explicit(&s->off_wake_required, false, memory_order_release);
         }
     }
@@ -435,7 +435,7 @@ static void consume_requests(app_settings_t *s, uint64_t now)
         mark_storage_dirty(s, now);
     }
     if (atomic_load_explicit(&s->idle_requested, memory_order_acquire) &&
-        !atomic_flag_test_and_set_explicit(&s->idle_request_lock, memory_order_acquire)) {
+            !atomic_flag_test_and_set_explicit(&s->idle_request_lock, memory_order_acquire)) {
         const uint32_t dim_s = atomic_load_explicit(&s->requested_dim_s, memory_order_relaxed);
         const uint32_t off_s = atomic_load_explicit(&s->requested_off_s, memory_order_relaxed);
         atomic_store_explicit(&s->idle_requested, false, memory_order_relaxed);
@@ -504,9 +504,9 @@ static void settings_task(void *argument)
             s->pending_rotation = -1;
             apply_display(s, now);
             if (s->pause == NULL && !s->current.screen_off && s->brightness_applied &&
-                s->current.effective_brightness == s->current.brightness &&
-                !atomic_load_explicit(&s->off_wake_required, memory_order_acquire) &&
-                release_owned_sensors(s) == ESP_OK) {
+                    s->current.effective_brightness == s->current.brightness &&
+                    !atomic_load_explicit(&s->off_wake_required, memory_order_acquire) &&
+                    release_owned_sensors(s) == ESP_OK) {
                 break;
             }
         } else {
@@ -582,7 +582,7 @@ esp_err_t app_settings_start(esp_gsp_handle_t ui,
     s->current.off_after_s = atomic_load_explicit(&s->requested_off_s, memory_order_relaxed);
     app_settings_idle_init(&s->idle, clock_ms());
     (void)app_settings_idle_configure(&s->idle, s->current.dim_after_s,
-                                     s->current.off_after_s, clock_ms());
+                                      s->current.off_after_s, clock_ms());
     app_settings_orientation_init(&s->orientation, 0);
     if (xTaskCreate(settings_task, "app_settings", SETTINGS_TASK_STACK_BYTES, s,
                     SETTINGS_TASK_PRIORITY, &s->task) != pdPASS) {
