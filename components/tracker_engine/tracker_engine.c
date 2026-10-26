@@ -616,15 +616,17 @@ float tracker_engine_speed_multiplier(tracker_engine_t *engine)
     return multiplier;
 }
 
-void tracker_engine_render(tracker_engine_t *engine, int16_t *stereo, int frames)
+static void render_into(tracker_engine_t *engine, void *stereo, int frames,
+                         bool floating)
 {
     if (engine == NULL || stereo == NULL || frames <= 0) {
         return;
     }
 
+    const size_t sample_bytes = floating ? sizeof(float) : sizeof(int16_t);
     engine_lock(engine);
     if (!engine_get_playing(engine)) {
-        memset(stereo, 0, (size_t)frames * 2 * sizeof(int16_t));
+        memset(stereo, 0, (size_t)frames * 2 * sample_bytes);
         engine_unlock(engine);
         return;
     }
@@ -646,8 +648,13 @@ void tracker_engine_render(tracker_engine_t *engine, int16_t *stereo, int frames
         if (chunk > engine->tick_frames_left) {
             chunk = engine->tick_frames_left;
         }
-        tracker_mixer_render(&engine->mixer, &engine->module,
-                             stereo + produced * 2, chunk);
+        if (floating) {
+            tracker_mixer_render_float(&engine->mixer, &engine->module,
+                                        (float *)stereo + produced * 2, chunk);
+        } else {
+            tracker_mixer_render(&engine->mixer, &engine->module,
+                                  (int16_t *)stereo + produced * 2, chunk);
+        }
         produced += chunk;
         engine->tick_frames_left -= chunk;
         if (engine->tick_frames_left <= 0) {
@@ -655,12 +662,13 @@ void tracker_engine_render(tracker_engine_t *engine, int16_t *stereo, int frames
             if (!engine_get_playing(engine)) {
                 /* A queued pad stop landed on the pattern boundary: finish this
                  * audio chunk with silence instead of starting the next row. */
-                memset(stereo + produced * 2, 0,
-                       (size_t)(frames - produced) * 2 * sizeof(int16_t));
                 break;
             }
         }
     }
+    /* A stop or malformed tick must never leave an uninitialized tail. */
+    memset((uint8_t *)stereo + (size_t)produced * 2 * sample_bytes, 0,
+           (size_t)(frames - produced) * 2 * sample_bytes);
     engine->frames += (uint64_t)frames;
     if (!engine_get_playing(engine)) {
         /* The order list ended without looping: clear monitoring under the lock
@@ -669,6 +677,17 @@ void tracker_engine_render(tracker_engine_t *engine, int16_t *stereo, int frames
     }
     publish_status(engine);
     engine_unlock(engine);
+}
+
+void tracker_engine_render(tracker_engine_t *engine, int16_t *stereo, int frames)
+{
+    render_into(engine, stereo, frames, false);
+}
+
+void tracker_engine_render_float(tracker_engine_t *engine, float *stereo,
+                                  int frames)
+{
+    render_into(engine, stereo, frames, true);
 }
 
 void tracker_engine_get_status(tracker_engine_t *engine, tracker_status_t *status)

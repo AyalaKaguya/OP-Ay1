@@ -134,6 +134,9 @@ void tracker_mixer_clear_monitoring(tracker_mixer_t *mixer);
 void tracker_mixer_render(tracker_mixer_t *mixer,
                           const tracker_module_t *module, int16_t *stereo,
                           int frames);
+void tracker_mixer_render_float(tracker_mixer_t *mixer,
+                                const tracker_module_t *module, float *stereo,
+                                int frames);
 
 /* Shared S3M little-endian readers with checked-range call sites. */
 static inline uint16_t tracker_read_u16(const uint8_t *data, size_t offset)

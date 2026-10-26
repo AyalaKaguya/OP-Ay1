@@ -46,3 +46,12 @@ same lock.
 
 The engine keeps fixed 48 kHz stereo output. `app_audio`, not this component,
 owns the DSP task, chunk ring, codec writer task, and output volume.
+
+`tracker_engine_render_float` advances the same sequencer and voice state as
+the compatible `int16_t` entry point. Its normalized stereo output can exceed
+plus/minus one: no source clipping occurs before the audio bus applies source
+gain, adds synth output and saturates the final signal. Call one render entry
+point per block from the single audio owner; calling both advances time twice.
+Monitoring remains source-local in both paths. Final mixed output meters and
+scope belong to `app_audio_bus`. Either output path zero-fills a stopped or
+invalid-tick tail instead of exposing uninitialized samples.

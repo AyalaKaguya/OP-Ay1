@@ -56,6 +56,12 @@ float tracker_engine_speed_multiplier(tracker_engine_t *engine);
 /* Fills interleaved stereo int16 samples; silence while paused. */
 void tracker_engine_render(tracker_engine_t *engine, int16_t *stereo, int frames);
 
+/* Same transport and monitoring as render(), with normalized, unclipped float
+ * stereo output. Values can exceed +/-1; the final audio bus owns clipping.
+ * Call only one render entry point for each block, from one audio owner. */
+void tracker_engine_render_float(tracker_engine_t *engine, float *stereo,
+                                  int frames);
+
 /* Thread-safe snapshot for the UI (writer = audio task). */
 void tracker_engine_get_status(tracker_engine_t *engine, tracker_status_t *status);
 

@@ -146,9 +146,9 @@ bool tracker_mixer_init(tracker_mixer_t *mixer, const tracker_module_t *module)
     return true;
 }
 
-void tracker_mixer_render(tracker_mixer_t *mixer,
-                          const tracker_module_t *module, int16_t *stereo,
-                          int frames)
+static void render_into(tracker_mixer_t *mixer,
+                         const tracker_module_t *module, void *stereo,
+                         int frames, bool floating)
 {
     /* Peaks are accumulated across the sub-chunks of one engine render call;
      * the engine clears them before it starts, so a chunk split by a tick
@@ -161,14 +161,35 @@ void tracker_mixer_render(tracker_mixer_t *mixer,
         const float gain = TRACKER_MIX_HEADROOM * module->global_volume;
         const float scaled_left = left * gain * 32767.0f;
         const float scaled_right = right * gain * 32767.0f;
-        stereo[frame * 2] = float_to_i16(scaled_left);
-        stereo[frame * 2 + 1] = float_to_i16(scaled_right);
+        if (floating) {
+            float *output = stereo;
+            output[frame * 2] = left * gain;
+            output[frame * 2 + 1] = right * gain;
+        } else {
+            int16_t *output = stereo;
+            output[frame * 2] = float_to_i16(scaled_left);
+            output[frame * 2 + 1] = float_to_i16(scaled_right);
+        }
         const float peak = fmaxf(fabsf(scaled_left), fabsf(scaled_right));
         mixer->master_peak = fmaxf(mixer->master_peak, peak / 32768.0f);
         if (peak >= 32767.0f) {
             mixer->master_clipped = true;
         }
     }
+}
+
+void tracker_mixer_render(tracker_mixer_t *mixer,
+                          const tracker_module_t *module, int16_t *stereo,
+                          int frames)
+{
+    render_into(mixer, module, stereo, frames, false);
+}
+
+void tracker_mixer_render_float(tracker_mixer_t *mixer,
+                                const tracker_module_t *module, float *stereo,
+                                int frames)
+{
+    render_into(mixer, module, stereo, frames, true);
 }
 
 void tracker_mixer_reset(tracker_mixer_t *mixer,
