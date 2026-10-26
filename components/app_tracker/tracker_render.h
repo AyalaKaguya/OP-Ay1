@@ -12,35 +12,35 @@
 #define TRACKER_VISIBLE_ROWS 19
 #define TRACKER_WAVE_GRID_Y 40
 #define TRACKER_WAVE_TILE_H 80
-#define TRACKER_MIX_HEADER_H 96
-#define TRACKER_MIX_STRIP_H 150
+#define TRACKER_MIX_HEADER_H 164
+#define TRACKER_MIX_VIEW_Y 164
+#define TRACKER_MIX_VIEW_H 264
+#define TRACKER_MIX_STRIP_H 66
 #define TRACKER_MIX_STRIPS 16
-#define TRACKER_MIX_FADER_X 20
-#define TRACKER_MIX_FADER_W 300
-#define TRACKER_MIX_FADER_Y 58
-#define TRACKER_MIX_FADER_H 10
-#define TRACKER_MIX_MUTE_X 300
-#define TRACKER_MIX_MUTE_Y 8
-#define TRACKER_MIX_MUTE_W 66
-#define TRACKER_MIX_MUTE_H 38
-#define TRACKER_MIX_SOLO_X 376
-#define TRACKER_MIX_MASTER_X 90
-#define TRACKER_MIX_MASTER_Y 40
-#define TRACKER_MIX_MASTER_W 360
-#define TRACKER_MIX_MASTER_H 10
+#define TRACKER_MIX_FADER_X 86
+#define TRACKER_MIX_FADER_W 232
+#define TRACKER_MIX_FADER_Y 41
+#define TRACKER_MIX_FADER_H 4
+#define TRACKER_MIX_FADER_HIT_Y 21
+#define TRACKER_MIX_FADER_HIT_H 44
+#define TRACKER_MIX_MUTE_X 334
+#define TRACKER_MIX_MUTE_Y 9
+#define TRACKER_MIX_MUTE_W 44
+#define TRACKER_MIX_MUTE_H 46
+#define TRACKER_MIX_SOLO_X 392
+#define TRACKER_MIX_MASTER_X 100
+#define TRACKER_MIX_MASTER_Y 86
+#define TRACKER_MIX_MASTER_W 290
+#define TRACKER_MIX_MASTER_H 4
 
 /* First song row shown in the scrolling pattern window. */
 int tracker_pattern_top_line(tracker_engine_t *engine);
 
-/* Renders the full 480x480 RGB565 frame for the pattern grid page. */
+/* Renders rows 0..431; the navigation owner draws rows 432..479 separately. */
 void tracker_render_pattern(uint16_t *frame, tracker_engine_t *engine);
 
-/* Renders the full 480x480 RGB565 frame for the per-track scope page. */
-void tracker_render_waves(uint16_t *frame, tracker_engine_t *engine);
-
-/* Mixer page: fixed header (master volume + master meter) plus 16 scrollable
- * channel strips. scroll is the content offset in pixels (0..content-336). */
-void tracker_render_mix(uint16_t *frame, tracker_engine_t *engine, int scroll,
-                        int volume, const uint8_t *levels,
-                        uint8_t master_level);
+/* Scope uses caller-owned reusable scratch; sample_count is its int16 capacity.
+ * A NULL scratch or fewer than two samples draws the grid without wave traces. */
+void tracker_render_waves(uint16_t *frame, tracker_engine_t *engine,
+                           int16_t *scratch, int sample_count);
 
