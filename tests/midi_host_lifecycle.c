@@ -12,10 +12,21 @@
     fprintf(stderr, "midi_host_lifecycle:%d: %s\n", __LINE__, #condition); exit(1); \
 } } while (0)
 
-struct fake_queue { unsigned count; unsigned capacity; unsigned item_size; uint8_t bytes[256]; };
-struct fake_semaphore { unsigned count; };
-struct fake_client { int marker; };
-struct fake_device { int marker; };
+struct fake_queue {
+    unsigned count;
+    unsigned capacity;
+    unsigned item_size;
+    uint8_t bytes[256];
+};
+struct fake_semaphore {
+    unsigned count;
+};
+struct fake_client {
+    int marker;
+};
+struct fake_device {
+    int marker;
+};
 static struct fake_client client_instance;
 static struct fake_device device_instance;
 static bool iris_enabled = true;
@@ -55,62 +66,102 @@ static const uint8_t configuration[] = {
     5, 0x25, 1, 1, 3,
 };
 
-static bool fail_next(void) { return ++install_stage == fail_stage; }
+static bool fail_next(void)
+{
+    return ++install_stage == fail_stage;
+}
 
 QueueHandle_t xQueueCreate(unsigned count, unsigned bytes)
 {
     CHECK(count * bytes <= sizeof(((struct fake_queue *)0)->bytes));
     struct fake_queue *queue = calloc(1, sizeof(*queue));
-    if (queue) { queue->capacity = count; queue->item_size = bytes; }
+    if (queue) {
+        queue->capacity = count;
+        queue->item_size = bytes;
+    }
     return queue;
 }
 int xQueueSend(QueueHandle_t q, const void *p, TickType_t wait)
 {
     (void)wait;
-    if (q->count == q->capacity) { return 0; }
+    if (q->count == q->capacity) {
+        return 0;
+    }
     memcpy(q->bytes + q->count++ * q->item_size, p, q->item_size);
     return pdTRUE;
 }
 int xQueueReceive(QueueHandle_t q, void *p, TickType_t wait)
 {
     (void)wait;
-    if (!q->count) { return 0; }
+    if (!q->count) {
+        return 0;
+    }
     memcpy(p, q->bytes, q->item_size);
     memmove(q->bytes, q->bytes + q->item_size, --q->count * q->item_size);
     return pdTRUE;
 }
-int xQueueReset(QueueHandle_t q) { q->count = 0; return pdTRUE; }
-void vQueueDelete(QueueHandle_t q) { free(q); }
+int xQueueReset(QueueHandle_t q)
+{
+    q->count = 0;
+    return pdTRUE;
+}
+void vQueueDelete(QueueHandle_t q)
+{
+    free(q);
+}
 SemaphoreHandle_t xSemaphoreCreateMutex(void)
 {
     struct fake_semaphore *s = malloc(sizeof(*s));
-    if (s) { s->count = 1; }
+    if (s) {
+        s->count = 1;
+    }
     return s;
 }
 SemaphoreHandle_t xSemaphoreCreateBinary(void)
 {
     struct fake_semaphore *s = malloc(sizeof(*s));
-    if (s) { s->count = 0; }
+    if (s) {
+        s->count = 0;
+    }
     return s;
 }
 int xSemaphoreTake(SemaphoreHandle_t s, TickType_t wait)
 {
-    if (s->count) { --s->count; return pdTRUE; }
+    if (s->count) {
+        --s->count;
+        return pdTRUE;
+    }
     clock_us += (uint64_t)wait * 1000;
     return 0;
 }
-int xSemaphoreGive(SemaphoreHandle_t s) { ++s->count; return pdTRUE; }
-void vSemaphoreDelete(SemaphoreHandle_t s) { free(s); }
+int xSemaphoreGive(SemaphoreHandle_t s)
+{
+    ++s->count;
+    return pdTRUE;
+}
+void vSemaphoreDelete(SemaphoreHandle_t s)
+{
+    free(s);
+}
 int xTaskCreate(void (*entry)(void *), const char *name, unsigned bytes, void *context,
-                  unsigned priority, TaskHandle_t *task)
+                unsigned priority, TaskHandle_t *task)
 {
     CHECK(entry != NULL && name != NULL && context != NULL && bytes == 6144 && priority == 4);
     *task = context; /* Tests call the real static handlers under deterministic scheduling. */
     return pdPASS;
 }
-void vTaskDelete(TaskHandle_t task) { (void)task; }
-void vTaskDelay(TickType_t ticks) { clock_us += (uint64_t)ticks * 1000; }
-int64_t esp_timer_get_time(void) { return (int64_t)clock_us; }
+void vTaskDelete(TaskHandle_t task)
+{
+    (void)task;
+}
+void vTaskDelay(TickType_t ticks)
+{
+    clock_us += (uint64_t)ticks * 1000;
+}
+int64_t esp_timer_get_time(void)
+{
+    return (int64_t)clock_us;
+}
 esp_err_t esp_register_shutdown_handler(void (*handler)(void))
 {
     CHECK(registered_shutdown == NULL);
@@ -127,9 +178,20 @@ void usb_dwc_ll_gahbcfg_dis_global_intr(void *hardware)
 {
     CHECK(hardware != NULL && shutdown_steps == 0); ++shutdown_steps;
 }
-void usb_utmi_ll_reset_register(void) { CHECK(shutdown_steps == 1); ++shutdown_steps; }
-void usb_utmi_ll_enable_bus_clock(bool enabled) { (void)enabled; CHECK(false); }
-bool _usb_utmi_ll_bus_clock_is_enabled(void) { return bus_clock_enabled; }
+void usb_utmi_ll_reset_register(void)
+{
+    CHECK(shutdown_steps == 1);
+    ++shutdown_steps;
+}
+void usb_utmi_ll_enable_bus_clock(bool enabled)
+{
+    (void)enabled;
+    CHECK(false);
+}
+bool _usb_utmi_ll_bus_clock_is_enabled(void)
+{
+    return bus_clock_enabled;
+}
 void esp_rom_route_intr_matrix(int cpu, uint32_t source, uint32_t interrupt)
 {
     CHECK(cpu >= 0 && cpu < 2 && source == ETS_USB_OTGHS_INTR_SOURCE && interrupt == ETS_INVALID_INUM);
@@ -140,11 +202,22 @@ esp_err_t esp_iris_usb_set_enabled(bool enabled, uint32_t timeout_ms)
 {
     CHECK(timeout_ms == 2000);
     CHECK(!host_installed); /* Owner may never resume Iris over a Host stack. */
-    if (enabled) { ++resume_attempts; }
-    if (iris_pending) { return ESP_ERR_INVALID_STATE; }
-    if (fail_stage == -1 && !enabled) { return ESP_ERR_TIMEOUT; }
-    if (fail_stage == -3 && !enabled) { iris_pending = true; return ESP_ERR_TIMEOUT; }
-    if (fail_stage == -2 && enabled) { return ESP_ERR_NO_MEM; }
+    if (enabled) {
+        ++resume_attempts;
+    }
+    if (iris_pending) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    if (fail_stage == -1 && !enabled) {
+        return ESP_ERR_TIMEOUT;
+    }
+    if (fail_stage == -3 && !enabled) {
+        iris_pending = true;
+        return ESP_ERR_TIMEOUT;
+    }
+    if (fail_stage == -2 && enabled) {
+        return ESP_ERR_NO_MEM;
+    }
     iris_enabled = enabled;
     return ESP_OK;
 }
@@ -160,7 +233,9 @@ esp_err_t esp_iris_usb_get_status(esp_iris_usb_status_t *status)
 esp_err_t usb_host_install(const usb_host_config_t *config)
 {
     CHECK(!iris_enabled && !host_installed && config->peripheral_map == 1);
-    if (fail_next()) { return ESP_ERR_NO_MEM; }
+    if (fail_next()) {
+        return ESP_ERR_NO_MEM;
+    }
     host_installed = true;
     bus_clock_enabled = true;
     return ESP_OK;
@@ -176,19 +251,28 @@ esp_err_t usb_host_lib_handle_events(TickType_t wait, uint32_t *events)
 {
     clock_us += (uint64_t)wait * 1000;
     *events = 0;
-    if (host_free_pending) { *events = USB_HOST_LIB_EVENT_FLAGS_ALL_FREE; host_free_pending = false; device_free_ready = true; }
+    if (host_free_pending) {
+        *events = USB_HOST_LIB_EVENT_FLAGS_ALL_FREE;
+        host_free_pending = false;
+        device_free_ready = true;
+    }
     return ESP_OK;
 }
 esp_err_t usb_host_device_free_all(void)
 {
     CHECK(!client_registered && !device_open);
-    if (!device_free_ready) { host_free_pending = true; return ESP_ERR_NOT_FINISHED; }
+    if (!device_free_ready) {
+        host_free_pending = true;
+        return ESP_ERR_NOT_FINISHED;
+    }
     return ESP_OK;
 }
 esp_err_t usb_host_client_register(const usb_host_client_config_t *config, usb_host_client_handle_t *out)
 {
     CHECK(host_installed && !client_registered && config->max_num_event_msg == 8);
-    if (fail_next()) { return ESP_ERR_NO_MEM; }
+    if (fail_next()) {
+        return ESP_ERR_NO_MEM;
+    }
     client_registered = true; *out = &client_instance;
     return ESP_OK;
 }
@@ -216,7 +300,9 @@ esp_err_t usb_host_client_handle_events(usb_host_client_handle_t client, TickTyp
 esp_err_t usb_host_device_open(usb_host_client_handle_t client, uint8_t address, usb_device_handle_t *out)
 {
     CHECK(client == &client_instance && address == 1 && !device_open);
-    if (fail_next()) { return ESP_ERR_NO_MEM; }
+    if (fail_next()) {
+        return ESP_ERR_NO_MEM;
+    }
     *out = &device_instance; device_open = true; device_free_ready = false;
     return ESP_OK;
 }
@@ -239,7 +325,9 @@ esp_err_t usb_host_get_device_descriptor(usb_device_handle_t device, const usb_d
 esp_err_t usb_host_interface_claim(usb_host_client_handle_t client, usb_device_handle_t device, uint8_t number, uint8_t alt)
 {
     CHECK(client == &client_instance && device == &device_instance && number == 0 && alt == 0);
-    if (fail_next()) { return ESP_ERR_NO_MEM; }
+    if (fail_next()) {
+        return ESP_ERR_NO_MEM;
+    }
     interface_claimed = true; return ESP_OK;
 }
 esp_err_t usb_host_interface_release(usb_host_client_handle_t client, usb_device_handle_t device, uint8_t number)
@@ -255,13 +343,19 @@ esp_err_t usb_host_endpoint_halt(usb_device_handle_t device, uint8_t endpoint)
 esp_err_t usb_host_endpoint_flush(usb_device_handle_t device, uint8_t endpoint)
 {
     CHECK(device == &device_instance);
-    if (endpoint == 0x81) { cancel_rx = true; } else { cancel_tx = true; }
+    if (endpoint == 0x81) {
+        cancel_rx = true;
+    } else {
+        cancel_tx = true;
+    }
     return ESP_OK;
 }
 esp_err_t usb_host_transfer_alloc(size_t size, int isoc, usb_transfer_t **out)
 {
     CHECK(size == 64 && isoc == 0);
-    if (fail_next()) { return ESP_ERR_NO_MEM; }
+    if (fail_next()) {
+        return ESP_ERR_NO_MEM;
+    }
     usb_transfer_t *t = calloc(1, sizeof(*t)); CHECK(t != NULL);
     t->data_buffer = malloc(size); CHECK(t->data_buffer != NULL);
     t->data_buffer_size = size; *out = t; ++live_transfers; return ESP_OK;
@@ -275,8 +369,10 @@ esp_err_t usb_host_transfer_submit(usb_transfer_t *t)
 {
     CHECK(interface_claimed && !iris_enabled && t->num_bytes > 0 &&
           (size_t)t->num_bytes <= t->data_buffer_size);
-    if (t->bEndpointAddress == 0x81) { CHECK(pending_rx == NULL); pending_rx = t; }
-    else {
+    if (t->bEndpointAddress == 0x81) {
+        CHECK(pending_rx == NULL);
+        pending_rx = t;
+    } else {
         CHECK(t->bEndpointAddress == 1 && pending_tx == NULL);
         pending_tx = t; ++submitted_tx;
         last_transmit_size = (size_t)t->num_bytes;
@@ -305,7 +401,8 @@ static void destroy_owner(app_usb_midi_t *usb)
 static void connect_keyboard(app_usb_midi_t *usb)
 {
     const usb_host_client_event_msg_t event = {.event = USB_HOST_CLIENT_EVENT_NEW_DEV,
-                                               .new_dev = {.address = 1}};
+                                               .new_dev = {.address = 1}
+                                              };
     client_event(&event, usb); CHECK(usb->candidate_address == 1);
     CHECK(open_candidate(usb) == ESP_OK);
     CHECK(usb->status.connected && usb->status.vendor_id == 0x1234 && usb->status.midi_in && usb->status.midi_out);
@@ -359,7 +456,9 @@ static void test_data_and_teardown(app_note_router_t *router, app_synth_t *synth
     pump_events(usb, 1); service_transmit(usb); CHECK(last_transmit[1] == 0x80);
     pump_events(usb, 1); service_transmit(usb);
     CHECK(last_transmit_size == 4);
-    for (unsigned i = 0; i <= USB_TX_CAPACITY; ++i) { (void)queue_transmit(usb, on); }
+    for (unsigned i = 0; i <= USB_TX_CAPACITY; ++i) {
+        (void)queue_transmit(usb, on);
+    }
     CHECK(atomic_load(&usb->transmit_panic));
     service_transmit(usb); CHECK(last_transmit[1] == 0xb0 && last_transmit[2] == 120);
     pump_events(usb, 1); service_transmit(usb);

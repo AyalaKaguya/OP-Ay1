@@ -109,7 +109,7 @@ static void status_unlock(app_usb_midi_t *usb)
 }
 
 static void set_state(app_usb_midi_t *usb, app_usb_mode_t actual,
-                       app_usb_state_t state, esp_err_t error)
+                      app_usb_state_t state, esp_err_t error)
 {
     status_lock(usb);
     usb->status.actual_mode = actual;
@@ -256,7 +256,7 @@ static esp_err_t close_device(app_usb_midi_t *usb, uint64_t deadline)
         }
         if (usb->claimed) {
             const esp_err_t released = usb_host_interface_release(usb->client,
-                                          usb->device, usb->interface.interface_number);
+                                                                  usb->device, usb->interface.interface_number);
             if (released != ESP_OK) {
                 return released;
             }
@@ -396,8 +396,8 @@ static esp_err_t open_candidate(app_usb_midi_t *usb)
     }
     if (result == ESP_OK) {
         result = usb_host_interface_claim(usb->client, usb->device,
-                                           usb->interface.interface_number,
-                                           usb->interface.alternate_setting);
+                                          usb->interface.interface_number,
+                                          usb->interface.alternate_setting);
         usb->claimed = result == ESP_OK;
     }
     if (result == ESP_OK && usb->interface.endpoint_in) {
@@ -445,7 +445,7 @@ static void service_receive(app_usb_midi_t *usb)
         }
         app_usb_midi_packet_counts_t counts;
         (void)app_usb_midi_receive_packets(usb->router, usb->receive->data_buffer,
-                                            bytes, &counts);
+                                           bytes, &counts);
         received_count(usb, counts.accepted, counts.dropped);
     }
     if (!usb->rx_inflight &&
@@ -514,11 +514,11 @@ static void settle_vendor_recovery(app_usb_midi_t *usb)
         return; /* A timed-out pause may still be executing; never steal PHY. */
     }
     const esp_err_t resumed = iris.enabled && !iris.phy_released ? ESP_OK :
-        esp_iris_usb_set_enabled(true, USB_TRANSITION_MS);
+                              esp_iris_usb_set_enabled(true, USB_TRANSITION_MS);
     if (resumed == ESP_OK) {
         usb->vendor_recovery_pending = false;
         set_state(usb, APP_USB_MODE_VENDOR, APP_USB_STATE_ERROR,
-                    usb->vendor_recovery_error);
+                  usb->vendor_recovery_error);
     }
 }
 
@@ -532,7 +532,7 @@ static void schedule_vendor_recovery(app_usb_midi_t *usb, esp_err_t error)
     const bool vendor_confirmed = observed == ESP_OK && !iris.transition_pending &&
                                   iris.enabled && !iris.phy_released;
     set_state(usb, vendor_confirmed ? APP_USB_MODE_VENDOR : APP_USB_MODE_NONE,
-                APP_USB_STATE_ERROR, error);
+              APP_USB_STATE_ERROR, error);
     settle_vendor_recovery(usb);
 }
 
@@ -543,11 +543,11 @@ static void transition(app_usb_midi_t *usb, app_usb_mode_t target)
     }
     usb->vendor_recovery_pending = false;
     set_state(usb, usb->library_installed ? APP_USB_MODE_MIDI_HOST : APP_USB_MODE_VENDOR,
-                APP_USB_STATE_SWITCHING, ESP_OK);
+              APP_USB_STATE_SWITCHING, ESP_OK);
     if (target == APP_USB_MODE_MIDI_HOST) {
         if (usb->library_installed && usb->client != NULL && !usb->closing) {
             set_state(usb, APP_USB_MODE_MIDI_HOST,
-                        usb->device ? APP_USB_STATE_HOST_CONNECTED : APP_USB_STATE_HOST_WAITING, ESP_OK);
+                      usb->device ? APP_USB_STATE_HOST_CONNECTED : APP_USB_STATE_HOST_WAITING, ESP_OK);
             return;
         }
         if (usb->library_installed) {
@@ -571,10 +571,10 @@ static void transition(app_usb_midi_t *usb, app_usb_mode_t target)
         }
         const esp_err_t stopped = stop_host(usb);
         const esp_err_t restored = stopped == ESP_OK ?
-            esp_iris_usb_set_enabled(true, USB_TRANSITION_MS) : stopped;
+                                   esp_iris_usb_set_enabled(true, USB_TRANSITION_MS) : stopped;
         set_state(usb, usb->library_installed ? APP_USB_MODE_MIDI_HOST :
-                    restored == ESP_OK ? APP_USB_MODE_VENDOR : APP_USB_MODE_NONE,
-                    APP_USB_STATE_ERROR, result);
+                  restored == ESP_OK ? APP_USB_MODE_VENDOR : APP_USB_MODE_NONE,
+                  APP_USB_STATE_ERROR, result);
         if (!usb->library_installed && restored != ESP_OK) {
             schedule_vendor_recovery(usb, result);
         }
@@ -586,7 +586,7 @@ static void transition(app_usb_midi_t *usb, app_usb_mode_t target)
         }
         const esp_err_t resumed = esp_iris_usb_set_enabled(true, USB_TRANSITION_MS);
         set_state(usb, resumed == ESP_OK ? APP_USB_MODE_VENDOR : APP_USB_MODE_NONE,
-                    resumed == ESP_OK ? APP_USB_STATE_VENDOR : APP_USB_STATE_ERROR, resumed);
+                  resumed == ESP_OK ? APP_USB_STATE_VENDOR : APP_USB_STATE_ERROR, resumed);
         if (resumed != ESP_OK) {
             schedule_vendor_recovery(usb, resumed);
         }
@@ -608,7 +608,7 @@ static void owner_task(void *context)
         const unsigned request = atomic_load_explicit(&usb->request_sequence, memory_order_acquire);
         if (request != completed_request || stopping) {
             const app_usb_mode_t target = stopping ? APP_USB_MODE_VENDOR :
-                (app_usb_mode_t)atomic_load_explicit(&usb->requested_mode, memory_order_relaxed);
+                                          (app_usb_mode_t)atomic_load_explicit(&usb->requested_mode, memory_order_relaxed);
             transition(usb, target);
             completed_request = request;
             if (stopping && !usb->library_installed && usb->status.actual_mode == APP_USB_MODE_VENDOR) {
@@ -626,7 +626,7 @@ static void owner_task(void *context)
             if (usb->gone) {
                 const esp_err_t closed = close_device(usb, milliseconds() + USB_TRANSITION_MS);
                 set_state(usb, APP_USB_MODE_MIDI_HOST,
-                            closed == ESP_OK ? APP_USB_STATE_HOST_WAITING : APP_USB_STATE_ERROR, closed);
+                          closed == ESP_OK ? APP_USB_STATE_HOST_WAITING : APP_USB_STATE_ERROR, closed);
             } else if (usb->candidate_address && usb->device == NULL && !usb->closing) {
                 const esp_err_t opened = open_candidate(usb);
                 if (opened != ESP_OK) {
@@ -674,7 +674,7 @@ bool app_usb_midi_create(app_note_router_t *router, app_usb_midi_t **out_handle)
     if (usb->status_lock == NULL || usb->finished == NULL || usb->transmit_queue == NULL ||
             shutdown_registered != ESP_OK ||
             xTaskCreate(owner_task, "usb_midi", USB_OWNER_STACK_BYTES, usb,
-                          USB_OWNER_PRIORITY, &usb->task) != pdPASS) {
+                        USB_OWNER_PRIORITY, &usb->task) != pdPASS) {
         if (usb->status_lock) {
             vSemaphoreDelete(usb->status_lock);
         }

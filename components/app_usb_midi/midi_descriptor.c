@@ -32,7 +32,7 @@ static bool finish_interface(const app_usb_midi_interface_t *candidate,
 }
 
 bool app_usb_midi_parse_configuration(const uint8_t *bytes, size_t size,
-                                       app_usb_midi_interface_t *interface_out)
+                                      app_usb_midi_interface_t *interface_out)
 {
     if (bytes == NULL || interface_out == NULL || size < 9 ||
             size > APP_USB_MIDI_MAX_CONFIG_BYTES || bytes[0] < 9 ||
@@ -62,7 +62,7 @@ bool app_usb_midi_parse_configuration(const uint8_t *bytes, size_t size,
                 return false;
             }
             if (midi && !finish_interface(&candidate, header_seen,
-                                           endpoints_expected, endpoints_seen)) {
+                                          endpoints_expected, endpoints_seen)) {
                 return false;
             }
             if (midi && !found) {
@@ -118,7 +118,7 @@ bool app_usb_midi_parse_configuration(const uint8_t *bytes, size_t size,
         offset += length;
     }
     if (midi && !finish_interface(&candidate, header_seen,
-                                   endpoints_expected, endpoints_seen)) {
+                                  endpoints_expected, endpoints_seen)) {
         return false;
     }
     if (midi && !found) {

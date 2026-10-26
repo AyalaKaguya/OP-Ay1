@@ -17,4 +17,4 @@ typedef struct {
  * preventing a partial gesture or a full synth queue from leaving a held note.
  * Returns true only when no malformed/rejected event was encountered. */
 bool app_usb_midi_receive_packets(app_note_router_t *router, const uint8_t *bytes,
-                                   size_t size, app_usb_midi_packet_counts_t *counts);
+                                  size_t size, app_usb_midi_packet_counts_t *counts);

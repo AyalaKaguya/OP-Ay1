@@ -21,4 +21,4 @@ typedef struct {
  * or both bulk endpoints. Rejects truncated/overlong/malformed descriptors,
  * duplicate directions and invalid packet sizes. Output unchanged on false. */
 bool app_usb_midi_parse_configuration(const uint8_t *bytes, size_t size,
-                                       app_usb_midi_interface_t *interface_out);
+                                      app_usb_midi_interface_t *interface_out);

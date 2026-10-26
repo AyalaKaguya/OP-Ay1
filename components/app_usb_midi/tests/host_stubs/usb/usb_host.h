@@ -36,8 +36,12 @@ typedef enum {
 typedef struct {
     usb_host_client_event_t event;
     union {
-        struct { uint8_t address; } new_dev;
-        struct { usb_device_handle_t dev_hdl; } dev_gone;
+        struct {
+            uint8_t address;
+        } new_dev;
+        struct {
+            usb_device_handle_t dev_hdl;
+        } dev_gone;
     };
 } usb_host_client_event_msg_t;
 typedef struct {
@@ -54,8 +58,13 @@ typedef struct {
     int intr_flags;
     unsigned peripheral_map;
 } usb_host_config_t;
-typedef struct { uint8_t bytes[9]; } usb_config_desc_t;
-typedef struct { uint16_t idVendor; uint16_t idProduct; } usb_device_desc_t;
+typedef struct {
+    uint8_t bytes[9];
+} usb_config_desc_t;
+typedef struct {
+    uint16_t idVendor;
+    uint16_t idProduct;
+} usb_device_desc_t;
 #define USB_HOST_LIB_EVENT_FLAGS_ALL_FREE 2U
 esp_err_t usb_host_install(const usb_host_config_t *config);
 esp_err_t usb_host_uninstall(void);

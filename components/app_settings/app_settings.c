@@ -45,7 +45,7 @@ static int gravity_direction(float x, float y, float z)
 {
     const float magnitude = sqrtf(x * x + y * y + z * z);
     if (!isfinite(magnitude) || magnitude < GRAVITY_MIN_G ||
-        magnitude > GRAVITY_MAX_G || fabsf(z) > FLAT_Z_G) {
+            magnitude > GRAVITY_MAX_G || fabsf(z) > FLAT_Z_G) {
         return -1;
     }
     const float ax = fabsf(x);
@@ -62,9 +62,9 @@ static int gravity_direction(float x, float y, float z)
 }
 
 bool app_settings_orientation_update(app_settings_orientation_t *o,
-                                      float x, float y, float z,
-                                      uint64_t now_ms, bool locked,
-                                      bool interaction_busy, int *out_rotation)
+                                     float x, float y, float z,
+                                     uint64_t now_ms, bool locked,
+                                     bool interaction_busy, int *out_rotation)
 {
     if (o == NULL || out_rotation == NULL) {
         return false;

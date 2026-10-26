@@ -16,13 +16,13 @@ static void require(bool condition, const char *message)
 }
 
 static void hold(app_settings_orientation_t *orientation, float x, float y, float z,
-                   uint64_t *now, bool locked, bool busy, int *last_rotation,
-                   int *changes, unsigned samples)
+                 uint64_t *now, bool locked, bool busy, int *last_rotation,
+                 int *changes, unsigned samples)
 {
     for (unsigned sample = 0; sample < samples; ++sample) {
         *now += 40;
         if (app_settings_orientation_update(orientation, x, y, z, *now,
-                                             locked, busy, last_rotation)) {
+                                            locked, busy, last_rotation)) {
             ++*changes;
         }
     }
@@ -45,14 +45,14 @@ static void four_directions(void)
         int rotation = -1;
         int changes = 0;
         hold(&orientation, cases[index].x, cases[index].y, 0.0f,
-               &now, false, false, &rotation, &changes, 10);
+             &now, false, false, &rotation, &changes, 10);
         require(changes == 0 && rotation == -1, "direction accepted before 400ms stable dwell");
         hold(&orientation, cases[index].x, cases[index].y, 0.0f,
-               &now, false, false, &rotation, &changes, 1);
+             &now, false, false, &rotation, &changes, 1);
         require(changes == 1 && rotation == cases[index].rotation,
                 "stable cardinal gravity did not select the expected direction");
         hold(&orientation, cases[index].x, cases[index].y, 0.0f,
-               &now, false, false, &rotation, &changes, 100);
+             &now, false, false, &rotation, &changes, 100);
         require(changes == 1, "unchanged orientation repeatedly requested rotation");
     }
 }
@@ -75,7 +75,7 @@ static void rejected_motion(void)
             "flat, diagonal, nonfinite or non-gravity sample caused rotation");
     for (int sample = 0; sample < 50; ++sample) {
         hold(&orientation, sample % 2 ? 1.0f : -1.0f, 0.0f, 0.0f,
-               &now, false, false, &rotation, &changes, 1);
+             &now, false, false, &rotation, &changes, 1);
     }
     require(changes == 0, "shaking between gravity axes caused rotation");
     hold(&orientation, 1.0f, 0.0f, 0.0f, &now, false, false, &rotation, &changes, 13);
@@ -91,13 +91,13 @@ static void lock_and_interaction(void)
         int rotation = -1;
         int changes = 0;
         hold(&orientation, 1.0f, 0.0f, 0.0f, &now, guard == 0, guard == 1,
-               &rotation, &changes, 50);
+             &rotation, &changes, 50);
         require(changes == 0, "locked or active interaction allowed auto rotation");
         hold(&orientation, 1.0f, 0.0f, 0.0f, &now, false, false,
-               &rotation, &changes, 10);
+             &rotation, &changes, 10);
         require(changes == 0, "unlock/release reused an old stable dwell");
         hold(&orientation, 1.0f, 0.0f, 0.0f, &now, false, false,
-               &rotation, &changes, 1);
+             &rotation, &changes, 1);
         require(changes == 1 && rotation == 90, "unlock/release did not resume auto rotation");
     }
 }

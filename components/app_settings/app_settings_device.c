@@ -116,7 +116,7 @@ static void load_preferences(app_settings_t *s)
     const esp_err_t rotation_error = nvs_get_u16(s->storage, "rotation", &rotation);
     const esp_err_t lock_error = nvs_get_u8(s->storage, "locked", &locked);
     if (brightness_error != ESP_OK || rotation_error != ESP_OK || lock_error != ESP_OK ||
-        brightness > 100 || locked > 1 || !app_settings_rotation_valid(rotation)) {
+            brightness > 100 || locked > 1 || !app_settings_rotation_valid(rotation)) {
         s->storage_error = ESP_ERR_INVALID_STATE;
         return;
     }
@@ -130,7 +130,7 @@ static void load_preferences(app_settings_t *s)
 static void save_preferences(app_settings_t *s, uint64_t now, bool force)
 {
     if (!s->storage_open || !s->storage_write_allowed || !s->storage_dirty ||
-        (!force && now < s->save_after_ms)) {
+            (!force && now < s->save_after_ms)) {
         return;
     }
     esp_err_t result = nvs_set_u8(s->storage, "version", SETTINGS_NVS_VERSION);
@@ -167,8 +167,8 @@ static void publish(app_settings_t *s, uint64_t now)
         s->current.charge = APP_SETTINGS_CHARGE_UNKNOWN;
     }
     s->current.last_error = s->display_error != ESP_OK ? s->display_error
-                             : s->storage_error != ESP_OK ? s->storage_error
-                             : s->imu_error != ESP_OK ? s->imu_error : s->battery_error;
+                            : s->storage_error != ESP_OK ? s->storage_error
+                            : s->imu_error != ESP_OK ? s->imu_error : s->battery_error;
     if (xSemaphoreTake(s->snapshot_lock, portMAX_DELAY) == pdTRUE) {
         s->published = s->current;
         (void)xSemaphoreGive(s->snapshot_lock);
@@ -228,9 +228,9 @@ static void apply_display(app_settings_t *s, uint64_t now)
         }
     }
     if (result == ESP_OK && set_rotation &&
-        !atomic_load_explicit(&s->interaction_busy, memory_order_acquire)) {
+            !atomic_load_explicit(&s->interaction_busy, memory_order_acquire)) {
         result = esp_display_presenter_set_rotation(s->presenter,
-                          (esp_display_present_rotation_t)s->pending_rotation);
+                                                    (esp_display_present_rotation_t)s->pending_rotation);
         if (result == ESP_OK) {
             s->current.rotation = s->pending_rotation;
             s->pending_rotation = -1;
@@ -296,7 +296,7 @@ static void poll_orientation(app_settings_t *s, uint64_t now)
     const bool busy = atomic_load_explicit(&s->interaction_busy, memory_order_acquire) ||
                       s->pending_rotation >= 0 || pending_manual;
     if (app_settings_orientation_update(&s->orientation, x, y, z, now,
-                                         s->current.rotation_locked, busy, &rotation)) {
+                                        s->current.rotation_locked, busy, &rotation)) {
         s->pending_rotation = rotation;
         s->manual_rotation_pending = false;
     }
@@ -315,7 +315,7 @@ static void poll_battery(app_settings_t *s, uint64_t now)
     /* Several BSP gauge getters report zero on bus failure. Reject impossible
      * voltage/SOC instead of inventing a valid 0-percent battery reading. */
     if (s->battery.voltage_mv < BATTERY_MIN_MV || s->battery.voltage_mv > BATTERY_MAX_MV ||
-        s->battery.state_of_charge > 100) {
+            s->battery.state_of_charge > 100) {
         s->battery_error = ESP_ERR_INVALID_RESPONSE;
         return;
     }
@@ -324,10 +324,10 @@ static void poll_battery(app_settings_t *s, uint64_t now)
     s->current.current_ma = s->battery.current_ma;
     const battery_status_t flags = {.full = s->battery.status_flags};
     s->current.charge = flags.DSG || s->battery.current_ma < -CHARGE_CURRENT_THRESHOLD_MA
-                         ? APP_SETTINGS_CHARGE_DISCHARGING
-                         : s->battery.current_ma > CHARGE_CURRENT_THRESHOLD_MA
-                         ? APP_SETTINGS_CHARGE_CHARGING
-                         : flags.FC ? APP_SETTINGS_CHARGE_FULL : APP_SETTINGS_CHARGE_IDLE;
+                        ? APP_SETTINGS_CHARGE_DISCHARGING
+                        : s->battery.current_ma > CHARGE_CURRENT_THRESHOLD_MA
+                        ? APP_SETTINGS_CHARGE_CHARGING
+                        : flags.FC ? APP_SETTINGS_CHARGE_FULL : APP_SETTINGS_CHARGE_IDLE;
     s->current.battery_updated_ms = now;
     s->battery_seen = true;
 }
@@ -416,8 +416,8 @@ static void wake(app_settings_t *s)
 }
 
 esp_err_t app_settings_start(esp_gsp_handle_t ui,
-                              esp_display_presenter_t *presenter,
-                              app_settings_t **out_settings)
+                             esp_display_presenter_t *presenter,
+                             app_settings_t **out_settings)
 {
     if (ui == NULL || presenter == NULL || out_settings == NULL) {
         return ESP_ERR_INVALID_ARG;
@@ -451,7 +451,7 @@ esp_err_t app_settings_start(esp_gsp_handle_t ui,
     load_preferences(s);
     app_settings_orientation_init(&s->orientation, 0);
     if (xTaskCreate(settings_task, "app_settings", SETTINGS_TASK_STACK_BYTES, s,
-                      SETTINGS_TASK_PRIORITY, &s->task) != pdPASS) {
+                    SETTINGS_TASK_PRIORITY, &s->task) != pdPASS) {
         goto no_memory;
     }
     *out_settings = s;
@@ -530,7 +530,7 @@ void app_settings_set_interaction_busy(app_settings_t *s, bool busy)
 }
 
 esp_err_t app_settings_read_snapshot(app_settings_t *s,
-                                      app_settings_snapshot_t *out_snapshot)
+                                     app_settings_snapshot_t *out_snapshot)
 {
     if (s == NULL || out_snapshot == NULL) {
         return ESP_ERR_INVALID_ARG;

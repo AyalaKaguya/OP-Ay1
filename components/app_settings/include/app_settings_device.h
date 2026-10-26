@@ -16,8 +16,8 @@ typedef struct app_settings app_settings_t;
  * ui and presenter until stop. Sensors/storage may be unavailable without
  * failing startup; their error and validity remain visible in snapshots. */
 esp_err_t app_settings_start(esp_gsp_handle_t ui,
-                              esp_display_presenter_t *presenter,
-                              app_settings_t **out_settings);
+                             esp_display_presenter_t *presenter,
+                             app_settings_t **out_settings);
 
 /* Nonblocking, coalesced UI-thread requests. Brightness accepts 0..100;
  * rotation accepts 0/90/180/270 and also works while rotation is locked. */
@@ -29,7 +29,7 @@ esp_err_t app_settings_request_lock(app_settings_t *settings, bool locked);
 void app_settings_set_interaction_busy(app_settings_t *settings, bool busy);
 /* Zero-wait snapshot read. On ESP_ERR_TIMEOUT, out_snapshot is unchanged. */
 esp_err_t app_settings_read_snapshot(app_settings_t *settings,
-                                      app_settings_snapshot_t *out_snapshot);
+                                     app_settings_snapshot_t *out_snapshot);
 /* Stop from a non-UI task after callers stop using the request/read API.
  * On timeout/failure retain *settings and retry; it is freed only on success.
  * Stop settings before stopping GSP or destroying its borrowed presenter. */

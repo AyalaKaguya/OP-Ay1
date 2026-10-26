@@ -51,13 +51,13 @@ typedef struct {
 void app_settings_snapshot_defaults(app_settings_snapshot_t *snapshot);
 bool app_settings_rotation_valid(int rotation);
 void app_settings_orientation_init(app_settings_orientation_t *orientation,
-                                    int rotation);
+                                   int rotation);
 /* Returns true only when a new stable direction is accepted. Inputs are
  * BMI270 acceleration in g; interaction_busy and locked suppress changes. */
 bool app_settings_orientation_update(app_settings_orientation_t *orientation,
-                                      float x_g, float y_g, float z_g,
-                                      uint64_t now_ms, bool locked,
-                                      bool interaction_busy, int *out_rotation);
+                                     float x_g, float y_g, float z_g,
+                                     uint64_t now_ms, bool locked,
+                                     bool interaction_busy, int *out_rotation);
 
 #ifdef __cplusplus
 }

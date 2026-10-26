@@ -57,10 +57,11 @@ static void fixture_destroy(fixture_t *f)
 }
 
 static bool midi(fixture_t *f, unsigned channel, unsigned type,
-                  unsigned data1, unsigned data2)
+                 unsigned data1, unsigned data2)
 {
     const uint8_t packet[4] = {(uint8_t)type, (uint8_t)(type * 16 + channel),
-                               (uint8_t)data1, (uint8_t)data2};
+                               (uint8_t)data1, (uint8_t)data2
+                              };
     return app_note_router_midi_packet(f->router, packet);
 }
 

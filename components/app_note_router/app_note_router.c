@@ -60,7 +60,7 @@ static bool held(const app_note_router_t *router, int note)
 }
 
 static bool start_note(app_note_router_t *router, int note, float velocity,
-                        bool retrigger)
+                       bool retrigger)
 {
     if ((!held(router, note) || retrigger) &&
             !app_synth_note_on(router->synth, note, velocity)) {
@@ -136,7 +136,8 @@ bool app_note_router_touch_note_on(app_note_router_t *router, int note,
         router->touch[note] = true;
         const unsigned midi_velocity = (unsigned)(velocity * 127.0f + 0.5f);
         const uint8_t packet[4] = {0x09, 0x90, (uint8_t)note,
-                                   (uint8_t)(midi_velocity ? midi_velocity : 1U)};
+                                   (uint8_t)(midi_velocity ? midi_velocity : 1U)
+                                  };
         transmit(router, packet);
     }
     control_unlock(router);

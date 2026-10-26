@@ -5,7 +5,7 @@
 #include <string.h>
 
 bool app_usb_midi_receive_packets(app_note_router_t *router, const uint8_t *bytes,
-                                   size_t size, app_usb_midi_packet_counts_t *counts)
+                                  size_t size, app_usb_midi_packet_counts_t *counts)
 {
     app_usb_midi_packet_counts_t result = {0};
     if (router == NULL || (bytes == NULL && size != 0) ||
