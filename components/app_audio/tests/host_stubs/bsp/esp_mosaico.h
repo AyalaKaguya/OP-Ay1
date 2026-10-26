@@ -10,7 +10,7 @@ typedef struct {
 #define ESP_CODEC_DEV_OK 0
 esp_codec_dev_handle_t bsp_audio_codec_speaker_init(void);
 int esp_codec_dev_open(esp_codec_dev_handle_t handle,
-                         const esp_codec_dev_sample_info_t *format);
+                       const esp_codec_dev_sample_info_t *format);
 int esp_codec_dev_close(esp_codec_dev_handle_t handle);
 int esp_codec_dev_set_out_vol(esp_codec_dev_handle_t handle, int volume);
 int esp_codec_dev_set_out_mute(esp_codec_dev_handle_t handle, bool muted);

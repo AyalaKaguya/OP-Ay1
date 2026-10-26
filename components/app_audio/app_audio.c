@@ -53,7 +53,7 @@ static void apply_volume(void)
 {
     const int volume = atomic_load(&s_audio.volume_req);
     if (volume != s_audio.applied_volume &&
-        esp_codec_dev_set_out_vol(s_audio.codec, volume) == ESP_CODEC_DEV_OK) {
+            esp_codec_dev_set_out_vol(s_audio.codec, volume) == ESP_CODEC_DEV_OK) {
         s_audio.applied_volume = volume;
     }
 }
@@ -87,12 +87,22 @@ static void writer_task(void *argument)
     int64_t dsp_max = 0;
     int64_t write_total = 0;
     int64_t write_max = 0;
+    int64_t ready_wait_max = 0;
+    unsigned late_blocks = 0;
     unsigned chunks = 0;
     for (;;) {
+        const int64_t ready_start = esp_timer_get_time();
         if (xSemaphoreTake(s_audio.ready_chunks, portMAX_DELAY) != pdTRUE) {
             continue;
         }
+        const int64_t ready_wait = esp_timer_get_time() - ready_start;
+        if (ready_wait > ready_wait_max) {
+            ready_wait_max = ready_wait;
+        }
         const int64_t render_us = s_audio.render_us[tail];
+        if (render_us > (int64_t)APP_AUDIO_BLOCK_FRAMES * 1000000 / APP_AUDIO_SAMPLE_RATE) {
+            ++late_blocks;
+        }
         dsp_total += render_us;
         if (render_us > dsp_max) {
             dsp_max = render_us;
@@ -100,7 +110,7 @@ static void writer_task(void *argument)
         apply_volume();
         const int64_t start = esp_timer_get_time();
         const int result = esp_codec_dev_write(s_audio.codec, s_audio.ring[tail],
-                                                sizeof(audio_chunk_t));
+                                               sizeof(audio_chunk_t));
         const int64_t elapsed = esp_timer_get_time() - start;
         write_total += elapsed;
         if (elapsed > write_max) {
@@ -115,14 +125,17 @@ static void writer_task(void *argument)
         }
         const int64_t now = esp_timer_get_time();
         if (now - stats_start >= AUDIO_STATS_PERIOD_US) {
-            ESP_LOGI(TAG, "dsp avg=%lldus max=%lldus | write avg=%lldus max=%lldus",
+            ESP_LOGI(TAG, "dsp avg=%lldus max=%lldus | write avg=%lldus max=%lldus | ready_wait=%lldus late=%u",
                      (long long)(dsp_total / chunks), (long long)dsp_max,
-                     (long long)(write_total / chunks), (long long)write_max);
+                     (long long)(write_total / chunks), (long long)write_max,
+                     (long long)ready_wait_max, late_blocks);
             stats_start = now;
             dsp_total = 0;
             dsp_max = 0;
             write_total = 0;
             write_max = 0;
+            ready_wait_max = 0;
+            late_blocks = 0;
             chunks = 0;
         }
     }
@@ -184,14 +197,14 @@ esp_err_t app_audio_init_bus(app_audio_bus_t *bus)
     codec_open = true;
     if (esp_codec_dev_set_out_vol(s_audio.codec, AUDIO_DEFAULT_VOLUME) !=
             ESP_CODEC_DEV_OK ||
-        esp_codec_dev_set_out_mute(s_audio.codec, false) != ESP_CODEC_DEV_OK) {
+            esp_codec_dev_set_out_mute(s_audio.codec, false) != ESP_CODEC_DEV_OK) {
         ESP_LOGE(TAG, "codec volume/unmute failed");
         goto fail;
     }
     s_audio.applied_volume = AUDIO_DEFAULT_VOLUME;
     s_audio.bus = bus;
     s_audio.free_chunks = xSemaphoreCreateCounting(AUDIO_RING_CHUNKS,
-                                                    AUDIO_RING_CHUNKS);
+                                                   AUDIO_RING_CHUNKS);
     s_audio.ready_chunks = xSemaphoreCreateCounting(AUDIO_RING_CHUNKS, 0);
     error = ESP_ERR_NO_MEM;
     if (s_audio.free_chunks == NULL || s_audio.ready_chunks == NULL) {
@@ -199,11 +212,11 @@ esp_err_t app_audio_init_bus(app_audio_bus_t *bus)
         goto fail;
     }
     if (xTaskCreatePinnedToCore(dsp_task, "audio_dsp", AUDIO_DSP_STACK, NULL,
-                                 AUDIO_DSP_PRIORITY, &s_audio.dsp_task,
-                                 AUDIO_TASK_CORE) != pdPASS ||
-        xTaskCreatePinnedToCore(writer_task, "audio_i2s", AUDIO_WRITER_STACK, NULL,
-                                 AUDIO_WRITER_PRIORITY, &s_audio.writer_task,
-                                 AUDIO_TASK_CORE) != pdPASS) {
+                                AUDIO_DSP_PRIORITY, &s_audio.dsp_task,
+                                AUDIO_TASK_CORE) != pdPASS ||
+            xTaskCreatePinnedToCore(writer_task, "audio_i2s", AUDIO_WRITER_STACK, NULL,
+                                    AUDIO_WRITER_PRIORITY, &s_audio.writer_task,
+                                    AUDIO_TASK_CORE) != pdPASS) {
         ESP_LOGE(TAG, "audio task create failed");
         goto fail;
     }
@@ -226,7 +239,7 @@ esp_err_t app_audio_init(tracker_engine_t *engine)
     }
     if (s_audio.ready) {
         return app_audio_bus_tracker(s_audio.bus) == engine
-                   ? ESP_OK : ESP_ERR_INVALID_STATE;
+               ? ESP_OK : ESP_ERR_INVALID_STATE;
     }
     app_audio_bus_t *bus = app_audio_bus_create(engine, NULL);
     if (bus == NULL) {

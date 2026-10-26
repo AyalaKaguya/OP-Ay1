@@ -55,6 +55,9 @@ struct app_synth {
     app_synth_patch_t current;
     app_synth_patch_t target;
     float wave_mix[5];
+    float cached_pan;
+    float pan_left;
+    float pan_right;
     float tables[SYNTH_TABLE_COUNT][APP_SYNTH_WAVETABLE_SIZE + 1U];
     synth_voice_t voices[APP_SYNTH_VOICE_COUNT];
     uint64_t next_age;
@@ -134,7 +137,7 @@ static app_synth_patch_t sanitize_patch(const app_synth_patch_t *input)
     patch.release_s = clampf(patch.release_s, 0.0f, 5.0f);
     patch.lfo_hz = clampf(patch.lfo_hz, 0.0f, 40.0f);
     patch.lfo_depth = clampf(patch.lfo_depth, 0.0f,
-                           patch.lfo_target == APP_SYNTH_LFO_TARGET_PITCH ? 12.0f : 1.0f);
+                             patch.lfo_target == APP_SYNTH_LFO_TARGET_PITCH ? 12.0f : 1.0f);
     return patch;
 }
 
@@ -297,7 +300,8 @@ bool app_synth_note_on(app_synth_t *synth, int note, float velocity)
         return app_synth_note_off(synth, note);
     }
     synth_command_t command = {.type = CMD_NOTE_ON, .note = note,
-                               .velocity = clampf(velocity, 0.0f, 1.0f)};
+                               .velocity = clampf(velocity, 0.0f, 1.0f)
+                              };
     return enqueue(synth, &command);
 }
 
@@ -376,6 +380,7 @@ app_synth_t *app_synth_create(float sample_rate)
     synth->current = synth->target;
     synth->preset_id = APP_SYNTH_PATCH_INIT;
     synth->wave_mix[APP_SYNTH_WAVE_SAW] = 1.0f;
+    synth->cached_pan = NAN;
     atomic_flag_clear(&synth->queue_lock);
     atomic_init(&synth->queue_depth, 0U);
     atomic_init(&synth->dropped, 0U);
@@ -737,9 +742,21 @@ void app_synth_render(app_synth_t *synth, float *stereo, size_t frames)
             }
             sample += render_voice(synth, voice);
         }
+        /* Control and voice clocks still advance above. Retain signed zero;
+         * NaN bypasses this branch and reaches the finite-output guard. */
+        if (sample == 0.0f) {
+            stereo[frame * 2U] = sample;
+            stereo[frame * 2U + 1U] = sample;
+            continue;
+        }
         sample *= SYNTH_VOICE_GAIN * synth->current.gain;
-        float left = sample * sqrtf(0.5f * (1.0f - synth->current.pan));
-        float right = sample * sqrtf(0.5f * (1.0f + synth->current.pan));
+        if (synth->cached_pan != synth->current.pan) {
+            synth->cached_pan = synth->current.pan;
+            synth->pan_left = sqrtf(0.5f * (1.0f - synth->current.pan));
+            synth->pan_right = sqrtf(0.5f * (1.0f + synth->current.pan));
+        }
+        float left = sample * synth->pan_left;
+        float right = sample * synth->pan_right;
         peak = fmaxf(peak, fmaxf(fabsf(left), fabsf(right)));
         clipped = clipped || fabsf(left) > 1.0f || fabsf(right) > 1.0f;
         /* Keep source headroom for the shared output bus. Saturating each

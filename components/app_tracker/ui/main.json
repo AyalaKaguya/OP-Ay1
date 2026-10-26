@@ -1,0 +1,21 @@
+{
+  "screen": "tracker",
+  "w": 480,
+  "h": 480,
+  "screen_bg": "#0B0C0E",
+  "swipe": false,
+  "objects": [
+    {
+      "type": "image",
+      "parent": -1,
+      "name": "workstation",
+      "x": 0,
+      "y": 0,
+      "w": 480,
+      "h": 480,
+      "image": "assets/canvas480.png",
+      "codec": "lossless",
+      "bind": "workstation"
+    }
+  ]
+}

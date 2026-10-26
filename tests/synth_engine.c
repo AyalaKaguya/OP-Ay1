@@ -114,6 +114,85 @@ static void test_blocks(void)
     app_synth_destroy(chunks);
 }
 
+static void render_irregular(app_synth_t *synth, float *output, size_t frames)
+{
+    for (size_t offset = 0; offset < frames;) {
+        size_t block = offset % 137U + 1U;
+        if (block > frames - offset) {
+            block = frames - offset;
+        }
+        app_synth_render(synth, output + offset * 2U, block);
+        offset += block;
+    }
+}
+
+static void test_idle_patch_and_dynamic_pan_blocks(void)
+{
+    app_synth_t *whole = app_synth_create(TEST_RATE);
+    app_synth_t *chunks = app_synth_create(TEST_RATE);
+    const size_t frames = 10007U;
+    float *a = calloc(frames * 2U, sizeof(*a));
+    float *b = calloc(frames * 2U, sizeof(*b));
+    assert(whole != NULL && chunks != NULL && a != NULL && b != NULL);
+    for (unsigned stage = 0; stage < 10U; ++stage) {
+        app_synth_patch_t patch = app_synth_patch_for_preset((app_synth_patch_id_t)(stage % 4U));
+        patch.pan = (float)((int)stage % 5 - 2) * 0.5f;
+        assert(app_synth_set_patch(whole, &patch));
+        assert(app_synth_set_patch(chunks, &patch));
+        if (stage == 2U || stage == 7U) {
+            assert(app_synth_note_on(whole, 60 + (int)stage, 0.8f));
+            assert(app_synth_note_on(chunks, 60 + (int)stage, 0.8f));
+        }
+        if (stage == 5U) {
+            app_synth_panic(whole);
+            app_synth_panic(chunks);
+        }
+        app_synth_render(whole, a, frames);
+        render_irregular(chunks, b, frames);
+        assert(memcmp(a, b, frames * 2U * sizeof(*a)) == 0);
+        app_synth_status_t status;
+        assert(app_synth_get_status(whole, &status));
+        assert(status.rendered_frames == (uint64_t)(stage + 1U) * frames);
+        if (stage < 2U || stage == 5U || stage == 6U) {
+            assert(energy(a, frames) == 0.0 && status.active_voices == 0U);
+        } else {
+            assert(energy(a, frames) > 0.00000001);
+        }
+    }
+    app_synth_destroy(whole);
+    app_synth_destroy(chunks);
+    free(a);
+    free(b);
+    puts("idle/pan: dynamic pan and later notes remain block-equivalent after idle edits");
+}
+
+static void test_signed_zero_output(void)
+{
+    app_synth_t *synth = sine_synth();
+    float *buffer = calloc(4096U * 2U, sizeof(*buffer));
+    assert(buffer != NULL);
+    assert(app_synth_note_on(synth, 69, 1.0e-44f));
+    app_synth_render(synth, buffer, 4096U);
+    unsigned negative_zeros = 0U;
+    unsigned positive_zeros = 0U;
+    for (unsigned i = 0; i < 4096U * 2U; ++i) {
+        assert(isfinite(buffer[i]));
+        if (buffer[i] == 0.0f) {
+            negative_zeros += signbit(buffer[i]) ? 1U : 0U;
+            positive_zeros += signbit(buffer[i]) ? 0U : 1U;
+        }
+    }
+    assert(negative_zeros != 0U && positive_zeros != 0U);
+    app_synth_panic(synth);
+    app_synth_render(synth, buffer, 4096U);
+    for (unsigned i = 0; i < 4096U * 2U; ++i) {
+        assert(buffer[i] == 0.0f && !signbit(buffer[i]));
+    }
+    free(buffer);
+    app_synth_destroy(synth);
+    puts("signed zero: underflow keeps both polarities and panic yields positive zero");
+}
+
 static void test_waveforms_and_extremes(void)
 {
     app_synth_t *synth = sine_synth();
@@ -295,7 +374,7 @@ static int stress_producer(void *argument)
         (void)app_synth_note_on(context->synth, note, 0.7f);
         if (event % 73U == 0U) {
             (void)app_synth_set_patch_id(context->synth,
-                                       (app_synth_patch_id_t)(event % APP_SYNTH_PATCH_COUNT));
+                                         (app_synth_patch_id_t)(event % APP_SYNTH_PATCH_COUNT));
         }
         (void)app_synth_note_off(context->synth, note);
         if (event % 97U == 0U) {
@@ -467,6 +546,8 @@ int main(int argc, char **argv)
     assert(app_synth_create(NAN) == NULL);
     test_pitch_and_release();
     test_blocks();
+    test_idle_patch_and_dynamic_pan_blocks();
+    test_signed_zero_output();
     test_waveforms_and_extremes();
     test_queue_emergency_and_steal();
     test_envelope();

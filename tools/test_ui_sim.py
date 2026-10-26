@@ -1,0 +1,290 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+"""Exercise the real native UI through the simulator's pointer API.
+
+Build components/app_tracker/host first. Only input, read-only state logs and
+captures are used; the test never changes application state through RPC.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from pathlib import Path
+import socket
+import subprocess
+import time
+import wave
+
+
+class Rpc:
+    def __init__(self, endpoint: str):
+        host, port = endpoint.removeprefix("tcp://").rsplit(":", 1)
+        self.socket = socket.create_connection((host, int(port)), timeout=10)
+        self.stream = self.socket.makefile("rwb", buffering=0)
+        self.sequence = 0
+
+    def call(self, method: str, params: dict | None = None):
+        self.sequence += 1
+        wire = json.dumps({"jsonrpc": "2.0", "id": self.sequence, "method": method, "params": params or {}}).encode()
+        self.stream.write(f"Content-Length: {len(wire)}\r\n\r\n".encode() + wire)
+        while True:
+            headers = {}
+            while (line := self.stream.readline()) not in (b"\r\n", b"\n"):
+                if not line:
+                    raise RuntimeError("Simulator API disconnected")
+                key, value = line.decode().split(":", 1)
+                headers[key.lower()] = value.strip()
+            length = int(headers["content-length"])
+            data = bytearray()
+            while len(data) < length:
+                piece = self.stream.read(length - len(data))
+                if not piece:
+                    raise RuntimeError("Truncated simulator reply")
+                data.extend(piece)
+            reply = json.loads(data)
+            if reply.get("id") != self.sequence:
+                continue
+            if "error" in reply:
+                raise RuntimeError(f"{method}: {reply['error']}")
+            return reply.get("result")
+
+    def close(self):
+        self.stream.close()
+        self.socket.close()
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--sim", type=Path, required=True)
+    root = Path(__file__).resolve().parents[1]
+    parser.add_argument("--build-dir", type=Path, default=root / "build-sim")
+    parser.add_argument("--output", type=Path, default=root / ".codex-runs/ui-sim")
+    args = parser.parse_args()
+    output = args.output.resolve()
+    output.mkdir(parents=True, exist_ok=True)
+    build = args.build_dir.resolve()
+    ready = output / f"ready-{time.time_ns()}.json"
+    state_log = output / "state.ndjson"
+    capture = output / "performance.wav"
+    stop_file = output / "stop-backend"
+    state_log.unlink(missing_ok=True)
+    capture.unlink(missing_ok=True)
+    stop_file.unlink(missing_ok=True)
+    flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+    env = dict(os.environ)
+    env["OP_AY1_SIM_STATE_LOG"] = str(state_log)
+    env["OP_AY1_SIM_WAV"] = str(capture)
+    env["OP_AY1_SIM_AUDIO"] = "0"
+    env["OP_AY1_SIM_STOP_FILE"] = str(stop_file)
+    results = []
+    backend = None
+    rpc = None
+    with (output / "sim.log").open("w", encoding="utf-8") as sim_log, (output / "backend.log").open(
+        "w", encoding="utf-8"
+    ) as backend_log:
+        sim = subprocess.Popen(
+            [
+                str(args.sim.resolve()),
+                "--bundle",
+                str(build / "op_ay1_backend_assets/app.gspb"),
+                "--frames",
+                "0",
+                "--headless",
+                "--backend-required",
+                "--backend-listen",
+                "tcp://127.0.0.1:0",
+                "--api-listen",
+                "tcp://127.0.0.1:0",
+                "--ready-file",
+                str(ready),
+            ],
+            cwd=root,
+            stdout=sim_log,
+            stderr=subprocess.STDOUT,
+            creationflags=flags,
+        )
+        try:
+            deadline = time.monotonic() + 30
+            while not ready.exists():
+                if sim.poll() is not None or time.monotonic() > deadline:
+                    raise RuntimeError(f"Simulator did not become ready; see {output / 'sim.log'}")
+                time.sleep(0.05)
+            info = json.loads(ready.read_text(encoding="utf-8"))
+            backend = subprocess.Popen(
+                [
+                    str(build / ("op_ay1_backend.exe" if os.name == "nt" else "op_ay1_backend")),
+                    "--endpoint",
+                    info["backend"],
+                ],
+                cwd=root,
+                env=env,
+                stdout=backend_log,
+                stderr=subprocess.STDOUT,
+                creationflags=flags,
+            )
+            rpc = Rpc(info["api"])
+
+            def state(predicate=lambda s: True, timeout=8):
+                end = time.monotonic() + timeout
+                last = None
+                while time.monotonic() < end:
+                    if backend.poll() is not None:
+                        raise RuntimeError(f"Backend exited: {backend.returncode}; see backend.log")
+                    if state_log.exists():
+                        for line in reversed(state_log.read_text(encoding="utf-8").splitlines()):
+                            try:
+                                last = json.loads(line)
+                            except json.JSONDecodeError:
+                                continue
+                            break
+                        if last is not None and predicate(last):
+                            assert last["error"] == 0, last
+                            return last
+                    time.sleep(0.03)
+                raise AssertionError(f"Expected UI state not reached; last={last}")
+
+            def tap(x, y):
+                rpc.call("feed_pointer", {"x": x, "y": y, "pressed": True})
+                time.sleep(0.06)
+                rpc.call("feed_pointer", {"x": x, "y": y, "pressed": False})
+                time.sleep(0.15)
+
+            def pointer(x, y, pressed):
+                rpc.call("feed_pointer", {"x": x, "y": y, "pressed": pressed})
+                time.sleep(0.12)
+
+            def drag(x1, y1, x2, y2):
+                pointer(x1, y1, True)
+                for step in range(1, 7):
+                    pointer(round(x1 + (x2 - x1) * step / 6), round(y1 + (y2 - y1) * step / 6), True)
+                pointer(x2, y2, False)
+
+            def page(index):
+                tap(200 + index * 16, 460)
+                return state(lambda s: s["page"] == index)
+
+            def screenshot(name):
+                time.sleep(0.2)
+                rpc.call("screenshot", {"path": str(output / (name + ".png")), "format": "png"})
+
+            state(lambda s: s["page"] == 1)
+            for i in range(6):
+                page(i)
+                screenshot(f"page-{i}")
+            results.append("six page navigation and native RGB565 captures")
+
+            page(2)
+            tap(340, 250)
+            state(lambda s: s["playing"])
+            screenshot("playback-playing")
+            tap(120, 250)
+            state(lambda s: not s["playing"] and s["launched"] == -1)
+            results.append("playback start and restart")
+
+            page(3)
+            drag(278, 205, 86, 205)
+            state(lambda s: s["gain"][0] == 0 and s["page"] == 3)
+            drag(86, 205, 278, 205)
+            state(lambda s: 98 <= s["gain"][0] <= 100)
+            tap(414, 196)
+            state(lambda s: s["solo"][0] == 1 and s["mute"][1] == 1)
+            screenshot("mixer-solo")
+            tap(414, 196)
+            state(lambda s: not any(s["solo"]) and not any(s["mute"]))
+            drag(456, 390, 456, 190)
+            state(lambda s: s["scroll"] >= 132 and s["page"] == 3)
+            screenshot("mixer-scrolled")
+            results.append("gain drag capture, solo cascade and vertical mixer scroll")
+
+            page(4)
+            tap(60, 140)
+            state(lambda s: s["playing"] and s["launched"] == 0)
+            tap(60, 140)
+            state(lambda s: s["stop"])
+            screenshot("pads-stop")
+            tap(60, 140)
+            state(lambda s: not s["stop"])
+            tap(170, 140)
+            state(lambda s: s["pending"] == 1)
+            screenshot("pads-queued")
+            results.append("pad launch from pause, stop queue/cancel and next queue")
+            page(2)
+            tap(120, 250)
+            state(lambda s: not s["playing"])
+
+            page(5)
+            pointer(56, 419, True)
+            state(lambda s: s["note"] == 60 and s["voices"] > 0 and s["peak"] > 0.001)
+            screenshot("synth-held")
+            pointer(109, 419, True)
+            state(lambda s: s["note"] == 62 and s["page"] == 5)
+            pointer(109, 419, False)
+            state(lambda s: s["note"] == -1 and s["voices"] == 0, timeout=4)
+            results.append("real press, glissando, release and audible PCM while tracker paused")
+
+            for tab in range(4):
+                tap(79 + tab * 107, 123)
+                state(lambda s: s["tab"] == tab)
+                screenshot(f"synth-tab-{tab}")
+            tap(79, 123)
+            pointer(56, 419, True)
+            state(lambda s: s["note"] == 60)
+            pointer(56, 300, True)
+            state(lambda s: s["note"] == -1)
+            pointer(56, 300, False)
+            state(lambda s: s["voices"] == 0)
+            results.append("leaving keyboard bounds releases note")
+            pointer(56, 419, True)
+            state(lambda s: s["voices"] > 0)
+            pointer(56, 419, False)
+            tap(398, 294)
+            state(lambda s: s["voices"] == 0 and s["note"] == -1)
+            page(1)
+            results.append("panic and return navigation")
+
+            stop_file.touch()
+            backend.wait(timeout=10)
+            assert backend.returncode == 0, "Native backend did not close cleanly"
+            rpc.call("quit")
+            sim.wait(timeout=10)
+            assert sim.returncode == 0, "Simulator did not close cleanly"
+            with wave.open(str(capture), "rb") as wav:
+                assert wav.getframerate() == 48000 and wav.getnchannels() == 2
+                frames = wav.getnframes()
+                pcm = wav.readframes(frames)
+                assert frames > 48000 and any(pcm), "Captured output is empty"
+            (output / "result.json").write_text(
+                json.dumps(
+                    {
+                        "passed": True,
+                        "checks": results,
+                        "wav_frames": frames,
+                        "sim_exit": sim.returncode,
+                        "backend_exit": backend.returncode,
+                        "focus_validation": "pointer release and out-of-bounds tested; browser blur/device delivery pending",
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+            print("Native simulator checks passed: " + "; ".join(results))
+            print(f"Evidence: {output}")
+        finally:
+            if rpc:
+                rpc.close()
+            for process in (backend, sim):
+                if process and process.poll() is None:
+                    process.terminate()
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                        process.wait(timeout=5)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

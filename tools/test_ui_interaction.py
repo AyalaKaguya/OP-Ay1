@@ -27,9 +27,9 @@ SOURCES = (
     "components/app_tracker/tracker_pages.c",
     "components/app_tracker/tracker_render.c",
     "components/app_tracker/tracker_font.c",
-    "components/tracker_engine/tracker_engine.c",
-    "components/tracker_engine/tracker_module.c",
-    "components/tracker_engine/tracker_mixer.c",
+    "components/app_tracker_engine/tracker_engine.c",
+    "components/app_tracker_engine/tracker_module.c",
+    "components/app_tracker_engine/tracker_mixer.c",
     "components/app_audio/app_audio_bus.c",
     "components/app_synth/app_synth.c",
 )
@@ -54,22 +54,39 @@ def main() -> int:
         build.mkdir(parents=True, exist_ok=True)
         executable = build / ("ui_interaction.exe" if os.name == "nt" else "ui_interaction")
         includes = (
-            project / "components/app_tracker", project / "components/tracker_engine/include",
-            project / "components/app_audio/include", project / "components/app_synth/include",
+            project / "components/app_tracker",
+            project / "components/app_tracker_engine/include",
+            project / "components/app_audio/include",
+            project / "components/app_synth/include",
         )
         sources = [str(ROOT / "tests/ui_interaction.c"), *(str(project / source) for source in SOURCES)]
         if compiler.name.lower() in ("cl", "cl.exe", "clang-cl", "clang-cl.exe"):
             command = [
-                str(compiler), "/nologo", "/std:c11", "/W4", "/WX",
-                "/experimental:c11atomics", "/D_CRT_SECURE_NO_WARNINGS",
-                *("/I" + str(path) for path in includes), *args.cflag, *sources,
+                str(compiler),
+                "/nologo",
+                "/std:c11",
+                "/W4",
+                "/WX",
+                "/experimental:c11atomics",
+                "/D_CRT_SECURE_NO_WARNINGS",
+                *("/I" + str(path) for path in includes),
+                *args.cflag,
+                *sources,
                 "/Fe:" + str(executable),
             ]
         else:
             command = [
-                str(compiler), "-std=c11", "-Wall", "-Wextra", "-Werror",
-                *("-I" + str(path) for path in includes), *args.cflag, *sources,
-                "-lm", "-o", str(executable),
+                str(compiler),
+                "-std=c11",
+                "-Wall",
+                "-Wextra",
+                "-Werror",
+                *("-I" + str(path) for path in includes),
+                *args.cflag,
+                *sources,
+                "-lm",
+                "-o",
+                str(executable),
             ]
         print(f"ui_interaction: source {project}; native compiler {compiler}", flush=True)
         subprocess.run(command, cwd=build, env=env, check=True, timeout=120)

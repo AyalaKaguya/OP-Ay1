@@ -202,6 +202,42 @@ static void tracker_transient_meter(void)
     tracker_engine_destroy(tracker);
 }
 
+static void legacy_gain_edge_monitoring(void)
+{
+    make_fixture(16);
+    tracker_engine_t *tracker = tracker_engine_create(fixture, sizeof(fixture));
+    CHECK(tracker != NULL);
+    if (tracker == NULL) {
+        return;
+    }
+    tracker_engine_play(tracker);
+    tracker_engine_set_channel_gain(tracker, 0, INFINITY);
+    CHECK(tracker_engine_channel_gain(tracker, 0) == 2.0f);
+    tracker_engine_set_channel_gain(tracker, 0, -INFINITY);
+    CHECK(tracker_engine_channel_gain(tracker, 0) == 0.0f);
+    for (int channel = 0; channel < 16; ++channel) {
+        tracker_engine_set_channel_gain(tracker, channel, NAN);
+    }
+    CHECK(isnan(tracker_engine_channel_gain(tracker, 0)));
+    tracker_engine_render_float(tracker, floating, 512);
+    CHECK(isnan(floating[0]) && isnan(floating[1]));
+    CHECK(tracker_engine_master_level(tracker) == 0);
+    CHECK(tracker_engine_channel_level(tracker, 0) == 0);
+    CHECK(!tracker_engine_master_clipped(tracker));
+    CHECK(tracker_engine_waveform(tracker, 0, history, APP_AUDIO_SCOPE_SAMPLES) ==
+          APP_AUDIO_SCOPE_SAMPLES);
+    CHECK(history[APP_AUDIO_SCOPE_SAMPLES - 1] == -32767);
+    app_audio_bus_t *bus = app_audio_bus_create(tracker, NULL);
+    CHECK(bus != NULL);
+    if (bus != NULL) {
+        app_audio_bus_render(bus, output, 512);
+        CHECK(output[0] == 0 && output[1023] == 0);
+        CHECK(app_audio_bus_consume_clip(bus));
+    }
+    app_audio_bus_destroy(bus);
+    tracker_engine_destroy(tracker);
+}
+
 int main(void)
 {
     CHECK(app_audio_bus_create(NULL, NULL) == NULL);
@@ -212,6 +248,7 @@ int main(void)
     legacy_and_chunk_equivalence();
     independent_synth();
     tracker_transient_meter();
+    legacy_gain_edge_monitoring();
     printf("audio bus: %s (%d failures)\n", failures == 0 ? "PASS" : "FAIL", failures);
     return failures == 0 ? 0 : 1;
 }

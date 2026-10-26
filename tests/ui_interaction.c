@@ -239,7 +239,7 @@ static void mixer(fixture_t *f)
             "S0 then M0 did not leave channel zero muted");
     tap(f, 414, 262);
     require(f->model.view.soloed[0] && f->model.view.soloed[1] &&
-            f->model.view.muted[0] && f->model.view.muted[1],
+            f->model.view.muted[0] && !f->model.view.muted[1],
             "adding S1 cleared the manual M0 mute");
     tap(f, 414, 196);
     require(!f->model.view.soloed[0] && f->model.view.soloed[1] &&

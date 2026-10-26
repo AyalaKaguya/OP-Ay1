@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Build/run portable synth tests; all outputs stay under build-synth/."""
+
 from __future__ import annotations
 
 import argparse
@@ -21,7 +22,9 @@ def msvc_environment(output: Path) -> tuple[str, dict[str, str]] | None:
         command_file.write_text(f'@call "{script}" -no_logo -host_arch=x64 -arch=x64 >nul\n@set\n', encoding="utf-8")
         result = subprocess.run(
             ["cmd.exe", "/d", "/c", str(command_file)],
-            capture_output=True, text=True, check=False,
+            capture_output=True,
+            text=True,
+            check=False,
         )
         if result.returncode:
             continue
@@ -33,7 +36,9 @@ def msvc_environment(output: Path) -> tuple[str, dict[str, str]] | None:
                     if existing.upper() == key.upper():
                         del environment[existing]
                 environment[key] = value
-        compiler = shutil.which("cl.exe", path=next((value for key, value in environment.items() if key.upper() == "PATH"), None))
+        compiler = shutil.which(
+            "cl.exe", path=next((value for key, value in environment.items() if key.upper() == "PATH"), None)
+        )
         if compiler:
             return compiler, environment
     return None
@@ -60,12 +65,35 @@ def main() -> int:
     if not compiler:
         parser.error("No native C compiler found; use --cc or install native build tools.")
     if Path(compiler).name.lower() in {"cl", "cl.exe"}:
-        command = [compiler, "/nologo", "/std:c11", "/experimental:c11atomics", "/W4", "/WX",
-                   "/O2", "/D_CRT_SECURE_NO_WARNINGS", f"/I{include}",
-                   *(str(source) for source in sources), f"/Fo{output}{os.sep}", f"/Fe{executable}"]
+        command = [
+            compiler,
+            "/nologo",
+            "/std:c11",
+            "/experimental:c11atomics",
+            "/W4",
+            "/WX",
+            "/O2",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            f"/I{include}",
+            *(str(source) for source in sources),
+            f"/Fo{output}{os.sep}",
+            f"/Fe{executable}",
+        ]
     else:
-        command = [compiler, "-std=c11", "-O2", "-Wall", "-Wextra", "-Werror", f"-I{include}",
-                   *(str(source) for source in sources), "-lm", "-pthread", "-o", str(executable)]
+        command = [
+            compiler,
+            "-std=c11",
+            "-O2",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            f"-I{include}",
+            *(str(source) for source in sources),
+            "-lm",
+            "-pthread",
+            "-o",
+            str(executable),
+        ]
     subprocess.run(command, cwd=root, env=environment, check=True, timeout=90)
     test_command = [str(executable)]
     if not arguments.no_wav:
@@ -76,7 +104,7 @@ def main() -> int:
             assert (audio.getnchannels(), audio.getframerate(), audio.getnframes()) == (2, 48000, 384000)
             samples = struct.unpack("<768000h", audio.readframes(audio.getnframes()))
         for index, name in enumerate(("INIT", "BASS", "LEAD", "PAD")):
-            segment = samples[index * 192000:(index + 1) * 192000]
+            segment = samples[index * 192000 : (index + 1) * 192000]
             rms = math.sqrt(sum(value * value for value in segment) / len(segment)) / 32768.0
             assert rms > 0.005, f"{name} preset WAV is unexpectedly silent"
             print(f"Verified WAV {name}: RMS {rms:.6f}")

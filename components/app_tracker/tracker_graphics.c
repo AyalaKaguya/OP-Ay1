@@ -27,7 +27,9 @@ static unsigned display_hex(int value)
 
 void tracker_gfx_init(tracker_graphics_t *gfx, uint16_t *frame)
 {
-    *gfx = (tracker_graphics_t) {frame, 0, 0, FRAME_W, CONTENT_H};
+    *gfx = (tracker_graphics_t) {
+        frame, 0, 0, FRAME_W, CONTENT_H
+    };
 }
 
 void tracker_gfx_clip(tracker_graphics_t *gfx, int x, int y, int w, int h)
@@ -44,7 +46,7 @@ void tracker_gfx_rect(tracker_graphics_t *gfx, int x, int y, int w, int h,
                       uint16_t color)
 {
     if (gfx == NULL || gfx->frame == NULL || w <= 0 || h <= 0 ||
-        x >= gfx->right || y >= gfx->bottom) {
+            x >= gfx->right || y >= gfx->bottom) {
         return;
     }
     const int64_t requested_right = (int64_t)x + w;
@@ -106,8 +108,8 @@ void tracker_gfx_text(tracker_graphics_t *gfx, int x, int y, int scale,
                       uint16_t color, const char *text)
 {
     if (gfx == NULL || gfx->frame == NULL || text == NULL || scale < 1 ||
-        scale > 16 || x >= gfx->right || y >= gfx->bottom ||
-        (int64_t)y + TRACKER_FONT_HEIGHT * scale <= gfx->top) {
+            scale > 16 || x >= gfx->right || y >= gfx->bottom ||
+            (int64_t)y + TRACKER_FONT_HEIGHT * scale <= gfx->top) {
         return;
     }
     /* Use the existing font's exact glyphs and advances; rectangle clipping
@@ -124,7 +126,7 @@ void tracker_gfx_text(tracker_graphics_t *gfx, int x, int y, int scale,
                 for (int column = 0; column < TRACKER_FONT_WIDTH; ++column) {
                     if (glyph[row] & (1U << (TRACKER_FONT_WIDTH - 1 - column))) {
                         tracker_gfx_rect(gfx, cursor + column * scale,
-                                          y + row * scale, scale, scale, color);
+                                         y + row * scale, scale, scale, color);
                     }
                 }
             }
@@ -140,14 +142,14 @@ void tracker_gfx_text_right(tracker_graphics_t *gfx, int right, int y, int scale
                             uint16_t color, const char *text)
 {
     tracker_gfx_text(gfx, right - tracker_font_width(text, scale), y, scale,
-                      color, text);
+                     color, text);
 }
 
 void tracker_gfx_text_center(tracker_graphics_t *gfx, int center, int y, int scale,
                              uint16_t color, const char *text)
 {
     tracker_gfx_text(gfx, center - (tracker_font_width(text, scale) - scale) / 2,
-                      y, scale, color, text);
+                     y, scale, color, text);
 }
 
 void tracker_gfx_slider(tracker_graphics_t *gfx, int x, int y, int w,
@@ -167,7 +169,7 @@ void tracker_gfx_slider(tracker_graphics_t *gfx, int x, int y, int w,
     }
     if (show_unity) {
         tracker_gfx_rect(gfx, x + ((w - 1) * 100 + 60) / 120, y - 4,
-                          1, 16, C_MUTED);
+                         1, 16, C_MUTED);
     }
     const int fill = (int)lroundf((float)w * fraction);
     tracker_gfx_rect(gfx, x, y, fill > 0 ? fill : 1, 4, color);
@@ -185,13 +187,13 @@ void tracker_gfx_meter(tracker_graphics_t *gfx, int x, int y, int w, int h,
         return;
     }
     const float db = level > 0 ? 20.0f * log10f((float)bounded(level, 0, 255) / 255.0f)
-                               : -48.0f;
+                     : -48.0f;
     for (int index = 0; index < count; ++index) {
         const float threshold = -48.0f + 48.0f * (float)(index + 1) / (float)count;
         const uint16_t color = threshold <= -12.0f ? C_GREEN
-                                : threshold <= -3.0f ? C_FX : C_ACCENT;
+                               : threshold <= -3.0f ? C_FX : C_ACCENT;
         tracker_gfx_rect(gfx, x + index * 5, y, 3, h,
-                          threshold <= db ? color : C_LINE);
+                         threshold <= db ? color : C_LINE);
     }
 }
 
@@ -199,7 +201,7 @@ void tracker_gfx_button(tracker_graphics_t *gfx, int x, int y, int w, int h,
                         const char *label, uint16_t color, bool active)
 {
     tracker_gfx_rect(gfx, x, y, w, h,
-                      active ? TRACKER_RGB565(25, 29, 35) : C_PANEL);
+                     active ? TRACKER_RGB565(25, 29, 35) : C_PANEL);
     tracker_gfx_outline(gfx, x, y, w, h, active ? color : C_BORDER);
     tracker_gfx_text_center(gfx, x + w / 2, y + (h - 14) / 2, 2, color, label);
     if (active) {
@@ -248,7 +250,7 @@ void tracker_gfx_header(tracker_graphics_t *gfx, const tracker_status_t *status,
     tracker_gfx_text(gfx, 216, 20, 1, C_MUTED, buffer);
     if (state_label != NULL) {
         tracker_gfx_text(gfx, 302, 20, 1,
-                          status->playing ? C_ACCENT : C_MUTED, state_label);
+                         status->playing ? C_ACCENT : C_MUTED, state_label);
     }
     snprintf(buffer, sizeof(buffer), "BPM %03u", (unsigned)bounded(status->tempo, 0, 999));
     tracker_gfx_text_right(gfx, 446, 10, 1, C_MUTED, buffer);
@@ -270,7 +272,7 @@ void tracker_gfx_order_strip(tracker_graphics_t *gfx,
     const int pitch = bounded((FRAME_W - 44) / orders, 3, 10);
     for (int step = 0; step < orders; ++step) {
         const uint16_t color = step < status->order_index ? C_ACCENT
-                                : step == status->order_index ? C_TEXT : C_BORDER;
+                               : step == status->order_index ? C_TEXT : C_BORDER;
         tracker_gfx_rect(gfx, 30 + step * pitch, 412, 6, 7, color);
     }
 }

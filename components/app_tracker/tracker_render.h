@@ -42,5 +42,4 @@ void tracker_render_pattern(uint16_t *frame, tracker_engine_t *engine);
 /* Scope uses caller-owned reusable scratch; sample_count is its int16 capacity.
  * A NULL scratch or fewer than two samples draws the grid without wave traces. */
 void tracker_render_waves(uint16_t *frame, tracker_engine_t *engine,
-                           int16_t *scratch, int sample_count);
-
+                          int16_t *scratch, int sample_count);

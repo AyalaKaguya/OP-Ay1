@@ -6,5 +6,5 @@ int xTaskNotifyGive(TaskHandle_t task);
 void vTaskDelete(TaskHandle_t task);
 void vTaskDelay(unsigned ticks);
 int xTaskCreatePinnedToCore(void (*entry)(void *), const char *name,
-                              unsigned stack, void *argument, unsigned priority,
-                              TaskHandle_t *handle, int core);
+                            unsigned stack, void *argument, unsigned priority,
+                            TaskHandle_t *handle, int core);

@@ -4,7 +4,7 @@
 their normalized float stereo output at 48 kHz. `app_audio.c` is the ESP-IDF
 adapter: one DSP task renders the bus, a four-slot PCM ring transfers blocks to
 one ES8311 writer, and the writer applies codec volume. Public dependencies are
-`tracker_engine` and `app_synth`; BSP, codec, timer and FreeRTOS belong to the
+`app_tracker_engine` (the `tracker_engine.h` facade) and `app_synth`; BSP, codec, timer and FreeRTOS belong to the
 device adapter only.
 
 ## Ownership and lifetime
@@ -70,8 +70,14 @@ coherent snapshots, not a single combined transaction.
 Timing information travels with each PCM ring slot. After semaphore transfer,
 only the writer reads that slot's DSP timing and owns the period totals/maxima;
 there are no shared unsynchronized counter resets.
+The five-second log also reports maximum writer wait for a ready PCM block and
+the count of blocks whose wall time exceeded 512/48000 seconds. These times
+include scheduling, source locks and interrupts; they are not isolated DSP CPU
+measurements. A ready wait is also not direct observation of a DMA underrun.
 
 ## Host verification
+
+Run `python tools/test_audio.py` for both native test executables below.
 
 Build `tests/audio_bus_test.c`, `app_audio_bus.c`, the three `tracker_engine`
 implementation files and the `app_synth` implementation files with their public

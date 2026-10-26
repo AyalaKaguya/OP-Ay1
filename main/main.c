@@ -7,6 +7,7 @@
 
 #include "app_audio.h"
 #include "app_display.h"
+#include "app_synth.h"
 #include "app_tracker.h"
 #include "bsp/esp_mosaico.h"
 #include "esp_gsp.h"
@@ -26,8 +27,21 @@ extern const uint8_t aryx_s3m_end[] asm("_binary_aryx_s3m_end");
 static struct {
     esp_gsp_handle_t ui;
     tracker_engine_t *engine;
+    app_synth_t *synth;
+    app_audio_bus_t *bus;
     app_tracker_t *controller;
 } application;
+
+/* Only used before audio tasks have successfully borrowed these sources. */
+static void release_audio_sources(void)
+{
+    app_audio_bus_destroy(application.bus);
+    app_synth_destroy(application.synth);
+    tracker_engine_destroy(application.engine);
+    application.bus = NULL;
+    application.synth = NULL;
+    application.engine = NULL;
+}
 
 void app_main(void)
 {
@@ -50,7 +64,19 @@ void app_main(void)
         ESP_LOGE(TAG, "S3M engine unavailable; Recovery RPC remains active");
         return;
     }
-    ESP_ERROR_CHECK_WITHOUT_ABORT(app_audio_init(application.engine));
+    application.synth = app_synth_create(APP_AUDIO_SAMPLE_RATE);
+    application.bus = app_audio_bus_create(application.engine, application.synth);
+    if (!application.synth || !application.bus) {
+        ESP_LOGE(TAG, "Audio sources unavailable; Vibe Mode RPC remains active");
+        release_audio_sources();
+        return;
+    }
+    const esp_err_t audio_error = app_audio_init_bus(application.bus);
+    if (audio_error != ESP_OK) {
+        ESP_LOGE(TAG, "Audio output unavailable (0x%x); Vibe Mode RPC remains active", audio_error);
+        release_audio_sources();
+        return;
+    }
 
     esp_gsp_config_t config;
     const esp_err_t bundle_err = ui_bundle_open(&config);
@@ -69,7 +95,8 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_gsp_esp_lcd_start(&config, &display, &application.ui));
     ESP_ERROR_CHECK(iris_screen_mirror_attach(application.ui));
 
-    ESP_ERROR_CHECK(app_tracker_start(application.ui, application.engine,
-                                      &application.controller));
-    ESP_LOGI(TAG, "OP-Ay1 tracker ready: %u bytes S3M", (unsigned)module_size);
+    ESP_ERROR_CHECK(app_tracker_start_bus(application.ui, application.engine,
+                                          application.synth, application.bus,
+                                          &application.controller));
+    ESP_LOGI(TAG, "OP-Ay1 ready: %u bytes S3M + 4-voice synth", (unsigned)module_size);
 }

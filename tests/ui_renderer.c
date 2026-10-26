@@ -90,7 +90,7 @@ static void require_complete(const uint16_t *frame)
 }
 
 static void controls_bounds(uint16_t *allocation, tracker_controls_view_t *view,
-                             uint16_t *reference)
+                            uint16_t *reference)
 {
     uint16_t *frame = allocation + GUARD_WORDS;
     view->status = (tracker_status_t) {
@@ -183,7 +183,7 @@ static void graphics_bounds(uint16_t *allocation)
     for (int y = 0; y < 480; ++y) {
         for (int x = 0; x < 480; ++x) {
             const uint16_t expected = x >= 10 && x < 15 && y >= 20 && y < 25
-                                          ? UINT16_C(0x1234) : CANARY;
+                                      ? UINT16_C(0x1234) : CANARY;
             require(frame[(size_t)y * 480U + (size_t)x] == expected,
                     "rectangle escaped its explicit clip");
         }

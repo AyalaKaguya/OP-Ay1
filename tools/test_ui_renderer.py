@@ -26,9 +26,9 @@ SOURCES = (
     "components/app_tracker/tracker_pages.c",
     "components/app_tracker/tracker_render.c",
     "components/app_tracker/tracker_font.c",
-    "components/tracker_engine/tracker_engine.c",
-    "components/tracker_engine/tracker_module.c",
-    "components/tracker_engine/tracker_mixer.c",
+    "components/app_tracker_engine/tracker_engine.c",
+    "components/app_tracker_engine/tracker_module.c",
+    "components/app_tracker_engine/tracker_mixer.c",
 )
 
 
@@ -44,11 +44,20 @@ def native_environment() -> dict[str, str]:
         return env
     result = subprocess.run(
         [
-            str(vswhere), "-latest", "-prerelease", "-products", "*",
-            "-requires", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
-            "-property", "installationPath",
+            str(vswhere),
+            "-latest",
+            "-prerelease",
+            "-products",
+            "*",
+            "-requires",
+            "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+            "-property",
+            "installationPath",
         ],
-        check=True, capture_output=True, text=True, timeout=30,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
     )
     installations = [line.strip() for line in result.stdout.splitlines() if line.strip()]
     if not installations:
@@ -58,7 +67,7 @@ def native_environment() -> dict[str, str]:
         return env
     # vcvars is a trusted VS-owned batch entry. Keep this one batch operation
     # within cmd; file operations and compiler invocations below use argv lists.
-    command = f'cmd.exe /d /s /c "\"{vcvars}\" amd64 >nul && set"'
+    command = f'cmd.exe /d /s /c ""{vcvars}" amd64 >nul && set"'
     result = subprocess.run(command, check=True, capture_output=True, text=True, timeout=30)
     for line in result.stdout.splitlines():
         if "=" in line and not line.startswith("="):
@@ -96,19 +105,34 @@ def main() -> int:
         fixture = args.fixture.expanduser().resolve(strict=True)
         build.mkdir(parents=True, exist_ok=True)
         executable = build / ("ui_renderer.exe" if os.name == "nt" else "ui_renderer")
-        includes = (ROOT / "components/app_tracker", ROOT / "components/tracker_engine/include")
+        includes = (ROOT / "components/app_tracker", ROOT / "components/app_tracker_engine/include")
         sources = [str(ROOT / source) for source in SOURCES]
         if compiler.name.lower() in ("cl", "cl.exe", "clang-cl", "clang-cl.exe"):
             command = [
-                str(compiler), "/nologo", "/std:c11", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",
-                *("/I" + str(path) for path in includes), *args.cflag, *sources,
+                str(compiler),
+                "/nologo",
+                "/std:c11",
+                "/W4",
+                "/WX",
+                "/D_CRT_SECURE_NO_WARNINGS",
+                *("/I" + str(path) for path in includes),
+                *args.cflag,
+                *sources,
                 "/Fe:" + str(executable),
             ]
         else:
             command = [
-                str(compiler), "-std=c11", "-Wall", "-Wextra", "-Werror",
-                *("-I" + str(path) for path in includes), *args.cflag, *sources,
-                "-lm", "-o", str(executable),
+                str(compiler),
+                "-std=c11",
+                "-Wall",
+                "-Wextra",
+                "-Werror",
+                *("-I" + str(path) for path in includes),
+                *args.cflag,
+                *sources,
+                "-lm",
+                "-o",
+                str(executable),
             ]
         print(f"ui_renderer: native compiler {compiler}", flush=True)
         subprocess.run(command, cwd=build, env=env, check=True, timeout=120)

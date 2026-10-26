@@ -49,6 +49,10 @@ Thumbs.db
 
 # Keep sdkconfig*.defaults, idf_component.yml and source assets versioned.
 
+# Authored GSP input is ui/main.json; generated scene headers/bundles are build outputs.
+/components/app_tracker/ui/scene*/
+/components/app_tracker/ui/*.gspb
+
 # Local release packaging
 dist/
 release/

@@ -11,7 +11,9 @@
 #include "freertos/semphr.h"
 #include "freertos/task.h"
 
-struct app_audio_bus { tracker_engine_t *tracker; };
+struct app_audio_bus {
+    tracker_engine_t *tracker;
+};
 static struct app_audio_bus test_bus;
 static int fail_at;
 static int stage;
@@ -29,7 +31,10 @@ static int failures;
     } \
 } while (0)
 
-static bool inject_failure(void) { return ++stage == fail_at; }
+static bool inject_failure(void)
+{
+    return ++stage == fail_at;
+}
 
 esp_codec_dev_handle_t bsp_audio_codec_speaker_init(void)
 {
@@ -37,7 +42,7 @@ esp_codec_dev_handle_t bsp_audio_codec_speaker_init(void)
 }
 
 int esp_codec_dev_open(esp_codec_dev_handle_t handle,
-                         const esp_codec_dev_sample_info_t *format)
+                       const esp_codec_dev_sample_info_t *format)
 {
     CHECK(handle != NULL && format->sample_rate == 48000 && format->channel == 2);
     if (inject_failure()) {
@@ -111,8 +116,8 @@ int xSemaphoreGive(SemaphoreHandle_t semaphore)
 }
 
 int xTaskCreatePinnedToCore(void (*entry)(void *), const char *name,
-                              unsigned stack, void *argument, unsigned priority,
-                              TaskHandle_t *handle, int core)
+                            unsigned stack, void *argument, unsigned priority,
+                            TaskHandle_t *handle, int core)
 {
     (void)argument;
     CHECK(entry != NULL && name != NULL && stack >= 3072 && priority >= 6);
@@ -150,8 +155,14 @@ int xTaskNotifyGive(TaskHandle_t task)
     return pdPASS;
 }
 
-void vTaskDelay(unsigned ticks) { (void)ticks; }
-int64_t esp_timer_get_time(void) { return 0; }
+void vTaskDelay(unsigned ticks)
+{
+    (void)ticks;
+}
+int64_t esp_timer_get_time(void)
+{
+    return 0;
+}
 
 app_audio_bus_t *app_audio_bus_create(tracker_engine_t *tracker, app_synth_t *synth)
 {
@@ -184,8 +195,14 @@ void app_audio_bus_render(app_audio_bus_t *bus, int16_t *output, int frames)
     CHECK(false);
 }
 
-void tracker_engine_play(tracker_engine_t *tracker) { (void)tracker; }
-void tracker_engine_pause(tracker_engine_t *tracker) { (void)tracker; }
+void tracker_engine_play(tracker_engine_t *tracker)
+{
+    (void)tracker;
+}
+void tracker_engine_pause(tracker_engine_t *tracker)
+{
+    (void)tracker;
+}
 
 int main(void)
 {

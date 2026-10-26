@@ -1,1205 +1,334 @@
 // SPDX-License-Identifier: Apache-2.0
-/*
- * OP-Ay1 tracker controller.
- *
- * Pages: WAVES | PATTERN | PLAYBACK | MIX | SEQUENCER.
- * MIX shows the master section on top and four channel slots below; a drag
- * inside the list scrolls the slots over all channels of the module.
- */
-
+/* The same GSP canvas, input state machine and renderers run on both hosts. */
 #include "app_tracker.h"
 
-#include <math.h>
-#include <stdio.h>
+#include <stdatomic.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "app_audio.h"
-#include "bsp/esp_mosaico.h"
-#include "esp_check.h"
-#include "esp_heap_caps.h"
-#include "esp_log.h"
-#include "esp_system.h"
-#include "esp_timer.h"
-#include "freertos/task.h"
-#include "iot_button.h"
-#include "tracker_render.h"
-
 #define GSP_BUNDLE_ENABLE_RAW_IDS 1
 #include "bundle_gsp.h"
+#include "tracker_graphics.h"
+#include "tracker_model.h"
+#include "tracker_render.h"
 
-#define PAGE_WAVES 0
-#define PAGE_PATTERN 1
-#define PAGE_PLAYBACK 2
-#define PAGE_MIX 3
-#define PAGE_ORDER 4
-
-#define FRAME_BYTES (TRACKER_FRAME_W * TRACKER_FRAME_H * sizeof(uint16_t))
 #define UI_TICK_MS 50
-#define PATTERN_REFRESH_TICKS 2
-#define LABEL_REFRESH_TICKS 10
-#define METER_REFRESH_TICKS 2
-#define MIX_ROW_H 74
-#define MIX_VIEW_Y 150
-#define MIX_VIEW_H 292
-#define PAGE_W_PX 480
-#define MIX_MAX_SCROLL ((TRACKER_MIX_STRIPS - 4) * MIX_ROW_H)
-/* Inertia tuning for the list: cap the launch speed and ignore momentum until
- * the finger has been quiet for a moment, so the drag itself is never doubled. */
-#define MIX_FLING_MAX 90.0f
-#define MIX_RELEASE_US 90000
-#define GAIN_STEPS 120
-
-static const char *TAG = "app_tracker";
-
-typedef esp_err_t (*vis_fn)(esp_gsp_handle_t, bool);
-typedef esp_err_t (*value_fn)(esp_gsp_handle_t, int32_t);
-typedef esp_err_t (*text_fn)(esp_gsp_handle_t, const char *);
-
-static const vis_fn k_mute_off[4] = {
-    gsp_tracker_smo0_set_visible, gsp_tracker_smo1_set_visible,
-    gsp_tracker_smo2_set_visible, gsp_tracker_smo3_set_visible,
-};
-static const vis_fn k_mute_on[4] = {
-    gsp_tracker_smn0_set_visible, gsp_tracker_smn1_set_visible,
-    gsp_tracker_smn2_set_visible, gsp_tracker_smn3_set_visible,
-};
-static const vis_fn k_solo_off[4] = {
-    gsp_tracker_sso0_set_visible, gsp_tracker_sso1_set_visible,
-    gsp_tracker_sso2_set_visible, gsp_tracker_sso3_set_visible,
-};
-static const vis_fn k_solo_on[4] = {
-    gsp_tracker_ssn0_set_visible, gsp_tracker_ssn1_set_visible,
-    gsp_tracker_ssn2_set_visible, gsp_tracker_ssn3_set_visible,
-};
-static const value_fn k_fader_set[4] = {
-    gsp_tracker_sf0_set_value, gsp_tracker_sf1_set_value,
-    gsp_tracker_sf2_set_value, gsp_tracker_sf3_set_value,
-};
-static const text_fn k_fader_db[4] = {
-    gsp_tracker_slot0_db_set_text, gsp_tracker_slot1_db_set_text,
-    gsp_tracker_slot2_db_set_text, gsp_tracker_slot3_db_set_text,
-};
-static const value_fn k_meter_g[4] = {
-    gsp_tracker_m0_g_set_value, gsp_tracker_m1_g_set_value,
-    gsp_tracker_m2_g_set_value, gsp_tracker_m3_g_set_value,
-};
-static const value_fn k_meter_y[4] = {
-    gsp_tracker_m0_y_set_value, gsp_tracker_m1_y_set_value,
-    gsp_tracker_m2_y_set_value, gsp_tracker_m3_y_set_value,
-};
-static const value_fn k_meter_r[4] = {
-    gsp_tracker_m0_r_set_value, gsp_tracker_m1_r_set_value,
-    gsp_tracker_m2_r_set_value, gsp_tracker_m3_r_set_value,
-};
-static const gsp_component_key_t k_slot_keys[4] = {
-    (gsp_component_key_t)GSP_TRACKER_OBJ_KEY_SLOT0,
-    (gsp_component_key_t)GSP_TRACKER_OBJ_KEY_SLOT1,
-    (gsp_component_key_t)GSP_TRACKER_OBJ_KEY_SLOT2,
-    (gsp_component_key_t)GSP_TRACKER_OBJ_KEY_SLOT3,
-};
+#define FRAME_WIDTH 480
+#define FRAME_HEIGHT 480
+#define FRAME_BYTES (FRAME_WIDTH * FRAME_HEIGHT * sizeof(uint16_t))
 
 struct app_tracker {
     esp_gsp_handle_t ui;
-    tracker_engine_t *engine;
+    app_tracker_hooks_t hooks;
+    tracker_model_t model;
+    uint16_t *frames[2];
+    atomic_uint frame_index;
+    int16_t wave_scratch[TRACKER_WAVEFORM_SAMPLES];
     void *timer;
-    esp_timer_handle_t stall_timer;
-    uint16_t *grid_frame;
-    uint16_t *waves_frame;
-    int page;
-    int pad_playing;
-    int pad_next;
-    int pad_stop;
-    bool pad_blink;
-    int volume;
-    int mix_scroll;
-    int mix_channels;
-    int64_t mix_last_input_us;
-    float mix_fling;
-    float mix_fling_rest;
-    int last_song_key;
-    int last_playing;
-    volatile unsigned tick_count;
-    int clip_hold;
-    int slot_channel[4];
-    uint8_t fader_value[TRACKER_MIX_STRIPS];
-    bool user_mute[TRACKER_MIX_STRIPS];
-    bool auto_mute[TRACKER_MIX_STRIPS];
-    bool soloed[TRACKER_MIX_STRIPS];
-    uint8_t level_hold[TRACKER_MIX_STRIPS];
-    uint8_t master_hold;
-    button_handle_t ai_button;
+    atomic_uint transport_requests;
+    atomic_bool ready;
+    uint64_t elapsed_ms;
+    unsigned ticks;
+    int applied_volume;
+    esp_gsp_err_t last_error;
 };
 
-static void update_labels(app_tracker_t *state, bool force);
-static void refresh_mix(app_tracker_t *state);
-static void update_transport(app_tracker_t *state);
-static void update_master_meter(app_tracker_t *state);
-static void refresh_pads(app_tracker_t *state, bool force);
-
-static void update_dots(app_tracker_t *state)
+static uint64_t now_ms(app_tracker_t *state)
 {
-    gsp_tracker_dot_on_0_set_visible(state->ui, state->page == 0);
-    gsp_tracker_dot_on_1_set_visible(state->ui, state->page == 1);
-    gsp_tracker_dot_on_2_set_visible(state->ui, state->page == 2);
-    gsp_tracker_dot_on_3_set_visible(state->ui, state->page == 3);
-    gsp_tracker_dot_on_4_set_visible(state->ui, state->page == 4);
+    return state->hooks.time_ms ? state->hooks.time_ms(state->hooks.context)
+           : state->elapsed_ms;
 }
 
-static void update_labels(app_tracker_t *state, bool force)
+static void remember_error(app_tracker_t *state, esp_gsp_err_t result)
 {
-    (void)force;
-    tracker_status_t status;
-    tracker_engine_get_status(state->engine, &status);
-    char buffer[40];
-
-    const float multiplier = tracker_engine_speed_multiplier(state->engine);
-    snprintf(buffer, sizeof(buffer), "%.2fx", multiplier);
-    gsp_tracker_pb_speed_value_set_text(state->ui, buffer);
-    gsp_tracker_speed_05_sel_set_visible(state->ui, multiplier < 0.75f);
-    gsp_tracker_speed_10_sel_set_visible(state->ui,
-                                         multiplier >= 0.75f && multiplier < 1.25f);
-    gsp_tracker_speed_15_sel_set_visible(state->ui,
-                                         multiplier >= 1.25f && multiplier < 1.75f);
-    gsp_tracker_speed_20_sel_set_visible(state->ui, multiplier >= 1.75f);
-
-    snprintf(buffer, sizeof(buffer), "ORD %02X  PAT %02X  ROW %02X",
-             status.order_index, status.pattern, status.row);
-    gsp_tracker_pb_pos_set_text(state->ui, buffer);
-
-    snprintf(buffer, sizeof(buffer), "%d", state->volume);
-    gsp_tracker_master_value_set_text(state->ui, buffer);
-}
-
-/* Meter zones in dBFS: the bar spans -48..0, green ends at -12 and yellow at
- * -3 (red only near clipping). The scene draws the matching segment widths and
- * the printed ticks, so a full green segment means -12 dBFS. */
-#define METER_FLOOR_DB (-48.0f)
-#define METER_YELLOW_DB (-12.0f)
-#define METER_RED_DB (-3.0f)
-#define FADER_UNITY 100
-#define FADER_DB_PER_STEP 0.3f
-#define FADER_MIN_DB (-60.0f)
-
-static void zone_value(float db, float low, float high, int32_t *out)
-{
-    float fraction = (db - low) / (high - low);
-    if (fraction < 0.0f) {
-        fraction = 0.0f;
-    } else if (fraction > 1.0f) {
-        fraction = 1.0f;
-    }
-    *out = (int32_t)(fraction * 255.0f);
-}
-
-static void meter_levels(int level, int32_t *g, int32_t *y, int32_t *r)
-{
-    float db = level > 0 ? 20.0f * log10f((float)level / 255.0f)
-                         : METER_FLOOR_DB;
-    if (db < METER_FLOOR_DB) {
-        db = METER_FLOOR_DB;
-    }
-    zone_value(db, METER_FLOOR_DB, METER_YELLOW_DB, g);
-    zone_value(db, METER_YELLOW_DB, METER_RED_DB, y);
-    zone_value(db, METER_RED_DB, 0.0f, r);
-}
-
-static void update_transport(app_tracker_t *state)
-{
-    tracker_status_t status;
-    tracker_engine_get_status(state->engine, &status);
-    const bool playing = status.playing;
-    gsp_tracker_pp_play_text_set_text(state->ui, playing ? "" : ">");
-    gsp_tracker_pp_pause_text_set_text(state->ui, playing ? "II" : "");
-    gsp_tracker_nav_icon_set_text(state->ui, playing ? "[]" : "|<");
-}
-
-/* --- Pattern pads ---------------------------------------------------------
- * A 4x4 clip launcher on the last page: the first launch takes over at once and
- * loops that pattern, later taps are queued by the engine and start at the next
- * pattern boundary. Tapping the playing pad stops it. */
-static const uint16_t k_pad_off[16] = {
-    GSP_TRACKER_BIND_PAD0_OFF,  GSP_TRACKER_BIND_PAD1_OFF,  GSP_TRACKER_BIND_PAD2_OFF,
-    GSP_TRACKER_BIND_PAD3_OFF,  GSP_TRACKER_BIND_PAD4_OFF,  GSP_TRACKER_BIND_PAD5_OFF,
-    GSP_TRACKER_BIND_PAD6_OFF,  GSP_TRACKER_BIND_PAD7_OFF,  GSP_TRACKER_BIND_PAD8_OFF,
-    GSP_TRACKER_BIND_PAD9_OFF,  GSP_TRACKER_BIND_PAD10_OFF, GSP_TRACKER_BIND_PAD11_OFF,
-    GSP_TRACKER_BIND_PAD12_OFF, GSP_TRACKER_BIND_PAD13_OFF, GSP_TRACKER_BIND_PAD14_OFF,
-    GSP_TRACKER_BIND_PAD15_OFF,
-};
-static const uint16_t k_pad_play[16] = {
-    GSP_TRACKER_BIND_PAD0_PLAY,  GSP_TRACKER_BIND_PAD1_PLAY,  GSP_TRACKER_BIND_PAD2_PLAY,
-    GSP_TRACKER_BIND_PAD3_PLAY,  GSP_TRACKER_BIND_PAD4_PLAY,  GSP_TRACKER_BIND_PAD5_PLAY,
-    GSP_TRACKER_BIND_PAD6_PLAY,  GSP_TRACKER_BIND_PAD7_PLAY,  GSP_TRACKER_BIND_PAD8_PLAY,
-    GSP_TRACKER_BIND_PAD9_PLAY,  GSP_TRACKER_BIND_PAD10_PLAY, GSP_TRACKER_BIND_PAD11_PLAY,
-    GSP_TRACKER_BIND_PAD12_PLAY, GSP_TRACKER_BIND_PAD13_PLAY, GSP_TRACKER_BIND_PAD14_PLAY,
-    GSP_TRACKER_BIND_PAD15_PLAY,
-};
-static const uint16_t k_pad_next[16] = {
-    GSP_TRACKER_BIND_PAD0_NEXT,  GSP_TRACKER_BIND_PAD1_NEXT,  GSP_TRACKER_BIND_PAD2_NEXT,
-    GSP_TRACKER_BIND_PAD3_NEXT,  GSP_TRACKER_BIND_PAD4_NEXT,  GSP_TRACKER_BIND_PAD5_NEXT,
-    GSP_TRACKER_BIND_PAD6_NEXT,  GSP_TRACKER_BIND_PAD7_NEXT,  GSP_TRACKER_BIND_PAD8_NEXT,
-    GSP_TRACKER_BIND_PAD9_NEXT,  GSP_TRACKER_BIND_PAD10_NEXT, GSP_TRACKER_BIND_PAD11_NEXT,
-    GSP_TRACKER_BIND_PAD12_NEXT, GSP_TRACKER_BIND_PAD13_NEXT, GSP_TRACKER_BIND_PAD14_NEXT,
-    GSP_TRACKER_BIND_PAD15_NEXT,
-};
-static const uint16_t k_pad_dim[16] = {
-    GSP_TRACKER_BIND_PAD0_DIM,  GSP_TRACKER_BIND_PAD1_DIM,
-    GSP_TRACKER_BIND_PAD2_DIM,  GSP_TRACKER_BIND_PAD3_DIM,
-    GSP_TRACKER_BIND_PAD4_DIM,  GSP_TRACKER_BIND_PAD5_DIM,
-    GSP_TRACKER_BIND_PAD6_DIM,  GSP_TRACKER_BIND_PAD7_DIM,
-    GSP_TRACKER_BIND_PAD8_DIM,  GSP_TRACKER_BIND_PAD9_DIM,
-    GSP_TRACKER_BIND_PAD10_DIM, GSP_TRACKER_BIND_PAD11_DIM,
-    GSP_TRACKER_BIND_PAD12_DIM, GSP_TRACKER_BIND_PAD13_DIM,
-    GSP_TRACKER_BIND_PAD14_DIM, GSP_TRACKER_BIND_PAD15_DIM,
-};
-typedef bool (*event_match_fn)(const esp_gsp_event_t *event);
-static const event_match_fn k_pad_event[16] = {
-    gsp_tracker_event_is_pad0_cb,  gsp_tracker_event_is_pad1_cb,
-    gsp_tracker_event_is_pad2_cb,  gsp_tracker_event_is_pad3_cb,
-    gsp_tracker_event_is_pad4_cb,  gsp_tracker_event_is_pad5_cb,
-    gsp_tracker_event_is_pad6_cb,  gsp_tracker_event_is_pad7_cb,
-    gsp_tracker_event_is_pad8_cb,  gsp_tracker_event_is_pad9_cb,
-    gsp_tracker_event_is_pad10_cb, gsp_tracker_event_is_pad11_cb,
-    gsp_tracker_event_is_pad12_cb, gsp_tracker_event_is_pad13_cb,
-    gsp_tracker_event_is_pad14_cb, gsp_tracker_event_is_pad15_cb,
-};
-
-/** Blink phase for a queued pad / queued stop: one toggle per half beat so it
- *  visibly follows the song tempo (the engine's tempo already includes the
- *  speed multiplier). Frozen while paused. */
-static bool pad_blink_on(app_tracker_t *state, const tracker_status_t *status)
-{
-    if (!status->playing) {
-        return true;
-    }
-    const float bpm = (float)status->tempo *
-                      tracker_engine_speed_multiplier(state->engine);
-    if (bpm < 1.0f) {
-        return true;
-    }
-    const uint64_t half_beat = (uint64_t)(48000.0 * 30.0 / (double)bpm);
-    if (half_beat == 0) {
-        return true;
-    }
-    return ((status->frames / half_beat) & 1u) != 0;
-}
-
-/** Pattern the order list plays after the current one, or -1 at the end. */
-static int next_order_pattern(app_tracker_t *state,
-                              const tracker_status_t *status)
-{
-    const int patterns = tracker_engine_patterns(state->engine);
-    const int orders = tracker_engine_orders(state->engine);
-    for (int index = status->order_index + 1; index < orders; ++index) {
-        const int pattern = tracker_engine_pattern_at(state->engine, index);
-        if (pattern >= 0 && pattern < patterns) {
-            return pattern;
-        }
-    }
-    return -1;
-}
-
-static void refresh_pads(app_tracker_t *state, bool force)
-{
-    tracker_status_t status;
-    tracker_engine_get_status(state->engine, &status);
-    const int patterns = tracker_engine_patterns(state->engine);
-    const int launched = tracker_engine_launched_pattern(state->engine);
-    const int pending = tracker_engine_pending_pattern(state->engine);
-    const bool stop_pending = tracker_engine_pattern_stop_pending(state->engine);
-    /* Pad mode highlights the launched pad; while the order list plays, the pad
-     * of the current order's pattern is shown instead (follows the song). The
-     * upcoming pattern blinks in the same way as a user-queued switch. */
-    int shown_playing = -1;
-    int shown_next = -1;
-    if (status.playing) {
-        if (launched >= 0) {
-            shown_playing = launched;
-            shown_next = pending;
-        } else {
-            shown_playing = status.pattern;
-            shown_next = next_order_pattern(state, &status);
-        }
-        if (shown_next == shown_playing) {
-            shown_next = -1;
-        }
-    }
-    const bool blink = pad_blink_on(state, &status);
-    if (!force && shown_playing == state->pad_playing &&
-        shown_next == state->pad_next && (int)stop_pending == state->pad_stop &&
-        blink == state->pad_blink) {
-        return;
-    }
-    state->pad_playing = shown_playing;
-    state->pad_next = shown_next;
-    state->pad_stop = (int)stop_pending;
-    state->pad_blink = blink;
-    for (int pad = 0; pad < 16; ++pad) {
-        const bool available = pad < patterns;
-        const bool is_playing = available && pad == shown_playing;
-        const bool is_next = available && !is_playing && pad == shown_next;
-        const bool play_lit = is_playing && (!stop_pending || blink);
-        const bool dark_playing = is_playing && stop_pending && !blink;
-        const bool next_lit = is_next && blink;
-        const bool dark_next = is_next && !blink;
-        (void)esp_gsp_set_visible(state->ui, k_pad_dim[pad], !available);
-        (void)esp_gsp_set_visible(
-            state->ui, k_pad_off[pad],
-            available && ((!is_playing && !is_next) || dark_playing ||
-                          dark_next));
-        (void)esp_gsp_set_visible(state->ui, k_pad_play[pad], play_lit);
-        (void)esp_gsp_set_visible(state->ui, k_pad_next[pad], next_lit);
+    if (result != ESP_GSP_OK) {
+        state->last_error = result;
     }
 }
 
-static void launch_pad(app_tracker_t *state, int pad)
+static void render_frame(app_tracker_t *state)
 {
-    const int patterns = tracker_engine_patterns(state->engine);
-    if (pad < 0 || pad >= patterns) {
-        return;
-    }
-    const bool playing = tracker_engine_is_playing(state->engine);
-    const int launched = tracker_engine_launched_pattern(state->engine);
-    if (launched == pad) {
-        if (playing) {
-            /* Close this pad after the pattern has played out; a second tap
-             * cancels the queued stop. */
-            tracker_engine_queue_pattern_stop(state->engine);
-        } else {
-            tracker_engine_play(state->engine);
-        }
+    tracker_model_t *m = &state->model;
+    const unsigned current = atomic_load_explicit(&state->frame_index,
+                                                  memory_order_acquire) & 1U;
+    uint16_t *frame = state->frames[current ^ 1U];
+    if (m->view.page == TRACKER_PAGE_PATTERN) {
+        tracker_render_pattern(frame, m->engine);
+    } else if (m->view.page == TRACKER_PAGE_WAVES) {
+        tracker_render_waves(frame, m->engine, state->wave_scratch,
+                             TRACKER_WAVEFORM_SAMPLES);
+    } else if (m->view.page == TRACKER_PAGE_SYNTH) {
+        tracker_render_synth(frame, &m->synth_view);
     } else {
-        tracker_engine_launch_pattern(state->engine, pad);
-        if (!playing) {
-            tracker_engine_play(state->engine);
-        }
+        tracker_render_controls(frame, &m->view);
     }
-    update_labels(state, true);
-    update_transport(state);
-    refresh_pads(state, true);
-}
-
-static void update_master_meter(app_tracker_t *state)
-{
-    int32_t g = 0;
-    int32_t y = 0;
-    int32_t r = 0;
-    meter_levels(state->master_hold, &g, &y, &r);
-    gsp_tracker_lvl_g_set_value(state->ui, g);
-    gsp_tracker_lvl_y_set_value(state->ui, y);
-    gsp_tracker_lvl_r_set_value(state->ui, r);
-    if (tracker_engine_consume_master_clip(state->engine)) {
-        state->clip_hold = 15;
-    } else if (state->clip_hold > 0) {
-        --state->clip_hold;
-    }
-    gsp_tracker_clip_on_set_visible(state->ui, state->clip_hold > 0);
-    gsp_tracker_clip_off_set_visible(state->ui, state->clip_hold == 0);
-}
-
-static bool channel_muted(app_tracker_t *state, int channel)
-{
-    return state->user_mute[channel] || state->auto_mute[channel];
-}
-
-/** The list shows TRACKER_MIX_STRIPS rows, but only module channels exist. */
-static bool channel_present(const app_tracker_t *state, int channel)
-{
-    return channel >= 0 && channel < state->mix_channels;
-}
-
-static void push_channel_buttons(app_tracker_t *state, int channel)
-{
-    for (int slot = 0; slot < 4; ++slot) {
-        if (state->slot_channel[slot] != channel) {
-            continue;
-        }
-        const bool muted = channel_muted(state, channel);
-        (void)k_mute_off[slot](state->ui, !muted);
-        (void)k_mute_on[slot](state->ui, muted);
-        (void)k_solo_off[slot](state->ui, !state->soloed[channel]);
-        (void)k_solo_on[slot](state->ui, state->soloed[channel]);
-    }
-}
-
-static void apply_channel(app_tracker_t *state, int channel)
-{
-    tracker_engine_set_channel_mute(state->engine, channel,
-                                    channel_muted(state, channel));
-    tracker_engine_set_channel_solo(state->engine, channel,
-                                    state->soloed[channel]);
-}
-
-static int solo_count(app_tracker_t *state)
-{
-    int count = 0;
-    for (int channel = 0; channel < TRACKER_MIX_STRIPS; ++channel) {
-        if (state->soloed[channel]) {
-            ++count;
-        }
-    }
-    return count;
-}
-
-static void toggle_mute(app_tracker_t *state, int channel)
-{
-    if (!channel_present(state, channel)) {
-        return;
-    }
-    if (solo_count(state) > 0 && !state->soloed[channel]) {
-        return;
-    }
-    state->user_mute[channel] = !state->user_mute[channel];
-    apply_channel(state, channel);
-    push_channel_buttons(state, channel);
-}
-
-static void toggle_solo(app_tracker_t *state, int channel)
-{
-    if (!channel_present(state, channel)) {
-        return;
-    }
-    if (!state->soloed[channel]) {
-        state->soloed[channel] = true;
-        state->user_mute[channel] = false;
-        state->auto_mute[channel] = false;
-        apply_channel(state, channel);
-        push_channel_buttons(state, channel);
-        for (int other = 0; other < TRACKER_MIX_STRIPS; ++other) {
-            if (other == channel || state->soloed[other]) {
-                continue;
+    /* navigation takes a frame pointer through a short local graphics context. */
+    tracker_graphics_t navigation_gfx;
+    tracker_gfx_init(&navigation_gfx, frame);
+    tracker_gfx_clip(&navigation_gfx, 0, 432, 480, 48);
+    tracker_gfx_rect(&navigation_gfx, 0, 432, 480, 48, TRACKER_RGB565(9, 13, 15));
+    for (int page = 0; page < TRACKER_PAGE_COUNT; ++page) {
+        const int x = 200 + 16 * page;
+        const uint16_t color = m->view.page == page ? C_TEXT : C_ROW;
+        for (int y = -4; y <= 3; ++y) {
+            for (int dx = -4; dx <= 3; ++dx) {
+                if ((2 * dx + 1) * (2 * dx + 1) + (2 * y + 1) * (2 * y + 1) <= 64) {
+                    tracker_gfx_rect(&navigation_gfx, x + dx, 460 + y, 1, 1, color);
+                }
             }
-            state->auto_mute[other] = true;
-            apply_channel(state, other);
-            push_channel_buttons(state, other);
-        }
-        return;
-    }
-
-    state->soloed[channel] = false;
-    apply_channel(state, channel);
-    push_channel_buttons(state, channel);
-    if (solo_count(state) > 0) {
-        state->auto_mute[channel] = true;
-        apply_channel(state, channel);
-        push_channel_buttons(state, channel);
-        return;
-    }
-    for (int other = 0; other < TRACKER_MIX_STRIPS; ++other) {
-        state->auto_mute[other] = false;
-        state->user_mute[other] = false;
-        apply_channel(state, other);
-        push_channel_buttons(state, other);
-    }
-}
-
-/** Channel fader law: 100 = unity, 120 = +6 dB, and the lower half tapers in
- *  dB so the travel behaves like a console channel fader (50 = -15 dB,
- *  0 = silent) instead of a linear attenuator. */
-static float fader_gain(int value)
-{
-    if (value <= 0) {
-        return 0.0f;
-    }
-    float db = (float)(value - FADER_UNITY) * FADER_DB_PER_STEP;
-    if (db < FADER_MIN_DB) {
-        db = FADER_MIN_DB;
-    }
-    return powf(10.0f, db / 20.0f);
-}
-
-/** Shows the fader law next to the slider so a change is visible immediately. */
-static void push_fader_db(app_tracker_t *state, int slot, int value)
-{
-    char text[12];
-    if (value <= 0) {
-        snprintf(text, sizeof(text), "-inf");
-    } else {
-        const float db = (float)(value - FADER_UNITY) * FADER_DB_PER_STEP;
-        if (fabsf(db) < 0.05f) {
-            snprintf(text, sizeof(text), "0.0");
-        } else {
-            snprintf(text, sizeof(text), "%+.1f", db);
         }
     }
-    (void)k_fader_db[slot](state->ui, text);
+    atomic_store_explicit(&state->frame_index, current ^ 1U, memory_order_release);
+    m->dirty = false;
 }
 
-static void set_gain(app_tracker_t *state, int channel, int value)
+static void repaint(app_tracker_t *state)
 {
-    if (value < 0) {
-        value = 0;
-    } else if (value > GAIN_STEPS) {
-        value = GAIN_STEPS;
-    }
-    state->fader_value[channel] = (uint8_t)value;
-    tracker_engine_set_channel_gain(state->engine, channel,
-                                    fader_gain(value));
-    for (int slot = 0; slot < 4; ++slot) {
-        if (state->slot_channel[slot] == channel) {
-            push_fader_db(state, slot, value);
+    render_frame(state);
+    remember_error(state, esp_gsp_canvas_invalidate(state->ui,
+                                                    GSP_TRACKER_BIND_WORKSTATION));
+}
+
+static void apply_volume(app_tracker_t *state)
+{
+    if (state->model.view.volume != state->applied_volume) {
+        if (state->hooks.set_volume) {
+            state->hooks.set_volume(state->hooks.context, state->model.view.volume);
         }
+        state->applied_volume = state->model.view.volume;
     }
 }
 
-static void apply_master(app_tracker_t *state, int raw_value)
-{
-    int value = ((raw_value + 2) / 5) * 5;
-    if (value < 0) {
-        value = 0;
-    } else if (value > 100) {
-        value = 100;
-    }
-    state->volume = value;
-    app_audio_set_volume(value);
-    update_labels(state, false);
-}
-
-static void mix_scroll_delta(app_tracker_t *state, int delta)
-{
-    int scroll = state->mix_scroll + delta;
-    if (scroll < 0) {
-        scroll = 0;
-    } else if (scroll > MIX_MAX_SCROLL) {
-        scroll = MIX_MAX_SCROLL;
-    }
-    if (scroll != state->mix_scroll) {
-        state->mix_scroll = scroll;
-        refresh_mix(state);
-    }
-}
-
-/** Vertical drag deltas inside the MIX viewport (render-task context). The
- *  gesture layer gives a scroll region priority over the page swipe, so a list
- *  drag never turns into a page change. The region is only registered while the
- *  MIX page is visible; elsewhere page swipes keep the whole screen. */
-static void mix_scroll_cb(esp_gsp_handle_t gsp, int32_t delta_y, void *context)
-{
-    (void)gsp;
-    app_tracker_t *state = context;
-    if (state->page != PAGE_MIX || delta_y == 0) {
-        return;
-    }
-    mix_scroll_delta(state, -(int)delta_y);
-    state->mix_last_input_us = esp_timer_get_time();
-    state->mix_fling_rest = 0.0f;
-    float fling = (float)-delta_y;
-    if (fling > MIX_FLING_MAX) {
-        fling = MIX_FLING_MAX;
-    } else if (fling < -MIX_FLING_MAX) {
-        fling = -MIX_FLING_MAX;
-    }
-    state->mix_fling = fling;
-}
-
-/** Registers the list drag region for the MIX page and empties it otherwise. */
-static void mix_scroll_region(app_tracker_t *state, bool active)
-{
-    gsp_rect_t rect = {0, 0, 0, 0};
-    if (active) {
-        rect = (gsp_rect_t){0, MIX_VIEW_Y, PAGE_W_PX, MIX_VIEW_Y + MIX_VIEW_H};
-    }
-    (void)esp_gsp_on_scroll(state->ui, rect, mix_scroll_cb, state);
-}
-
-static void mix_momentum(app_tracker_t *state)
-{
-    if (fabsf(state->mix_fling) < 0.5f) {
-        state->mix_fling = 0.0f;
-        /* At rest the list settles on a row boundary, so no half row is left
-         * showing at the top edge of the viewport. */
-        const int remainder = state->mix_scroll % MIX_ROW_H;
-        if (remainder != 0) {
-            int target = state->mix_scroll - remainder;
-            if (remainder * 2 >= MIX_ROW_H) {
-                target += MIX_ROW_H;
-            }
-            if (target < 0) {
-                target = 0;
-            } else if (target > MIX_MAX_SCROLL) {
-                target = MIX_MAX_SCROLL;
-            }
-            int delta = (target - state->mix_scroll) / 2;
-            if (delta == 0) {
-                delta = (target > state->mix_scroll) ? 1 : -1;
-            }
-            mix_scroll_delta(state, delta);
-        }
-        return;
-    }
-    if (esp_timer_get_time() - state->mix_last_input_us < MIX_RELEASE_US) {
-        return;
-    }
-    state->mix_fling_rest += state->mix_fling;
-    const int step = (int)state->mix_fling_rest;
-    state->mix_fling_rest -= (float)step;
-    if (step != 0) {
-        mix_scroll_delta(state, step);
-    }
-    state->mix_fling *= 0.86f;
-}
-
-static void refresh_mix(app_tracker_t *state)
-{
-    for (int slot = 0; slot < 4; ++slot) {
-        const int channel = state->mix_scroll / MIX_ROW_H + slot;
-        int32_t g = 0;
-        int32_t y = 0;
-        int32_t r = 0;
-        const bool visible = channel < TRACKER_MIX_STRIPS;
-        (void)esp_gsp_component_set_position(
-            state->ui, k_slot_keys[slot], 0,
-            slot * MIX_ROW_H - state->mix_scroll % MIX_ROW_H);
-        (void)esp_gsp_component_set_visible(state->ui, k_slot_keys[slot],
-                                            visible);
-        if (!visible) {
-            continue;
-        }
-        meter_levels(state->level_hold[channel], &g, &y, &r);
-        (void)k_meter_g[slot](state->ui, g);
-        (void)k_meter_y[slot](state->ui, y);
-        (void)k_meter_r[slot](state->ui, r);
-        if (state->slot_channel[slot] != channel) {
-            state->slot_channel[slot] = channel;
-            char name[16];
-            snprintf(name, sizeof(name), "CH %02X", channel);
-            switch (slot) {
-            case 0: gsp_tracker_slot0_name_set_text(state->ui, name); break;
-            case 1: gsp_tracker_slot1_name_set_text(state->ui, name); break;
-            case 2: gsp_tracker_slot2_name_set_text(state->ui, name); break;
-            default: gsp_tracker_slot3_name_set_text(state->ui, name); break;
-            }
-            (void)k_fader_set[slot](state->ui, state->fader_value[channel]);
-            push_fader_db(state, slot, state->fader_value[channel]);
-            push_channel_buttons(state, channel);
-        }
-    }
-}
-
-static void update_meters(app_tracker_t *state)
-{
-    if (!tracker_engine_is_playing(state->engine)) {
-        for (int channel = 0; channel < TRACKER_MIX_STRIPS; ++channel) {
-            state->level_hold[channel] = 0;
-        }
-        state->master_hold = 0;
-        update_master_meter(state);
-        if (state->page == PAGE_MIX) {
-            refresh_mix(state);
-        }
-        return;
-    }
-    for (int channel = 0; channel < TRACKER_MIX_STRIPS; ++channel) {
-        const int level = tracker_engine_channel_level(state->engine, channel);
-        const int hold = state->level_hold[channel] * 7 / 8;
-        state->level_hold[channel] = (uint8_t)(level > hold ? level : hold);
-    }
-    const int master = tracker_engine_master_level(state->engine);
-    const int hold = state->master_hold * 7 / 8;
-    state->master_hold = (uint8_t)(master > hold ? master : hold);
-    update_master_meter(state);
-    if (state->page == PAGE_MIX) {
-        refresh_mix(state);
-    }
-}
-
-static void render_pattern_page(app_tracker_t *state)
-{
-    tracker_render_pattern(state->grid_frame, state->engine);
-    esp_gsp_canvas_invalidate(state->ui, GSP_TRACKER_BIND_GRID_CANVAS);
-}
-
-static void render_waves_page(app_tracker_t *state)
-{
-    tracker_render_waves(state->waves_frame, state->engine);
-    esp_gsp_canvas_invalidate(state->ui, GSP_TRACKER_BIND_WAVES_CANVAS);
-}
-
-static void render_page(app_tracker_t *state, int page)
-{
-    if (page == PAGE_PATTERN) {
-        render_pattern_page(state);
-    } else if (page == PAGE_WAVES) {
-        render_waves_page(state);
-    }
-}
-
-/* --- UI stall detector ----------------------------------------------------
- * ui_tick advances on every 50 ms GSP tick, so a frozen render task shows up as
- * a counter that stops moving. The esp_timer task is independent: when the UI
- * stops we log a task/heap snapshot and then panic, so the retained pre-crash
- * log ring and a core dump survive the reboot instead of leaving the device
- * stuck until it is power cycled. */
-static void stall_log(app_tracker_t *state)
-{
-    multi_heap_info_t internal_info;
-    multi_heap_info_t spiram_info;
-    heap_caps_get_info(&internal_info, MALLOC_CAP_INTERNAL);
-    heap_caps_get_info(&spiram_info, MALLOC_CAP_SPIRAM);
-    ESP_LOGE(TAG, "UI STALL ticks=%u I=%u/%u S=%u/%u largest=%u",
-             (unsigned)state->tick_count,
-             (unsigned)internal_info.total_free_bytes,
-             (unsigned)internal_info.minimum_free_bytes,
-             (unsigned)spiram_info.total_free_bytes,
-             (unsigned)spiram_info.minimum_free_bytes,
-             (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL));
-    static TaskStatus_t tasks[24];
-    const UBaseType_t count = uxTaskGetSystemState(tasks, 24, NULL);
-    for (UBaseType_t index = 0; index < count; ++index) {
-        ESP_LOGE(TAG, "UI STALL task=%s state=%u stack_free=%u",
-                 tasks[index].pcTaskName, (unsigned)tasks[index].eCurrentState,
-                 (unsigned)tasks[index].usStackHighWaterMark);
-    }
-}
-
-static void stall_check(void *arg)
-{
-    app_tracker_t *state = arg;
-    static unsigned last_tick;
-    static unsigned stalled;
-    const unsigned tick = state->tick_count;
-    if (tick != last_tick) {
-        last_tick = tick;
-        stalled = 0;
-        return;
-    }
-    ++stalled;
-    if (stalled == 5) {
-        stall_log(state);
-    } else if (stalled == 7) {
-        esp_system_abort("UI task stalled");
-    }
-}
-
-static void ui_tick(esp_gsp_handle_t ui, void *context)
+static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
+                    bool pressed, void *context)
 {
     (void)ui;
     app_tracker_t *state = context;
-    ++state->tick_count;
-    mix_momentum(state);
-    if (state->tick_count % METER_REFRESH_TICKS == 0) {
-        update_meters(state);
+    if (!atomic_load_explicit(&state->ready, memory_order_acquire)) {
+        return;
     }
-    if (state->tick_count % LABEL_REFRESH_TICKS == 0) {
-        update_labels(state, false);
-        update_transport(state);
-    }
-    if (state->page == PAGE_ORDER) {
-        /* Blinks queued pads in tempo and picks up boundary switches. */
-        refresh_pads(state, false);
-    }
-    const bool playing = tracker_engine_is_playing(state->engine);
-    if (playing != state->last_playing) {
-        state->last_playing = playing;
-        if (state->page == PAGE_WAVES) {
-            render_waves_page(state);
-        }
-    }
-    tracker_status_t status;
-    tracker_engine_get_status(state->engine, &status);
-    const int song_key = (status.order_index << 16) | (status.pattern << 8) |
-                         status.row;
-    if (playing && state->page == PAGE_PATTERN &&
-        state->tick_count % PATTERN_REFRESH_TICKS == 0 &&
-        song_key != state->last_song_key) {
-        state->last_song_key = song_key;
-        render_pattern_page(state);
-    } else if (playing && state->page == PAGE_WAVES) {
-        render_waves_page(state);
+    tracker_model_pointer(&state->model, x, y, pressed, now_ms(state));
+    tracker_model_tick(&state->model, now_ms(state));
+    apply_volume(state);
+    if (state->model.dirty) {
+        repaint(state);
     }
 }
 
-static void copy_region(const esp_gsp_canvas_surface_t *surface,
-                        const uint16_t *source)
+void app_tracker_feed_pointer(app_tracker_t *state, int x, int y, bool pressed)
 {
-    if (surface->pixel_format != ESP_GSP_CANVAS_PIXEL_RGB565) {
+    if (state) {
+        pointer(state->ui, x, y, pressed, state);
+    }
+}
+
+void app_tracker_cancel_pointer(app_tracker_t *state)
+{
+    if (state) {
+        tracker_model_cancel_input(&state->model);
+        state->model.dirty = true;
+    }
+}
+
+static void tick(esp_gsp_handle_t ui, void *context)
+{
+    (void)ui;
+    app_tracker_t *state = context;
+    if (!atomic_load_explicit(&state->ready, memory_order_acquire)) {
+        return;
+    }
+    state->elapsed_ms += UI_TICK_MS;
+    ++state->ticks;
+    if (state->hooks.heartbeat) {
+        state->hooks.heartbeat(state->hooks.context);
+    }
+    const unsigned requests = atomic_exchange_explicit(&state->transport_requests,
+                                                       0, memory_order_acquire);
+    if (requests) {
+        tracker_model_transport(&state->model, (requests & 2U) != 0, false);
+    }
+    tracker_model_tick(&state->model, now_ms(state));
+    apply_volume(state);
+    /* Waveforms retain 20Hz; controls refresh at 10Hz and input is immediate. */
+    if (state->model.dirty || state->model.view.page == TRACKER_PAGE_WAVES ||
+            state->ticks % 2 == 0) {
+        repaint(state);
+    }
+}
+
+static void draw(const esp_gsp_canvas_surface_t *surface, void *context)
+{
+    const app_tracker_t *state = context;
+    const unsigned frame_index = atomic_load_explicit(&state->frame_index,
+                                                      memory_order_acquire) & 1U;
+    const uint16_t *frame = state->frames[frame_index];
+    if (!frame || surface->pixel_format != ESP_GSP_CANVAS_PIXEL_RGB565 ||
+            surface->x + surface->width > FRAME_WIDTH ||
+            surface->y + surface->height > FRAME_HEIGHT) {
         return;
     }
     for (uint16_t row = 0; row < surface->height; ++row) {
-        uint8_t *destination = (uint8_t *)surface->pixels +
-                               (size_t)row * surface->stride_bytes;
-        const uint16_t *line = source +
-                               (size_t)(surface->y + row) * TRACKER_FRAME_W +
-                               surface->x;
-        memcpy(destination, line, (size_t)surface->width * sizeof(uint16_t));
+        uint8_t *destination = (uint8_t *)surface->pixels + (size_t)row * surface->stride_bytes;
+        const uint16_t *source = frame +
+                                 (size_t)(surface->y + row) * FRAME_WIDTH + surface->x;
+        memcpy(destination, source, (size_t)surface->width * sizeof(uint16_t));
     }
 }
 
-static void grid_canvas_draw(const esp_gsp_canvas_surface_t *surface, void *context)
+esp_gsp_err_t app_tracker_create(esp_gsp_handle_t ui,
+                                 const app_tracker_config_t *config,
+                                 app_tracker_t **out_handle)
 {
-    app_tracker_t *state = context;
-    if (state->grid_frame != NULL) {
-        copy_region(surface, state->grid_frame);
+    if (!out_handle) {
+        return ESP_GSP_ERR_INVALID_ARG;
     }
-}
-
-static void waves_canvas_draw(const esp_gsp_canvas_surface_t *surface, void *context)
-{
-    app_tracker_t *state = context;
-    if (state->waves_frame != NULL) {
-        copy_region(surface, state->waves_frame);
-    }
-}
-
-static void on_component_event(esp_gsp_handle_t ui,
-                               const esp_gsp_component_event_t *event, void *context)
-{
-    (void)ui;
-    app_tracker_t *state = context;
-    if (event->key != GSP_TRACKER_OBJ_KEY_PAGES) {
-        return;
-    }
-    const int page = (int)event->state.value;
-    if ((event->flags & ESP_GSP_COMPONENT_EVENT_VALUE_CHANGED) == 0 ||
-        event->state.dragging || page < 0 || page > PAGE_ORDER ||
-        page == state->page) {
-        return;
-    }
-    state->page = page;
-    mix_scroll_region(state, page == PAGE_MIX);
-    state->last_song_key = -1;
-    update_dots(state);
-    render_page(state, page);
-    update_labels(state, true);
-    update_transport(state);
-    if (page == PAGE_MIX) {
-        refresh_mix(state);
-    } else if (page == PAGE_ORDER) {
-        refresh_pads(state, true);
-    }
-}
-
-static void ai_short_press(void *handle, void *data)
-{
-    (void)handle;
-    app_tracker_t *state = data;
-    if (tracker_engine_is_playing(state->engine)) {
-        tracker_engine_pause(state->engine);
-    } else {
-        tracker_engine_play(state->engine);
-    }
-    update_labels(state, true);
-    update_transport(state);
-    refresh_pads(state, true);
-}
-
-static void ai_long_press(void *handle, void *data)
-{
-    (void)handle;
-    app_tracker_t *state = data;
-    tracker_engine_pause(state->engine);
-    tracker_engine_restart(state->engine);
-    update_labels(state, true);
-    update_transport(state);
-    refresh_pads(state, true);
-}
-
-static void on_event(esp_gsp_handle_t ui, const esp_gsp_event_t *event, void *context)
-{
-    (void)ui;
-    app_tracker_t *state = context;
-
-    if (gsp_tracker_event_is_pp_cb(event)) {
-        if (tracker_engine_is_playing(state->engine)) {
-            tracker_engine_pause(state->engine);
-        } else {
-            /* The PLAYBACK page plays the song; leave the pad pattern loop. */
-            tracker_engine_stop_pattern_launch(state->engine);
-            tracker_engine_play(state->engine);
-        }
-        update_labels(state, true);
-        update_transport(state);
-        refresh_pads(state, true);
-        return;
-    }
-    if (gsp_tracker_event_is_nav_cb(event)) {
-        tracker_engine_pause(state->engine);
-        tracker_engine_restart(state->engine);
-        update_labels(state, true);
-        update_transport(state);
-        refresh_pads(state, true);
-        return;
-    }
-    if (gsp_tracker_event_is_master_fader_cb(event)) {
-        apply_master(state, (int)event->arg);
-        return;
-    }
-
-    if (gsp_tracker_event_is_slot_fader0_cb(event)) {
-        const int ch = state->slot_channel[0];
-        if (ch >= 0 && ch < TRACKER_MIX_STRIPS) {
-            set_gain(state, ch, (int)event->arg);
-        }
-        return;
-    }
-
-    if (gsp_tracker_event_is_slot_fader1_cb(event)) {
-        const int ch = state->slot_channel[1];
-        if (ch >= 0 && ch < TRACKER_MIX_STRIPS) {
-            set_gain(state, ch, (int)event->arg);
-        }
-        return;
-    }
-
-    if (gsp_tracker_event_is_slot_fader2_cb(event)) {
-        const int ch = state->slot_channel[2];
-        if (ch >= 0 && ch < TRACKER_MIX_STRIPS) {
-            set_gain(state, ch, (int)event->arg);
-        }
-        return;
-    }
-
-    if (gsp_tracker_event_is_slot_fader3_cb(event)) {
-        const int ch = state->slot_channel[3];
-        if (ch >= 0 && ch < TRACKER_MIX_STRIPS) {
-            set_gain(state, ch, (int)event->arg);
-        }
-        return;
-    }
-
-    if (gsp_tracker_event_is_slot_mute0_cb(event)) {
-        const int ch = state->slot_channel[0];
-        if (ch >= 0 && ch < TRACKER_MIX_STRIPS) {
-            toggle_mute(state, ch);
-        }
-        return;
-    }
-    if (gsp_tracker_event_is_slot_solo0_cb(event)) {
-        const int ch = state->slot_channel[0];
-        if (ch >= 0 && ch < TRACKER_MIX_STRIPS) {
-            toggle_solo(state, ch);
-        }
-        return;
-    }
-
-    if (gsp_tracker_event_is_slot_mute1_cb(event)) {
-        const int ch = state->slot_channel[1];
-        if (ch >= 0 && ch < TRACKER_MIX_STRIPS) {
-            toggle_mute(state, ch);
-        }
-        return;
-    }
-    if (gsp_tracker_event_is_slot_solo1_cb(event)) {
-        const int ch = state->slot_channel[1];
-        if (ch >= 0 && ch < TRACKER_MIX_STRIPS) {
-            toggle_solo(state, ch);
-        }
-        return;
-    }
-
-    if (gsp_tracker_event_is_slot_mute2_cb(event)) {
-        const int ch = state->slot_channel[2];
-        if (ch >= 0 && ch < TRACKER_MIX_STRIPS) {
-            toggle_mute(state, ch);
-        }
-        return;
-    }
-    if (gsp_tracker_event_is_slot_solo2_cb(event)) {
-        const int ch = state->slot_channel[2];
-        if (ch >= 0 && ch < TRACKER_MIX_STRIPS) {
-            toggle_solo(state, ch);
-        }
-        return;
-    }
-
-    if (gsp_tracker_event_is_slot_mute3_cb(event)) {
-        const int ch = state->slot_channel[3];
-        if (ch >= 0 && ch < TRACKER_MIX_STRIPS) {
-            toggle_mute(state, ch);
-        }
-        return;
-    }
-    if (gsp_tracker_event_is_slot_solo3_cb(event)) {
-        const int ch = state->slot_channel[3];
-        if (ch >= 0 && ch < TRACKER_MIX_STRIPS) {
-            toggle_solo(state, ch);
-        }
-        return;
-    }
-
-    if (gsp_tracker_event_is_speed_05_cb(event)) {
-        tracker_engine_set_speed_multiplier(state->engine, 0.5f);
-        update_labels(state, false);
-        return;
-    }
-    if (gsp_tracker_event_is_speed_10_cb(event)) {
-        tracker_engine_set_speed_multiplier(state->engine, 1.0f);
-        update_labels(state, false);
-        return;
-    }
-    if (gsp_tracker_event_is_speed_15_cb(event)) {
-        tracker_engine_set_speed_multiplier(state->engine, 1.5f);
-        update_labels(state, false);
-        return;
-    }
-    if (gsp_tracker_event_is_speed_20_cb(event)) {
-        tracker_engine_set_speed_multiplier(state->engine, 2.0f);
-        update_labels(state, false);
-        return;
-    }
-    for (int pad = 0; pad < 16; ++pad) {
-        if (k_pad_event[pad](event)) {
-            launch_pad(state, pad);
-            return;
-        }
-    }
-}
-
-esp_err_t app_tracker_start(esp_gsp_handle_t ui, tracker_engine_t *engine,
-                            app_tracker_t **out_handle)
-{
-    ESP_RETURN_ON_FALSE(ui != NULL && engine != NULL && out_handle != NULL,
-                        ESP_ERR_INVALID_ARG, TAG, "invalid argument");
     *out_handle = NULL;
-
+    if (!ui || !config || !config->tracker ||
+            (!!config->hooks.allocate_frame != !!config->hooks.free_frame)) {
+        return ESP_GSP_ERR_INVALID_ARG;
+    }
     app_tracker_t *state = calloc(1, sizeof(*state));
-    ESP_RETURN_ON_FALSE(state != NULL, ESP_ERR_NO_MEM, TAG, "state alloc failed");
+    if (!state) {
+        return ESP_GSP_ERR_NO_MEM;
+    }
     state->ui = ui;
-    state->engine = engine;
-    state->page = PAGE_PATTERN;
-    state->volume = 100;
-    state->last_song_key = -1;
-    for (int slot = 0; slot < 4; ++slot) {
-        state->slot_channel[slot] = -1;
+    state->hooks = config->hooks;
+    atomic_init(&state->transport_requests, 0);
+    atomic_init(&state->frame_index, 0);
+    atomic_init(&state->ready, false);
+    state->applied_volume = -1;
+    for (unsigned index = 0; index < 2; ++index) {
+        state->frames[index] = state->hooks.allocate_frame ?
+                               state->hooks.allocate_frame(state->hooks.context, FRAME_BYTES) : malloc(FRAME_BYTES);
     }
-    tracker_engine_set_loop(engine, false);
-    for (int channel = 0; channel < TRACKER_MIX_STRIPS; ++channel) {
-        state->fader_value[channel] = 100;
-        tracker_engine_set_channel_gain(engine, channel, 1.0f);
-        tracker_engine_set_channel_mute(engine, channel, false);
-        tracker_engine_set_channel_solo(engine, channel, false);
+    if (!state->frames[0] || !state->frames[1]) {
+        for (unsigned index = 0; index < 2; ++index) {
+            if (state->frames[index]) {
+                if (state->hooks.free_frame) {
+                    state->hooks.free_frame(state->hooks.context, state->frames[index]);
+                } else {
+                    free(state->frames[index]);
+                }
+            }
+        }
+        free(state);
+        return ESP_GSP_ERR_NO_MEM;
     }
-    state->grid_frame = heap_caps_malloc(FRAME_BYTES, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-    state->waves_frame = heap_caps_malloc(FRAME_BYTES, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-    if (state->grid_frame == NULL || state->waves_frame == NULL) {
-        ESP_LOGE(TAG, "frame buffers unavailable");
-        goto fail;
+    tracker_model_init(&state->model, config->tracker, config->synth, config->audio_bus);
+    tracker_model_tick(&state->model, now_ms(state));
+    apply_volume(state);
+    render_frame(state);
+    esp_gsp_err_t result = esp_gsp_canvas_set_draw_cb(ui, GSP_TRACKER_BIND_WORKSTATION, draw, state);
+    if (result == ESP_GSP_OK) {
+        result = esp_gsp_set_pointer_observer(ui, pointer, state);
     }
-
-    tracker_status_t status;
-    tracker_engine_get_status(engine, &status);
-    state->mix_channels = status.channels;
-    if (state->mix_channels > TRACKER_MIX_STRIPS) {
-        state->mix_channels = TRACKER_MIX_STRIPS;
+    if (result == ESP_GSP_OK) {
+        state->timer = esp_gsp_timer_create(ui, UI_TICK_MS, tick, state);
+        if (!state->timer) {
+            result = ESP_GSP_ERR_NO_MEM;
+        }
     }
-    state->pad_playing = -1;
-    state->pad_next = -1;
-
-    esp_gsp_err_t error = esp_gsp_on_event(ui, on_event, state);
-    if (error == ESP_GSP_OK) {
-        error = esp_gsp_on_component_event(ui, on_component_event, state);
+    if (result != ESP_GSP_OK) {
+        state->last_error = result;
+        state->hooks.shutdown = NULL;
+        app_tracker_t *remaining = state;
+        app_tracker_stop(&remaining);
+        if (remaining) {
+            /* Detachment could not be fenced: retain the live context for a
+             * caller retry instead of freeing a selected callback's memory. */
+            remaining->hooks.shutdown = config->hooks.shutdown;
+            *out_handle = remaining;
+        }
+        return result;
     }
-    if (error == ESP_GSP_OK) {
-        error = esp_gsp_canvas_set_draw_cb(ui, GSP_TRACKER_BIND_GRID_CANVAS,
-                                           grid_canvas_draw, state);
-    }
-    if (error == ESP_GSP_OK) {
-        error = esp_gsp_canvas_set_draw_cb(ui, GSP_TRACKER_BIND_WAVES_CANVAS,
-                                           waves_canvas_draw, state);
-    }
-    if (error != ESP_GSP_OK) {
-        ESP_LOGE(TAG, "GSP binding failed: 0x%x", error);
-        goto fail;
-    }
-
-    /* The list drag region only exists on the MIX page. */
-    mix_scroll_region(state, false);
-
-    tracker_render_pattern(state->grid_frame, engine);
-    tracker_render_waves(state->waves_frame, engine);
-    esp_gsp_page_flow_set_page(ui, GSP_TRACKER_OBJ_KEY_PAGES, PAGE_PATTERN, false);
-    update_dots(state);
-    update_labels(state, true);
-    update_transport(state);
-    gsp_tracker_master_fader_set_value(ui, state->volume);
-    app_audio_set_volume(state->volume);
-    update_master_meter(state);
-    state->mix_scroll = 0;
-    for (int slot = 0; slot < 4; ++slot) {
-        state->slot_channel[slot] = -1;
-    }
-    refresh_mix(state);
-    refresh_pads(state, true);
-
-    state->timer = esp_gsp_timer_create(ui, UI_TICK_MS, ui_tick, state);
-    if (state->timer == NULL) {
-        ESP_LOGE(TAG, "UI timer unavailable");
-        goto fail;
-    }
-
-    /* Independent watchdog for the render/UI task, which the task watchdog
-     * cannot see when the task spins or deadlocks with IDLE still running. */
-    const esp_timer_create_args_t stall_args = {
-        .callback = stall_check,
-        .arg = state,
-        .name = "ui_stall",
-    };
-    if (esp_timer_create(&stall_args, &state->stall_timer) != ESP_OK) {
-        ESP_LOGW(TAG, "UI stall timer unavailable");
-    } else if (esp_timer_start_periodic(state->stall_timer, 1000000) != ESP_OK) {
-        ESP_LOGW(TAG, "UI stall timer could not start");
-    }
-
-    button_handle_t buttons[BSP_BUTTON_NUM] = {0};
-    int button_count = 0;
-    if (bsp_iot_button_create(buttons, &button_count, BSP_BUTTON_NUM) == ESP_OK &&
-        button_count > BSP_BUTTON_AI) {
-        state->ai_button = buttons[BSP_BUTTON_AI];
-        iot_button_register_cb(state->ai_button, BUTTON_SINGLE_CLICK, NULL,
-                               ai_short_press, state);
-        iot_button_register_cb(state->ai_button, BUTTON_LONG_PRESS_START, NULL,
-                               ai_long_press, state);
-        ESP_LOGI(TAG, "AI button bound: short=play/pause, long=rewind");
-    }
-
+    atomic_store_explicit(&state->ready, true, memory_order_release);
     *out_handle = state;
-    return ESP_OK;
+    return ESP_GSP_OK;
+}
 
-fail:
-    mix_scroll_region(state, false);
-    (void)esp_gsp_on_event(ui, NULL, NULL);
-    (void)esp_gsp_on_component_event(ui, NULL, NULL);
-    (void)esp_gsp_canvas_set_draw_cb(ui, GSP_TRACKER_BIND_GRID_CANVAS, NULL,
-                                     NULL);
-    (void)esp_gsp_canvas_set_draw_cb(ui, GSP_TRACKER_BIND_WAVES_CANVAS, NULL,
-                                     NULL);
-    if (state->timer != NULL) {
-        esp_gsp_timer_delete(ui, state->timer);
+esp_gsp_err_t app_tracker_read(app_tracker_t *state, app_tracker_snapshot_t *s)
+{
+    if (!state || !s) {
+        return ESP_GSP_ERR_INVALID_ARG;
     }
-    if (state->stall_timer != NULL) {
-        (void)esp_timer_stop(state->stall_timer);
-        (void)esp_timer_delete(state->stall_timer);
+    const tracker_model_t *m = &state->model;
+    memset(s, 0, sizeof(*s));
+    s->page = m->view.page;
+    s->volume = m->view.volume;
+    s->mix_scroll = m->view.mix_scroll;
+    s->held_note = m->synth_view.note;
+    s->synth_tab = m->synth_view.tab;
+    s->preset = m->synth_view.preset;
+    s->playing = m->view.status.playing;
+    s->launched_pattern = tracker_engine_launched_pattern(m->engine);
+    s->pending_pattern = tracker_engine_pending_pattern(m->engine);
+    s->stop_pending = tracker_engine_pattern_stop_pending(m->engine);
+    s->active_voices = m->synth_view.status.active_voices;
+    s->synth_peak = m->synth_view.status.peak;
+    s->rendered_frames = m->synth_view.status.rendered_frames;
+    s->last_error = state->last_error;
+    const int first = m->view.mix_scroll / TRACKER_MIX_STRIP_H;
+    for (int slot = 0; slot < 4; ++slot) {
+        const int ch = first + slot;
+        if (ch < TRACKER_MAX_CHANNELS) {
+            s->gain_steps[slot] = m->view.gain_steps[ch];
+            s->muted[slot] = m->view.muted[ch];
+            s->soloed[slot] = m->view.soloed[ch];
+        }
     }
-    free(state->grid_frame);
-    free(state->waves_frame);
-    free(state);
-    return ESP_ERR_NO_MEM;
+    return ESP_GSP_OK;
+}
+
+void app_tracker_request_transport(app_tracker_t *state, bool restart)
+{
+    if (state) {
+        atomic_fetch_or_explicit(&state->transport_requests, restart ? 2U : 1U,
+                                 memory_order_release);
+    }
 }
 
 void app_tracker_stop(app_tracker_t **handle)
 {
-    if (handle == NULL || *handle == NULL) {
+    if (!handle || !*handle) {
         return;
     }
     app_tracker_t *state = *handle;
-    if (state->stall_timer != NULL) {
-        (void)esp_timer_stop(state->stall_timer);
-        (void)esp_timer_delete(state->stall_timer);
-        state->stall_timer = NULL;
+    atomic_store_explicit(&state->ready, false, memory_order_release);
+    esp_gsp_err_t result = esp_gsp_set_pointer_observer(state->ui, NULL, NULL);
+    if (state->timer) {
+        const esp_gsp_err_t timer_result = esp_gsp_timer_delete(state->ui, state->timer);
+        if (timer_result == ESP_GSP_OK) {
+            state->timer = NULL;
+        } else {
+            result = timer_result;
+        }
     }
-    if (state->timer != NULL) {
-        esp_gsp_timer_delete(state->ui, state->timer);
-        state->timer = NULL;
+    const esp_gsp_err_t canvas_result = esp_gsp_canvas_stop(state->ui,
+                                                            GSP_TRACKER_BIND_WORKSTATION);
+    if (canvas_result != ESP_GSP_OK) {
+        result = canvas_result;
     }
-    mix_scroll_region(state, false);
-    (void)esp_gsp_on_event(state->ui, NULL, NULL);
-    (void)esp_gsp_on_component_event(state->ui, NULL, NULL);
-    (void)esp_gsp_canvas_set_draw_cb(state->ui, GSP_TRACKER_BIND_GRID_CANVAS,
-                                     NULL, NULL);
-    (void)esp_gsp_canvas_set_draw_cb(state->ui, GSP_TRACKER_BIND_WAVES_CANVAS,
-                                     NULL, NULL);
-    free(state->grid_frame);
-    free(state->waves_frame);
-    free(state);
+#if defined(ESP_PLATFORM)
+    /* The device teardown contract requires an external control task. */
+    if (result == ESP_GSP_OK) {
+        result = esp_gsp_flush(state->ui, 2000);
+    }
+#endif
+    if (result != ESP_GSP_OK) {
+        state->last_error = result;
+        return;
+    }
     *handle = NULL;
+    tracker_model_cancel_input(&state->model);
+    for (unsigned index = 0; index < 2; ++index) {
+        if (state->hooks.free_frame) {
+            state->hooks.free_frame(state->hooks.context, state->frames[index]);
+        } else {
+            free(state->frames[index]);
+        }
+    }
+    if (state->hooks.shutdown) {
+        state->hooks.shutdown(state->hooks.context);
+    }
+    free(state);
 }

@@ -40,7 +40,7 @@ void app_audio_bus_render(app_audio_bus_t *bus, int16_t *stereo, int frames);
 /* Thread safe; finite gain 0..2, defaults to 1. Invalid requests return false.
  * Gains are sampled once per render call. */
 bool app_audio_bus_set_source_gain(app_audio_bus_t *bus,
-                                    app_audio_source_t source, float gain);
+                                   app_audio_source_t source, float gain);
 float app_audio_bus_source_gain(app_audio_bus_t *bus, app_audio_source_t source);
 void app_audio_bus_get_status(app_audio_bus_t *bus,
                               app_audio_bus_status_t *status);

@@ -36,7 +36,7 @@ static void monitor_lock(app_audio_bus_t *bus)
     (void)xSemaphoreTake(bus->monitor_lock, portMAX_DELAY);
 #else
     while (atomic_exchange_explicit(&bus->monitor_lock, true,
-                                     memory_order_acquire)) {
+                                    memory_order_acquire)) {
     }
 #endif
 }
@@ -115,7 +115,7 @@ void app_audio_bus_render(app_audio_bus_t *bus, int16_t *stereo, int frames)
     bool clipped = false;
     for (int offset = 0; offset < frames;) {
         const int block = frames - offset < APP_AUDIO_BLOCK_FRAMES
-                              ? frames - offset : APP_AUDIO_BLOCK_FRAMES;
+                          ? frames - offset : APP_AUDIO_BLOCK_FRAMES;
         memset(bus->tracker_samples, 0, (size_t)block * 2 * sizeof(float));
         if (bus->tracker != NULL) {
             /* Tracker clears its source meters per render call. Render a full
@@ -124,7 +124,7 @@ void app_audio_bus_render(app_audio_bus_t *bus, int16_t *stereo, int frames)
         }
         for (int position = 0; position < block;) {
             const int count = block - position < BUS_RENDER_FRAMES
-                                  ? block - position : BUS_RENDER_FRAMES;
+                              ? block - position : BUS_RENDER_FRAMES;
             memset(bus->synth_samples, 0, (size_t)count * 2 * sizeof(float));
             if (bus->synth != NULL) {
                 app_synth_render(bus->synth, bus->synth_samples, count);
@@ -144,8 +144,14 @@ void app_audio_bus_render(app_audio_bus_t *bus, int16_t *stereo, int frames)
                     right = 0.0f;
                     clipped = true;
                 }
-                const float frame_peak = fmaxf(fabsf(left), fabsf(right));
-                peak = fmaxf(peak, frame_peak);
+                /* Inputs are finite here; avoid libc signaling-NaN helpers in
+                 * the per-sample meter without changing the summation order. */
+                const float left_peak = fabsf(left);
+                const float right_peak = fabsf(right);
+                const float frame_peak = left_peak > right_peak ? left_peak : right_peak;
+                if (frame_peak > peak) {
+                    peak = frame_peak;
+                }
                 clipped = clipped || frame_peak >= 1.0f;
                 const int16_t output_left = to_sample(left);
                 const int16_t output_right = to_sample(right);
@@ -162,22 +168,22 @@ void app_audio_bus_render(app_audio_bus_t *bus, int16_t *stereo, int frames)
     }
     monitor_lock(bus);
     bus->status.master_peak = peak;
-    bus->status.master_level = (int)(fminf(peak, 1.0f) * 255.0f + 0.5f);
+    bus->status.master_level = (int)((peak < 1.0f ? peak : 1.0f) * 255.0f + 0.5f);
     bus->status.clipped = bus->status.clipped || clipped;
     bus->status.frames += (uint64_t)frames;
     monitor_unlock(bus);
 }
 
 bool app_audio_bus_set_source_gain(app_audio_bus_t *bus,
-                                    app_audio_source_t source, float gain)
+                                   app_audio_source_t source, float gain)
 {
     if (bus == NULL || source < 0 || source >= APP_AUDIO_SOURCE_COUNT ||
-        !isfinite(gain) || gain < 0.0f || gain > 2.0f) {
+            !isfinite(gain) || gain < 0.0f || gain > 2.0f) {
         return false;
     }
     atomic_store_explicit(&bus->gain[source],
-                           (unsigned)(gain * BUS_GAIN_SCALE + 0.5f),
-                           memory_order_relaxed);
+                          (unsigned)(gain * BUS_GAIN_SCALE + 0.5f),
+                          memory_order_relaxed);
     return true;
 }
 
@@ -221,7 +227,7 @@ int app_audio_bus_waveform(app_audio_bus_t *bus, int16_t *out, int count)
         return 0;
     }
     const int available = count < APP_AUDIO_SCOPE_SAMPLES
-                              ? count : APP_AUDIO_SCOPE_SAMPLES;
+                          ? count : APP_AUDIO_SCOPE_SAMPLES;
     if (bus == NULL) {
         memset(out, 0, (size_t)available * sizeof(*out));
         return 0;

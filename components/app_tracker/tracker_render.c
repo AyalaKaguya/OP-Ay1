@@ -215,7 +215,7 @@ void tracker_render_pattern(uint16_t *frame, tracker_engine_t *engine)
 }
 
 void tracker_render_waves(uint16_t *frame, tracker_engine_t *engine,
-                           int16_t *samples, int sample_count)
+                          int16_t *samples, int sample_count)
 {
     if (frame == NULL || engine == NULL) {
         return;
@@ -254,8 +254,8 @@ void tracker_render_waves(uint16_t *frame, tracker_engine_t *engine,
 
         if (channel < status.channels && samples != NULL && sample_count > 1) {
             const int available = tracker_engine_waveform(
-                engine, channel, samples, sample_count < TRACKER_WAVEFORM_SAMPLES
-                                              ? sample_count : TRACKER_WAVEFORM_SAMPLES);
+                                      engine, channel, samples, sample_count < TRACKER_WAVEFORM_SAMPLES
+                                      ? sample_count : TRACKER_WAVEFORM_SAMPLES);
             if (available > 1) {
                 /* Fit about three cycles of the playing note: a fixed window
                  * either misses bass cycles or crams treble ones. */
