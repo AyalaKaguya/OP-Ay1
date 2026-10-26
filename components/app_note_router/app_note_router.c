@@ -134,8 +134,9 @@ bool app_note_router_touch_note_on(app_note_router_t *router, int note,
     const bool accepted = start_note(router, note, velocity, router->touch[note]);
     if (accepted) {
         router->touch[note] = true;
+        const unsigned midi_velocity = (unsigned)(velocity * 127.0f + 0.5f);
         const uint8_t packet[4] = {0x09, 0x90, (uint8_t)note,
-                                   (uint8_t)(velocity * 127.0f + 0.5f)};
+                                   (uint8_t)(midi_velocity ? midi_velocity : 1U)};
         transmit(router, packet);
     }
     control_unlock(router);
@@ -230,10 +231,12 @@ static bool packet_valid(const uint8_t packet[4])
                packet[2] == 0 && packet[3] == 0;
     }
     if (cin == 6) {
-        return packet[1] < 128 && packet[2] == 0xf7 && packet[3] == 0;
+        return (packet[1] == 0xf0 || packet[1] < 128) &&
+               packet[2] == 0xf7 && packet[3] == 0;
     }
     if (cin == 7) {
-        return packet[1] < 128 && packet[2] < 128 && packet[3] == 0xf7;
+        return (packet[1] == 0xf0 || packet[1] < 128) &&
+               packet[2] < 128 && packet[3] == 0xf7;
     }
     if (type < 8 || type > 14 || cin != type || packet[2] >= 128) {
         return false;

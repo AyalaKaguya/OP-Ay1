@@ -164,6 +164,9 @@ static void test_transmit_and_queue_withdrawal(void)
     CHECK(midi(f, 0, 9, 64, 100));
     CHECK(midi(f, 0, 8, 64, 0));
     CHECK(f->transmitted_count == 2); /* Incoming data is not echoed. */
+    CHECK(app_note_router_touch_note_on(f->router, 60, 0.0001f));
+    CHECK(f->transmitted[f->transmitted_count - 1][3] == 1);
+    app_note_router_touch_note_off(f->router, 60);
     f->reject_transmit = true;
     CHECK(app_note_router_touch_note_on(f->router, 67, 0.8f));
     app_note_router_release_touch(f->router);
@@ -203,8 +206,11 @@ static void test_packet_validation(void)
     CHECK(ownership(f).midi_notes == 0);
     CHECK(midi(f, 0, 9, 60, 100));
     CHECK(app_note_router_touch_note_on(f->router, 67, 0.8f));
-    const uint8_t short_completion[7] = {0x0f, 0xf8, 0, 0, 0x09, 0x90, 60};
+    const uint8_t short_sysex[8] = {6, 0xf0, 0xf7, 0, 7, 0xf0, 1, 0xf7};
     app_usb_midi_packet_counts_t counts;
+    CHECK(app_usb_midi_receive_packets(f->router, short_sysex, sizeof(short_sysex), &counts));
+    CHECK(counts.accepted == 2 && ownership(f).midi_notes == 1);
+    const uint8_t short_completion[7] = {0x0f, 0xf8, 0, 0, 0x09, 0x90, 60};
     CHECK(!app_usb_midi_receive_packets(f->router, short_completion, sizeof(short_completion), &counts));
     CHECK(counts.accepted == 1 && counts.dropped == 1);
     CHECK(ownership(f).midi_notes == 0 && ownership(f).touch_notes == 1);
