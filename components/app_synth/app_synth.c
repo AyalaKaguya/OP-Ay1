@@ -219,25 +219,27 @@ bool app_synth_get_patch(const app_synth_t *synth, app_synth_patch_t *out_patch)
         if ((before & 1U) != 0U) {
             continue;
         }
-        out_patch->waveform = (app_synth_waveform_t)atomic_load_explicit(&synth->patch_words[0], memory_order_relaxed);
-        out_patch->lfo_target = (app_synth_lfo_target_t)atomic_load_explicit(&synth->patch_words[1], memory_order_relaxed);
+        app_synth_patch_t snapshot;
+        snapshot.waveform = (app_synth_waveform_t)atomic_load_explicit(&synth->patch_words[0], memory_order_relaxed);
+        snapshot.lfo_target = (app_synth_lfo_target_t)atomic_load_explicit(&synth->patch_words[1], memory_order_relaxed);
         float values[SYNTH_PATCH_FLOATS];
         for (size_t i = 0; i < SYNTH_PATCH_FLOATS; ++i) {
             values[i] = word_float(atomic_load_explicit(&synth->patch_words[i + 2U], memory_order_relaxed));
         }
         if (before == atomic_load_explicit(&synth->patch_sequence, memory_order_acquire)) {
-            out_patch->wavetable_position = values[0];
-            out_patch->detune_cents = values[1];
-            out_patch->gain = values[2];
-            out_patch->pan = values[3];
-            out_patch->filter_cutoff_hz = values[4];
-            out_patch->filter_resonance = values[5];
-            out_patch->attack_s = values[6];
-            out_patch->decay_s = values[7];
-            out_patch->sustain = values[8];
-            out_patch->release_s = values[9];
-            out_patch->lfo_hz = values[10];
-            out_patch->lfo_depth = values[11];
+            snapshot.wavetable_position = values[0];
+            snapshot.detune_cents = values[1];
+            snapshot.gain = values[2];
+            snapshot.pan = values[3];
+            snapshot.filter_cutoff_hz = values[4];
+            snapshot.filter_resonance = values[5];
+            snapshot.attack_s = values[6];
+            snapshot.decay_s = values[7];
+            snapshot.sustain = values[8];
+            snapshot.release_s = values[9];
+            snapshot.lfo_hz = values[10];
+            snapshot.lfo_depth = values[11];
+            *out_patch = snapshot;
             return true;
         }
     }
@@ -749,33 +751,32 @@ void app_synth_render(app_synth_t *synth, float *stereo, size_t frames)
     publish_status(synth, peak, clipped);
 }
 
-void app_synth_get_status(const app_synth_t *synth, app_synth_status_t *out_status)
+bool app_synth_get_status(const app_synth_t *synth, app_synth_status_t *out_status)
 {
-    if (out_status == NULL) {
-        return;
-    }
-    memset(out_status, 0, sizeof(*out_status));
-    if (synth == NULL) {
-        return;
+    if (synth == NULL || out_status == NULL) {
+        return false;
     }
     for (unsigned attempt = 0; attempt < 4U; ++attempt) {
         unsigned before = atomic_load_explicit(&synth->status_sequence, memory_order_acquire);
         if ((before & 1U) != 0U) {
             continue;
         }
-        out_status->rendered_frames = atomic_load_explicit(&synth->status_frames_low, memory_order_relaxed) |
-                                      ((uint64_t)atomic_load_explicit(&synth->status_frames_high, memory_order_relaxed) << 32U);
-        out_status->active_voices = atomic_load_explicit(&synth->status_active, memory_order_relaxed);
-        out_status->stolen_voices = atomic_load_explicit(&synth->status_stolen, memory_order_relaxed);
-        out_status->emergency_releases = atomic_load_explicit(&synth->status_emergencies, memory_order_relaxed);
-        out_status->panic_count = atomic_load_explicit(&synth->status_panics, memory_order_relaxed);
-        out_status->patch_id = (app_synth_patch_id_t)atomic_load_explicit(&synth->status_preset, memory_order_relaxed);
-        out_status->peak = word_float(atomic_load_explicit(&synth->status_peak, memory_order_relaxed));
-        out_status->clipped = atomic_load_explicit(&synth->status_clipped, memory_order_relaxed);
+        app_synth_status_t snapshot = {0};
+        snapshot.rendered_frames = atomic_load_explicit(&synth->status_frames_low, memory_order_relaxed) |
+                                   ((uint64_t)atomic_load_explicit(&synth->status_frames_high, memory_order_relaxed) << 32U);
+        snapshot.active_voices = atomic_load_explicit(&synth->status_active, memory_order_relaxed);
+        snapshot.stolen_voices = atomic_load_explicit(&synth->status_stolen, memory_order_relaxed);
+        snapshot.emergency_releases = atomic_load_explicit(&synth->status_emergencies, memory_order_relaxed);
+        snapshot.panic_count = atomic_load_explicit(&synth->status_panics, memory_order_relaxed);
+        snapshot.patch_id = (app_synth_patch_id_t)atomic_load_explicit(&synth->status_preset, memory_order_relaxed);
+        snapshot.peak = word_float(atomic_load_explicit(&synth->status_peak, memory_order_relaxed));
+        snapshot.clipped = atomic_load_explicit(&synth->status_clipped, memory_order_relaxed);
         if (before == atomic_load_explicit(&synth->status_sequence, memory_order_acquire)) {
-            break;
+            snapshot.queue_depth = atomic_load_explicit(&synth->queue_depth, memory_order_relaxed);
+            snapshot.dropped_commands = atomic_load_explicit(&synth->dropped, memory_order_relaxed);
+            *out_status = snapshot;
+            return true;
         }
     }
-    out_status->queue_depth = atomic_load_explicit(&synth->queue_depth, memory_order_relaxed);
-    out_status->dropped_commands = atomic_load_explicit(&synth->dropped, memory_order_relaxed);
+    return false;
 }

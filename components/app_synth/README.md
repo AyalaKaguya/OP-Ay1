@@ -35,10 +35,13 @@ its own emergency flag, and panic always uses an emergency flag. Render applies
 emergencies after earlier queued commands, preventing queued note-ons from
 resurrecting released notes. No producer spins or mutates voice DSP state.
 
-`get_patch` returns the last accepted control patch through atomic words and a
-bounded sequence check; it may return false under a simultaneous patch write.
-`get_status` returns a thread-safe diagnostic snapshot; meter data describes the
-last render call. Ring drops include commands retained by the emergency path.
+`get_patch` and `get_status` use atomic words and bounded sequence checks. They
+return true only after copying one coherent snapshot to the caller. Invalid
+arguments or four unsuccessful read attempts return false without changing the
+caller's output; keep the last successful snapshot and retry on a later update.
+Patch snapshots describe the last accepted control patch; DSP/meter snapshots
+describe the last render call. Independently sampled queue counters are live
+command diagnostics. Ring drops include commands retained by the emergency path.
 No C11 64-bit atomic is required on the device.
 
 Output is interleaved stereo float, in PCM full-scale units. It overwrites the

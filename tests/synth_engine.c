@@ -201,6 +201,15 @@ static void test_queue_emergency_and_steal(void)
     assert(energy(buffer, TEST_BLOCK) == 0.0);
     app_synth_get_status(synth, &status);
     assert(status.active_voices == 0U && status.panic_count == 1U);
+    app_synth_render(synth, buffer, TEST_BLOCK);
+    assert(energy(buffer, TEST_BLOCK) == 0.0);
+    assert(app_synth_note_on(synth, 72, 0.8f));
+    app_synth_render(synth, buffer, TEST_BLOCK);
+    assert(energy(buffer, TEST_BLOCK) > 0.0001);
+    assert(app_synth_get_status(synth, &status) && status.active_voices == 1U);
+    app_synth_panic(synth);
+    app_synth_render(synth, buffer, TEST_BLOCK);
+    assert(energy(buffer, TEST_BLOCK) == 0.0);
     assert(!app_synth_note_on(synth, -1, 1.0f));
     assert(!app_synth_note_on(synth, 128, 1.0f));
     assert(!app_synth_note_on(synth, 60, NAN));
@@ -293,8 +302,22 @@ static int stress_producer(void *argument)
             app_synth_panic(context->synth);
         }
         app_synth_patch_t snapshot;
+        memset(&snapshot, 0xA5, sizeof(snapshot));
+        app_synth_patch_t old_patch = snapshot;
         if (app_synth_get_patch(context->synth, &snapshot)) {
             assert(isfinite(snapshot.gain) && snapshot.gain >= 0.0f && snapshot.gain <= 1.5f);
+        } else {
+            assert(memcmp(&snapshot, &old_patch, sizeof(snapshot)) == 0);
+        }
+        app_synth_status_t status;
+        memset(&status, 0xA5, sizeof(status));
+        app_synth_status_t old_status = status;
+        if (app_synth_get_status(context->synth, &status)) {
+            assert(status.active_voices <= APP_SYNTH_VOICE_COUNT);
+            assert(status.queue_depth <= APP_SYNTH_COMMAND_CAPACITY);
+            assert(isfinite(status.peak));
+        } else {
+            assert(memcmp(&status, &old_status, sizeof(status)) == 0);
         }
     }
     atomic_fetch_add_explicit(context->done, 1U, memory_order_release);
@@ -349,6 +372,29 @@ static void test_concurrent_commands(void)
     printf("concurrency: 3 producers x 4000 events; %u render blocks, %u bounded ring drops\n",
            blocks, status.dropped_commands);
     app_synth_destroy(synth);
+}
+
+static void test_failed_snapshots_preserve_output(void)
+{
+    app_synth_t *synth = app_synth_create(TEST_RATE);
+    assert(synth != NULL);
+    app_synth_patch_t patch;
+    app_synth_status_t status;
+    memset(&patch, 0xA5, sizeof(patch));
+    memset(&status, 0xA5, sizeof(status));
+    app_synth_patch_t old_patch = patch;
+    app_synth_status_t old_status = status;
+    assert(!app_synth_get_patch(NULL, &patch));
+    assert(!app_synth_get_status(NULL, &status));
+    assert(!app_synth_get_patch(synth, NULL));
+    assert(!app_synth_get_status(synth, NULL));
+    assert(memcmp(&patch, &old_patch, sizeof(patch)) == 0);
+    assert(memcmp(&status, &old_status, sizeof(status)) == 0);
+    assert(app_synth_get_patch(synth, &patch));
+    assert(app_synth_get_status(synth, &status));
+    assert(patch.waveform == APP_SYNTH_WAVE_SAW && status.rendered_frames == 0U);
+    app_synth_destroy(synth);
+    puts("snapshots: failed reads preserve caller output; successful reads publish complete data");
 }
 
 static void write_u16(FILE *file, unsigned value)
@@ -426,6 +472,7 @@ int main(int argc, char **argv)
     test_envelope();
     test_source_headroom();
     test_concurrent_commands();
+    test_failed_snapshots_preserve_output();
     if (argc > 1) {
         write_demo(argv[1]);
     }

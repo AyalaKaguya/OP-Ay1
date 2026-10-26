@@ -86,6 +86,8 @@ void app_synth_destroy(app_synth_t *synth);
 
 /** Queues a smoothed patch change. */
 bool app_synth_set_patch(app_synth_t *synth, const app_synth_patch_t *patch);
+/** Returns a coherent last-accepted patch. On false, out_patch is unchanged;
+ * retain the previous successful snapshot until a later call succeeds. */
 bool app_synth_get_patch(const app_synth_t *synth, app_synth_patch_t *out_patch);
 bool app_synth_set_patch_id(app_synth_t *synth, app_synth_patch_id_t id);
 app_synth_patch_t app_synth_patch_for_preset(app_synth_patch_id_t id);
@@ -105,7 +107,9 @@ void app_synth_panic(app_synth_t *synth);
  * This function performs no allocation. The render task is the sole owner of
  * voice state; control calls only enqueue commands or set emergency flags. */
 void app_synth_render(app_synth_t *synth, float *stereo, size_t frames);
-void app_synth_get_status(const app_synth_t *synth, app_synth_status_t *out_status);
+/** Returns a coherent DSP snapshot. On false, out_status is unchanged;
+ * retain the previous successful snapshot until a later call succeeds. */
+bool app_synth_get_status(const app_synth_t *synth, app_synth_status_t *out_status);
 
 #ifdef __cplusplus
 }
