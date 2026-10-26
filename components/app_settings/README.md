@@ -73,10 +73,11 @@ samples, changes over 0.30g/sample, sample gaps over 200 ms and backward time.
 Lock and active input reset the candidate dwell. Rotation failures restore the
 classifier's last applied angle, not the attempted angle.
 
-The board-axis mapping is centralized in `app_settings.c`: negative Y is 0°,
-positive X is 90°, positive Y is 180° and negative X is 270°. This mounting
-convention **requires four-direction physical validation on the product board**;
-host gravity tests establish the policy, not sensor mounting or physical touch.
+The board-axis mapping is centralized in `app_settings.c`: positive Y is 0°,
+positive X is 90°, negative Y is 180° and negative X is 270°. The Y mapping was
+corrected after physical AUTO feedback on 2026-10-27. The complete four-direction
+mounting convention still needs confirmation on the product board; host gravity
+tests establish the policy, not sensor mounting or physical touch.
 Changing mounting convention must update the portable cardinal test with it.
 No magnetometer, gyro integration or sensor-fusion service is required.
 

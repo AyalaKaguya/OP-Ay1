@@ -56,7 +56,8 @@ static int gravity_direction(float x, float y, float z)
         return x > 0.0f ? 90 : 270;
     }
     if (ay >= AXIS_ENTER_G && ay >= ax + AXIS_DOMINANCE_G) {
-        return y > 0.0f ? 180 : 0;
+        /* Product mounting verified from the physical AUTO orientation. */
+        return y > 0.0f ? 0 : 180;
     }
     return -1;
 }

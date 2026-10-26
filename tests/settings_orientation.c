@@ -35,8 +35,8 @@ static void four_directions(void)
         float y;
         int rotation;
     } cases[] = {
-        {0.0f, -1.0f, 0}, {1.0f, 0.0f, 90},
-        {0.0f, 1.0f, 180}, {-1.0f, 0.0f, 270},
+        {0.0f, 1.0f, 0}, {1.0f, 0.0f, 90},
+        {0.0f, -1.0f, 180}, {-1.0f, 0.0f, 270},
     };
     for (unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); ++index) {
         app_settings_orientation_t orientation;
