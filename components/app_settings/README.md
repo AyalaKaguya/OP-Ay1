@@ -25,7 +25,8 @@ Only the worker calls IMU/fuel-gauge APIs, owns NVS, applies panel commands and
 pauses/resumes the display. UI callbacks send nonblocking atomic requests and use
 `app_settings_read_snapshot()`. Snapshot reads use a zero-wait mutex and leave
 the caller's previous snapshot untouched on `ESP_ERR_TIMEOUT`. A snapshot's
-settings are applied values; `busy` means a hardware change is pending/in flight.
+`brightness` is the accepted user preference and `effective_brightness` is the
+last successfully applied output. `busy` means a hardware change is pending/in flight.
 Sensor/storage failure does not stop brightness or manual rotation, and remains
 visible in `last_error` and validity flags.
 
@@ -59,10 +60,54 @@ exclusive owner deletes it. NULL `*settings` is an idempotent successful stop.
   the inverse transform. The square 480x480 scene needs no layout transpose.
 - Rotation lock freezes automatic changes at the current applied angle.
   Explicit manual rotation is still allowed while locked.
-- Initial preferences are brightness 70%, angle 0 and locked. NVS stores only
-  version, brightness, rotation and lock in the application-owned namespace.
+- Initial preferences are brightness 70%, angle 0 and locked. NVS stores
+  version, brightness, rotation, lock and optional idle timers in its namespace.
   Commits coalesce after 600 ms; errors retry after five seconds. Unknown
   future schema versions are reported and are not overwritten or erased.
+
+## Idle dim and display off
+
+Both timers default to **OFF**. `app_settings_request_idle(dim_s, off_s)` accepts
+independent values of zero (disabled) or 1..86400 seconds. A timeout change
+restarts the activity epoch; repeatedly submitting unchanged values is not
+activity. An enabled OFF timer takes precedence even when earlier than DIM.
+
+The portable `app_settings_idle_*` policy is shared with host adapters. DIM
+caps output at `min(preferred brightness, 10)` and never increases an already
+lower user level. OFF requests a real CO5300 Display Off command and reports
+effective output zero only after that command succeeds. `brightness` and its
+NVS key always remain the user's preference; phases, elapsed time and temporary
+dim levels are not persisted. Schema-1 stores from before this feature have no
+`dim_s`/`off_s` keys and load both as disabled. Restart begins awake at the saved
+preference, never by restoring an old dim/off phase.
+
+The worker applies only Display Off/On (`0x28`/`0x29`) through
+`esp_lcd_panel_disp_on_off()`, serialized with the existing short GSP
+pause/presentation fence. It deliberately does not use `bsp_display_off()`,
+which also enters Sleep In and can stop the TE/input service path. GSP resumes
+after each command so touch polling, timers, heartbeat and audio remain alive.
+The UI should suppress repeated invalidations while `screen_off` is applied;
+the wake resume forces a complete display redraw. Touch/controller power rails
+and audio tasks are unchanged. Automatic rotation is suppressed while the
+screen is off or heading to OFF. Stop restores Display On and the preferred
+brightness before returning hardware ownership.
+
+The UI records real input through `app_settings_record_activity()` before
+dispatching that input to controls. It returns true only for applied or
+committed OFF intent, and remains true until wake hardware restoration succeeds.
+The UI must then consume that complete gesture through release, so waking
+cannot tap an unseen control. A touch on a dimmed display restores brightness
+and still operates normally. The OFF commitment/activity handshake uses a
+sequentially consistent atomic order; new input is rechecked after waiting for
+the GSP pause fence. Failed panel/brightness commands retain actual applied
+flags, set busy/error, and retry without pretending the panel woke or slept.
+
+Held interaction updates keep the screen awake; a false `interaction_busy`
+poll does not reset the idle clock. Status queries, animation, audio render,
+IMU and battery samples are not activity. Backward time restarts the epoch
+instead of underflowing into immediate screen-off. Button and remote audition
+adapters should record explicit input; the worker itself does not infer MIDI
+activity or change MIDI behavior.
 
 ## Automatic orientation
 
@@ -109,3 +154,7 @@ Run `python tools/test_settings_orientation.py` for native `/W4 /WX` or
 lock, interaction suppression and stale/backward clocks. Those tests never
 connect a board or require ESP-IDF. Display pauses, NVS and battery integration
 require the pinned firmware build and the repository's device acceptance flow.
+
+`python tools/test_settings_idle.py` checks default-disabled behavior, exact
+thresholds, independent timers, preference restoration, low brightness,
+interaction suppression, reconfiguration, restart and 64-bit/backward clocks.

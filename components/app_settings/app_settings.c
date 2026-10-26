@@ -22,8 +22,73 @@ void app_settings_snapshot_defaults(app_settings_snapshot_t *snapshot)
     }
     memset(snapshot, 0, sizeof(*snapshot));
     snapshot->brightness = DEFAULT_BRIGHTNESS_PERCENT;
+    snapshot->effective_brightness = DEFAULT_BRIGHTNESS_PERCENT;
     snapshot->rotation_locked = true;
     snapshot->charge = APP_SETTINGS_CHARGE_UNKNOWN;
+}
+
+void app_settings_idle_init(app_settings_idle_t *idle, uint64_t now_ms)
+{
+    if (idle == NULL) {
+        return;
+    }
+    memset(idle, 0, sizeof(*idle));
+    idle->last_activity_ms = now_ms;
+    idle->last_evaluation_ms = now_ms;
+    idle->initialized = true;
+}
+
+void app_settings_idle_record_activity(app_settings_idle_t *idle, uint64_t now_ms)
+{
+    if (idle == NULL) {
+        return;
+    }
+    idle->last_activity_ms = now_ms;
+    idle->last_evaluation_ms = now_ms;
+    idle->initialized = true;
+}
+
+bool app_settings_idle_configure(app_settings_idle_t *idle, uint32_t dim_after_s,
+                                  uint32_t off_after_s, uint64_t now_ms)
+{
+    if (idle == NULL || dim_after_s > APP_SETTINGS_IDLE_MAX_SECONDS ||
+        off_after_s > APP_SETTINGS_IDLE_MAX_SECONDS) {
+        return false;
+    }
+    if (!idle->initialized || idle->dim_after_s != dim_after_s ||
+        idle->off_after_s != off_after_s) {
+        idle->dim_after_s = dim_after_s;
+        idle->off_after_s = off_after_s;
+        app_settings_idle_record_activity(idle, now_ms);
+    }
+    return true;
+}
+
+void app_settings_idle_evaluate(app_settings_idle_t *idle, uint64_t now_ms,
+                                 bool interaction_busy, int preferred_brightness,
+                                 app_settings_idle_target_t *out_target)
+{
+    if (idle == NULL || out_target == NULL) {
+        return;
+    }
+    const int preference = preferred_brightness < 0 ? 0
+                           : preferred_brightness > 100 ? 100 : preferred_brightness;
+    if (!idle->initialized || now_ms < idle->last_evaluation_ms ||
+        now_ms < idle->last_activity_ms || interaction_busy) {
+        app_settings_idle_record_activity(idle, now_ms);
+    }
+    idle->last_evaluation_ms = now_ms;
+    const uint64_t elapsed_ms = now_ms - idle->last_activity_ms;
+    const bool off = idle->off_after_s != 0 &&
+                     elapsed_ms >= (uint64_t)idle->off_after_s * 1000U;
+    const bool dim = !off && idle->dim_after_s != 0 &&
+                     elapsed_ms >= (uint64_t)idle->dim_after_s * 1000U;
+    *out_target = (app_settings_idle_target_t) {
+        .effective_brightness = off ? 0 : dim && preference > APP_SETTINGS_IDLE_DIM_PERCENT
+                                ? APP_SETTINGS_IDLE_DIM_PERCENT : preference,
+        .dimmed = dim,
+        .screen_off = off,
+    };
 }
 
 bool app_settings_rotation_valid(int rotation)

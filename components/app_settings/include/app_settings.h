@@ -16,11 +16,16 @@ typedef enum {
     APP_SETTINGS_CHARGE_FULL,
 } app_settings_charge_t;
 
-/* Snapshot values describe successfully applied settings. Battery percentage
+/* Snapshot values describe accepted preferences and applied hardware. Battery percentage
  * comes from the fuel gauge, current is mA (+charging/-discharging), and
  * voltage is mV. Keep an old snapshot when a nonblocking read fails. */
 typedef struct {
-    int brightness;              /* 0..100 percent. */
+    int brightness;              /* User preference, 0..100 percent. */
+    int effective_brightness;    /* Applied output, 0 when display is off. */
+    uint32_t dim_after_s;         /* 0 disables dimming; otherwise 1..86400. */
+    uint32_t off_after_s;         /* 0 disables display-off; otherwise 1..86400. */
+    bool dimmed;
+    bool screen_off;
     int rotation;                /* Clockwise degrees: 0, 90, 180, 270. */
     bool rotation_locked;        /* Freeze auto-rotation; manual turns work. */
     bool battery_valid;
@@ -34,6 +39,34 @@ typedef struct {
     int last_error;              /* Device adapter's esp_err_t, 0 on success. */
     bool busy;                   /* Hardware change pending/in progress. */
 } app_settings_snapshot_t;
+
+#define APP_SETTINGS_IDLE_MAX_SECONDS 86400U
+#define APP_SETTINGS_IDLE_DIM_PERCENT 10
+
+typedef struct {
+    uint32_t dim_after_s;
+    uint32_t off_after_s;
+    uint64_t last_activity_ms;
+    uint64_t last_evaluation_ms;
+    bool initialized;
+} app_settings_idle_t;
+
+typedef struct {
+    int effective_brightness;
+    bool dimmed;
+    bool screen_off;
+} app_settings_idle_target_t;
+
+/* Portable idle policy is single-owner. Both timers start disabled; changing
+ * configuration or a backward clock restarts its activity epoch. Timers are
+ * independent and screen-off wins when both have elapsed. */
+void app_settings_idle_init(app_settings_idle_t *idle, uint64_t now_ms);
+bool app_settings_idle_configure(app_settings_idle_t *idle, uint32_t dim_after_s,
+                                  uint32_t off_after_s, uint64_t now_ms);
+void app_settings_idle_record_activity(app_settings_idle_t *idle, uint64_t now_ms);
+void app_settings_idle_evaluate(app_settings_idle_t *idle, uint64_t now_ms,
+                                 bool interaction_busy, int preferred_brightness,
+                                 app_settings_idle_target_t *out_target);
 
 /* Portable, single-owner orientation classifier. Device and host tests use
  * the same gravity/motion rejection, hysteresis and stable dwell timing. */
