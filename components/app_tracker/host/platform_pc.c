@@ -13,12 +13,31 @@ static struct {
     tracker_engine_t *tracker;
     app_synth_t *synth;
     app_audio_bus_t *bus;
+    app_note_router_t *router;
+    app_usb_midi_t *usb;
+    app_settings_snapshot_t settings;
     host_audio_t *audio;
     uint8_t *module;
     void *audio_timer;
     void *state_timer;
     FILE *state_log;
 } backend;
+
+static bool read_settings(void *context, app_settings_snapshot_t *snapshot)
+{
+    (void)context;
+    *snapshot = backend.settings;
+    return true;
+}
+
+static bool request_settings(void *context, int brightness, int rotation, bool locked)
+{
+    (void)context;
+    backend.settings.brightness = brightness;
+    backend.settings.rotation = rotation;
+    backend.settings.rotation_locked = locked;
+    return true;
+}
 
 static uint64_t clock_ms(void *context)
 {
@@ -65,6 +84,19 @@ static void report_state(esp_gsp_handle_t ui, void *context)
                 s.soloed[0], s.soloed[1], s.soloed[2], s.soloed[3], s.last_error);
         fflush(backend.state_log);
     }
+    app_tracker_settings_snapshot_t q;
+    if (app_tracker_read_settings(backend.controller, &q) == ESP_GSP_OK) {
+        const char *path = getenv("OP_AY1_SIM_SETTINGS_LOG");
+        if (path && *path) {
+            FILE *file = fopen(path, "a");
+            if (file) {
+                fprintf(file, "{\"open\":%d,\"confirm\":%d,\"brightness\":%d,\"rotation\":%d,\"locked\":%d,\"usb_mode\":%d,\"usb_state\":%d,\"usb_error\":%ld}\n",
+                        q.menu_open, q.confirmation_open, q.display.brightness, q.display.rotation,
+                        q.display.rotation_locked, q.usb.actual_mode, q.usb.state, (long)q.usb.last_error);
+                fclose(file);
+            }
+        }
+    }
 }
 
 static bool read_module(void)
@@ -105,6 +137,11 @@ esp_gsp_err_t gsp_bridge_app_init(esp_gsp_handle_t ui)
     if (!backend.audio) {
         return ESP_GSP_ERR_NO_MEM;
     }
+    backend.router = app_note_router_create(backend.synth);
+    if (!backend.router || !app_usb_midi_create(backend.router, &backend.usb)) {
+        return ESP_GSP_ERR_NO_MEM;
+    }
+    app_settings_snapshot_defaults(&backend.settings);
     const char *state_path = getenv("OP_AY1_SIM_STATE_LOG");
     if (state_path && *state_path) {
         backend.state_log = fopen(state_path, "w");
@@ -114,7 +151,11 @@ esp_gsp_err_t gsp_bridge_app_init(esp_gsp_handle_t ui)
     }
     const app_tracker_config_t config = {
         .tracker = backend.tracker, .synth = backend.synth, .audio_bus = backend.bus,
-        .hooks = {.time_ms = clock_ms, .set_volume = set_volume},
+        .note_router = backend.router, .usb_midi = backend.usb,
+        .hooks = {
+            .time_ms = clock_ms, .set_volume = set_volume,
+            .read_settings = read_settings, .request_settings = request_settings
+        },
     };
     const esp_gsp_err_t result = app_tracker_create(ui, &config, &backend.controller);
     if (result != ESP_GSP_OK) {
@@ -145,6 +186,8 @@ void gsp_bridge_app_deinit(esp_gsp_handle_t ui)
         return;
     }
     host_audio_destroy(backend.audio);
+    (void)app_usb_midi_shutdown(&backend.usb, 1000);
+    app_note_router_destroy(backend.router);
     app_audio_bus_destroy(backend.bus);
     app_synth_destroy(backend.synth);
     tracker_engine_destroy(backend.tracker);

@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "app_audio.h"
+#include "app_settings_device.h"
 #include "bsp/esp_mosaico.h"
 #include "esp_heap_caps.h"
 #include "esp_log.h"
@@ -24,6 +25,7 @@
 #define WORKSTATION_STATUS_SERVICE 0x2101U
 #define WORKSTATION_STATUS_METHOD 1U
 #define WORKSTATION_AUDITION_METHOD 2U
+#define WORKSTATION_SETTINGS_METHOD 3U
 #define POINTER_QUEUE_CAPACITY 32
 
 typedef struct {
@@ -53,6 +55,8 @@ typedef struct {
     SemaphoreHandle_t snapshot_lock;
     app_tracker_snapshot_t snapshot;
     app_synth_t *synth;
+    app_settings_t *settings;
+    app_tracker_settings_snapshot_t settings_snapshot;
     uint64_t audition_deadline_ms;
     unsigned previous_ticks;
     unsigned stalled_seconds;
@@ -127,9 +131,71 @@ static void heartbeat(void *context)
     }
     if (xSemaphoreTake(device->snapshot_lock, 0) == pdTRUE) {
         (void)app_tracker_read(device->controller, &device->snapshot);
+        (void)app_tracker_read_settings(device->controller, &device->settings_snapshot);
         (void)xSemaphoreGive(device->snapshot_lock);
         atomic_store_explicit(&device->snapshot_ready, true, memory_order_release);
     }
+}
+
+static bool read_settings(void *context, app_settings_snapshot_t *snapshot)
+{
+    tracker_device_t *device = context;
+    return device->settings && app_settings_read_snapshot(device->settings, snapshot) == ESP_OK;
+}
+
+static bool request_settings(void *context, int brightness, int rotation, bool locked)
+{
+    tracker_device_t *device = context;
+    if (!device->settings) {
+        return false;
+    }
+    return app_settings_request_brightness(device->settings, brightness) == ESP_OK &&
+           app_settings_request_rotation(device->settings, rotation) == ESP_OK &&
+           app_settings_request_lock(device->settings, locked) == ESP_OK;
+}
+
+static void interaction_busy(void *context, bool busy)
+{
+    tracker_device_t *device = context;
+    if (device->settings) {
+        app_settings_set_interaction_busy(device->settings, busy);
+    }
+}
+
+static esp_err_t settings_rpc(const esp_iris_rpc_request_t *request,
+                              uint8_t *response, size_t capacity,
+                              size_t *response_size, void *context)
+{
+    tracker_device_t *device = context;
+    if (!request || !response || !response_size || request->payload_size) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    if (!atomic_load_explicit(&device->snapshot_ready, memory_order_acquire)) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    if (xSemaphoreTake(device->snapshot_lock, pdMS_TO_TICKS(50)) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
+    /* Read fields under the lock directly; do not put two large service
+     * snapshots on the small RPC task stack. */
+    const app_tracker_settings_snapshot_t *s = &device->settings_snapshot;
+    const int count = snprintf((char *)response, capacity,
+                               "{\"open\":%d,\"confirm\":%d,\"brightness\":%d,\"rotation\":%d,\"locked\":%d,"
+                               "\"battery_valid\":%d,\"battery_stale\":%d,\"battery_percent\":%d,\"voltage_mv\":%d,"
+                               "\"current_ma\":%d,\"charge\":%d,\"imu\":%d,\"display_error\":%d,\"busy\":%d,"
+                               "\"usb_mode\":%d,\"usb_state\":%d,\"connected\":%d,\"rx\":%lu,\"tx\":%lu,\"usb_error\":%ld}",
+                               s->menu_open, s->confirmation_open, s->display.brightness, s->display.rotation,
+                               s->display.rotation_locked, s->display.battery_valid, s->display.battery_stale,
+                               s->display.battery_percent, s->display.voltage_mv, s->display.current_ma, s->display.charge,
+                               s->display.imu_available, s->display.last_error, s->display.busy, s->usb.actual_mode,
+                               s->usb.state, s->usb.connected, (unsigned long)s->usb.received_packets,
+                               (unsigned long)s->usb.sent_packets, (long)s->usb.last_error);
+    (void)xSemaphoreGive(device->snapshot_lock);
+    if (count < 0 || (size_t)count >= capacity) {
+        return ESP_ERR_INVALID_SIZE;
+    }
+    *response_size = (size_t)count;
+    return ESP_OK;
 }
 
 static esp_err_t pointer_rpc(const esp_iris_rpc_request_t *request,
@@ -285,9 +351,10 @@ static void shutdown(void *context)
      * inert tombstone remain valid until reboot; callbacks never retain UI. */
 }
 
-esp_err_t app_tracker_start_bus(esp_gsp_handle_t ui, tracker_engine_t *engine,
-                                app_synth_t *synth, app_audio_bus_t *bus,
-                                app_tracker_t **out_handle)
+esp_err_t app_tracker_start_workstation(esp_gsp_handle_t ui, tracker_engine_t *engine,
+                                        app_synth_t *synth, app_audio_bus_t *bus,
+                                        app_note_router_t *router, app_usb_midi_t *usb,
+                                        app_settings_t *settings, app_tracker_t **out_handle)
 {
     if (device_started) {
         return ESP_ERR_INVALID_STATE;
@@ -301,6 +368,7 @@ esp_err_t app_tracker_start_bus(esp_gsp_handle_t ui, tracker_engine_t *engine,
     atomic_init(&device->cancel_input, false);
     atomic_init(&device->active, false);
     atomic_init(&device->snapshot_ready, false);
+    device->settings = settings;
     device->input_queue = xQueueCreate(POINTER_QUEUE_CAPACITY, sizeof(tracker_pointer_t));
     device->audition_queue = xQueueCreate(1, sizeof(tracker_audition_t));
     device->snapshot_lock = xSemaphoreCreateMutex();
@@ -319,10 +387,12 @@ esp_err_t app_tracker_start_bus(esp_gsp_handle_t ui, tracker_engine_t *engine,
     }
     app_tracker_config_t config = {
         .tracker = engine, .synth = synth, .audio_bus = bus,
+        .note_router = router, .usb_midi = usb,
         .hooks = {
             .context = device, .allocate_frame = allocate_frame,
             .free_frame = free_frame, .time_ms = time_ms, .set_volume = set_volume,
-            .heartbeat = heartbeat, .shutdown = shutdown
+            .heartbeat = heartbeat, .shutdown = shutdown, .read_settings = read_settings,
+            .request_settings = request_settings, .interaction_busy = interaction_busy
         },
     };
     const esp_err_t result = app_tracker_create(ui, &config, out_handle);
@@ -345,7 +415,9 @@ esp_err_t app_tracker_start_bus(esp_gsp_handle_t ui, tracker_engine_t *engine,
                                         WORKSTATION_STATUS_SERVICE, WORKSTATION_STATUS_METHOD, status_rpc, device);
     const esp_err_t audition_result = esp_iris_rpc_register(
                                           WORKSTATION_STATUS_SERVICE, WORKSTATION_AUDITION_METHOD, audition_rpc, device);
-    if (pointer_result != ESP_OK || status_result != ESP_OK || audition_result != ESP_OK) {
+    const esp_err_t settings_result = esp_iris_rpc_register(
+                                          WORKSTATION_STATUS_SERVICE, WORKSTATION_SETTINGS_METHOD, settings_rpc, device);
+    if (pointer_result != ESP_OK || status_result != ESP_OK || audition_result != ESP_OK || settings_result != ESP_OK) {
         ESP_LOGW(TAG, "Workstation RPC registration failed (%d/%d/%d)",
                  pointer_result, status_result, audition_result);
     }
@@ -369,6 +441,13 @@ esp_err_t app_tracker_start_bus(esp_gsp_handle_t ui, tracker_engine_t *engine,
         }
     }
     return ESP_OK;
+}
+
+esp_err_t app_tracker_start_bus(esp_gsp_handle_t ui, tracker_engine_t *engine,
+                                app_synth_t *synth, app_audio_bus_t *bus,
+                                app_tracker_t **out_handle)
+{
+    return app_tracker_start_workstation(ui, engine, synth, bus, NULL, NULL, NULL, out_handle);
 }
 
 esp_err_t app_tracker_start(esp_gsp_handle_t ui, tracker_engine_t *engine,

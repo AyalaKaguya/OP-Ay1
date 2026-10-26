@@ -17,16 +17,21 @@ add_subdirectory("${ESP_GSP_COMPONENT_DIR}/tools/sim_bridge" sim_bridge)
 gsp_add_backend(op_ay1_backend
     SOURCES
         ../tracker_font.c ../tracker_graphics.c ../tracker_render.c
-        ../tracker_pages.c ../tracker_model.c ../tracker_synth.c ../tracker_ui.c
+        ../tracker_pages.c ../tracker_model.c ../tracker_synth.c ../tracker_ui.c ../tracker_settings.c
         ../../app_tracker_engine/tracker_engine.c
         ../../app_tracker_engine/tracker_module.c
         ../../app_tracker_engine/tracker_mixer.c
         ../../app_audio/app_audio_bus.c
         ../../app_synth/app_synth.c
+        ../../app_note_router/app_note_router.c
+        ../../app_usb_midi/usb_midi_native.c
+        ../../app_usb_midi/midi_packets.c
+        ../../app_usb_midi/midi_descriptor.c
+        ../../app_settings/app_settings.c
         platform_pc.c audio_pc.c backend_main.c
     INCLUDE_DIRECTORIES
         ../include .. ../../app_tracker_engine/include ../../app_audio/include
-        ../../app_synth/include
+        ../../app_synth/include ../../app_note_router/include ../../app_usb_midi/include ../../app_settings/include
     SCENES ../ui/main.json)
 
 # The standard main closes the bridge before application teardown can report

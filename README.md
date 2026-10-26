@@ -66,6 +66,26 @@ The Pad capture shows the state after a Pattern switch has completed.
   then hold or slide across the keyboard. PANIC clears voices. Edits stay in RAM.
 - **AI button:** short press toggles song playback; long press pauses and rewinds.
 
+The local `codex/global-settings` branch also adds a top-edge Quick Settings
+drawer for battery status, brightness, automatic/manual rotation and USB
+MIDI Host / Vendor selection. The [settings implementation record](docs/global-settings-plan.zh-CN.md)
+tracks its own build and device acceptance separately from the earlier release.
+
+## USB Host product exception
+
+In this application's normal mode, MIDI IO temporarily assigns the S31 USB
+controller to a class-compliant USB-MIDI 1.0 keyboard. Vendor restores the
+ESP-Iris dual-CDC device used by the PC. Switching requires an on-screen
+confirmation; PC USB disconnect is expected. Vendor is the default after reboot,
+and USB role is not saved. OTG power is handled by the board hardware.
+
+Iris UART0 control/log/RPC remains enabled on the board's default UART pins at
+115200 baud. Use the product CLI and coordinate Gateway ownership for a UART
+adapter; this build does not prove an attached UART cable or live TCP network.
+Firmware delivery still requires Vendor USB's separate data link. Return to
+Vendor on the device before reconnecting to the PC. The retained Vibe Mode
+always uses Iris USB, with its partitions, identity and OTA writer unchanged.
+
 ## Build and preview
 
 This repository is the application. Place it at `projects/OP-Ay1` inside an

@@ -3,6 +3,7 @@
 
 #include "app_audio_bus.h"
 #include "app_synth.h"
+#include "app_note_router.h"
 #include "tracker_pages.h"
 
 enum {
@@ -39,6 +40,7 @@ typedef struct {
     tracker_engine_t *engine;
     app_synth_t *synth;
     app_audio_bus_t *bus;
+    app_note_router_t *router;
     tracker_controls_view_t view;
     tracker_synth_view_t synth_view;
     tracker_input_kind_t input;

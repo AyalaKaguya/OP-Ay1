@@ -67,14 +67,17 @@ def main() -> int:
     build = args.build_dir.resolve()
     ready = output / f"ready-{time.time_ns()}.json"
     state_log = output / "state.ndjson"
+    settings_log = output / "settings.ndjson"
     capture = output / "performance.wav"
     stop_file = output / "stop-backend"
     state_log.unlink(missing_ok=True)
+    settings_log.unlink(missing_ok=True)
     capture.unlink(missing_ok=True)
     stop_file.unlink(missing_ok=True)
     flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
     env = dict(os.environ)
     env["OP_AY1_SIM_STATE_LOG"] = str(state_log)
+    env["OP_AY1_SIM_SETTINGS_LOG"] = str(settings_log)
     env["OP_AY1_SIM_WAV"] = str(capture)
     env["OP_AY1_SIM_AUDIO"] = "0"
     env["OP_AY1_SIM_STOP_FILE"] = str(stop_file)
@@ -150,6 +153,22 @@ def main() -> int:
                 time.sleep(0.06)
                 rpc.call("feed_pointer", {"x": x, "y": y, "pressed": False})
                 time.sleep(0.15)
+
+            def settings(predicate=lambda s: True, timeout=5):
+                deadline = time.monotonic() + timeout
+                last = None
+                while time.monotonic() < deadline:
+                    if settings_log.exists():
+                        for line in reversed(settings_log.read_text(encoding="utf-8").splitlines()):
+                            try:
+                                last = json.loads(line)
+                            except json.JSONDecodeError:
+                                continue
+                            break
+                        if last is not None and predicate(last):
+                            return last
+                    time.sleep(0.03)
+                raise AssertionError(f"Expected settings state not reached; last={last}")
 
             def pointer(x, y, pressed):
                 rpc.call("feed_pointer", {"x": x, "y": y, "pressed": pressed})
@@ -243,6 +262,63 @@ def main() -> int:
             state(lambda s: s["voices"] == 0 and s["note"] == -1)
             page(1)
             results.append("panic and return navigation")
+
+            # The drawer uses production pointer arbitration on every page.
+            for index in range(6):
+                page(index)
+                drag(220, 12, 225, 90)
+                settings(lambda s: s["open"] == 1)
+                tap(248, 460)  # Dismiss outside; the page nav must not receive it.
+                settings(lambda s: s["open"] == 0)
+                state(lambda s: s["page"] == index)
+            results.append("global top swipe on all six pages and no dismissal passthrough")
+            page(5)
+            pointer(56, 419, True)
+            state(lambda s: s["voices"] > 0)
+            pointer(56, 20, True)
+            pointer(56, 20, False)
+            settings(lambda s: s["open"] == 0)
+            state(lambda s: s["note"] == -1 and s["voices"] == 0)
+            results.append("page drag crossing top edge retains its release owner")
+            page(2)
+            tap(340, 250)
+            before_menu = state(lambda s: s["playing"])
+            drag(220, 12, 225, 90)
+            settings(lambda s: s["open"] == 1)
+            drag(100, 127, 447, 127)
+            settings(lambda s: s["brightness"] == 100)
+            drag(447, 127, 32, 127)
+            settings(lambda s: s["brightness"] == 5)
+            tap(316, 127)
+            settings(lambda s: 69 <= s["brightness"] <= 71)
+            for angle in range(4):
+                tap(79 + angle * 107, 233)
+                settings(lambda s, angle=angle: s["rotation"] == angle * 90 and s["locked"] == 1)
+            tap(370, 180)
+            settings(lambda s: s["locked"] == 0)
+            screenshot("settings-auto")
+            tap(79, 233)
+            settings(lambda s: s["rotation"] == 0 and s["locked"] == 1)
+            current = state(lambda s: s["playing"] and s["frames"] > before_menu["frames"])
+            assert current["page"] == 2
+            results.append("brightness endpoints and four angle/lock requests while audio continues")
+            tap(130, 340)
+            settings(lambda s: s["confirm"] == 1)
+            screenshot("settings-midi-confirm")
+            tap(130, 270)
+            settings(lambda s: s["confirm"] == 0 and s["usb_state"] == 0)
+            tap(130, 340)
+            tap(330, 270)
+            settings(lambda s: s["confirm"] == 0 and s["usb_mode"] == 0 and s["usb_error"] == 0x106)
+            screenshot("settings-native-usb-unavailable")
+            tap(350, 340)
+            settings(lambda s: s["usb_state"] == 0 and s["usb_error"] == 0)
+            screenshot("settings-vendor")
+            drag(250, 380, 250, 270)
+            settings(lambda s: s["open"] == 0)
+            tap(120, 250)
+            state(lambda s: not s["playing"])
+            results.append("USB confirmation cancel, truthful native unsupported error and Vendor retry")
 
             stop_file.touch()
             backend.wait(timeout=10)

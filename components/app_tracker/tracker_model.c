@@ -105,10 +105,16 @@ static void change_note(tracker_model_t *m, int note)
         return;
     }
     if (m->synth_view.note >= 0) {
-        (void)app_synth_note_off(m->synth, m->synth_view.note);
+        if (m->router) {
+            app_note_router_touch_note_off(m->router, m->synth_view.note);
+        } else {
+            (void)app_synth_note_off(m->synth, m->synth_view.note);
+        }
     }
     m->synth_view.note = -1;
-    if (note >= 0 && app_synth_note_on(m->synth, note, 0.8f)) {
+    const bool accepted = note >= 0 && (m->router ?
+                                        app_note_router_touch_note_on(m->router, note, 0.8f) : app_synth_note_on(m->synth, note, 0.8f));
+    if (accepted) {
         m->synth_view.note = note;
     } else if (note >= 0) {
         m->synth_view.command_failed = true;
@@ -119,7 +125,9 @@ static void change_note(tracker_model_t *m, int note)
 void tracker_model_cancel_input(tracker_model_t *m)
 {
     change_note(m, -1);
-    if (m->synth != NULL) {
+    if (m->router) {
+        app_note_router_release_touch(m->router);
+    } else if (m->synth != NULL) {
         app_synth_all_notes_off(m->synth);
     }
     m->pointer_down = false;
@@ -198,7 +206,11 @@ static void synth_tap(tracker_model_t *m, int x, int y)
     } else if (in_rect(x, y, 124, 271, 52, 49)) {
         v->octave = clamp_int(v->octave + 1, 0, 8);
     } else if (in_rect(x, y, 348, 271, 102, 49)) {
-        app_synth_panic(m->synth);
+        if (m->router) {
+            app_note_router_panic(m->router);
+        } else {
+            app_synth_panic(m->synth);
+        }
         v->note = -1;
         v->command_failed = false;
     } else if (v->tab == 0 && in_rect(x, y, 30, 154, 186, 109)) {

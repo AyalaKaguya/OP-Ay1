@@ -11,6 +11,7 @@
 #include "tracker_graphics.h"
 #include "tracker_model.h"
 #include "tracker_render.h"
+#include "tracker_settings.h"
 
 #define UI_TICK_MS 50
 #define FRAME_WIDTH 480
@@ -21,6 +22,8 @@ struct app_tracker {
     esp_gsp_handle_t ui;
     app_tracker_hooks_t hooks;
     tracker_model_t model;
+    tracker_settings_t settings;
+    app_usb_midi_t *usb;
     uint16_t *frames[2];
     atomic_uint frame_index;
     int16_t wave_scratch[TRACKER_WAVEFORM_SAMPLES];
@@ -78,6 +81,7 @@ static void render_frame(app_tracker_t *state)
             }
         }
     }
+    tracker_settings_render(frame, &state->settings);
     atomic_store_explicit(&state->frame_index, current ^ 1U, memory_order_release);
     m->dirty = false;
 }
@@ -99,6 +103,37 @@ static void apply_volume(app_tracker_t *state)
     }
 }
 
+static void update_settings(app_tracker_t *state)
+{
+    tracker_settings_t *s = &state->settings;
+    if (state->hooks.interaction_busy) {
+        state->hooks.interaction_busy(state->hooks.context,
+                                      state->model.pointer_down || s->pointer_down || state->model.synth_view.note >= 0);
+    }
+    if (s->display_request && state->hooks.request_settings) {
+        if (state->hooks.request_settings(state->hooks.context, s->requested_brightness,
+                                          s->requested_rotation, s->requested_locked)) {
+            s->display_request = false;
+            s->awaiting_display = true;
+        }
+    }
+    if (s->usb_request && state->usb) {
+        /* A failed request has a published error. Retry requires another tap,
+         * so unsupported native USB and transient failures cannot spin here. */
+        (void)app_usb_midi_request_mode(state->usb, s->requested_usb);
+        s->usb_request = false;
+    }
+    if (state->hooks.read_settings) {
+        app_settings_snapshot_t next;
+        if (state->hooks.read_settings(state->hooks.context, &next)) {
+            tracker_settings_receive_display(s, &next);
+        }
+    }
+    if (state->usb) {
+        app_usb_midi_get_status(state->usb, &s->usb);
+    }
+}
+
 static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
                     bool pressed, void *context)
 {
@@ -107,7 +142,16 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
     if (!atomic_load_explicit(&state->ready, memory_order_acquire)) {
         return;
     }
-    tracker_model_pointer(&state->model, x, y, pressed, now_ms(state));
+    bool opened = false;
+    if (tracker_settings_pointer(&state->settings, x, y, pressed, &opened)) {
+        if (opened) {
+            tracker_model_cancel_input(&state->model);
+        }
+        state->model.dirty = true;
+    } else {
+        tracker_model_pointer(&state->model, x, y, pressed, now_ms(state));
+    }
+    update_settings(state);
     tracker_model_tick(&state->model, now_ms(state));
     apply_volume(state);
     if (state->model.dirty) {
@@ -126,6 +170,13 @@ void app_tracker_cancel_pointer(app_tracker_t *state)
 {
     if (state) {
         tracker_model_cancel_input(&state->model);
+        state->settings.pointer_down = false;
+        state->settings.page_pointer_down = false;
+        state->settings.brightness_drag = false;
+        state->settings.top_candidate = false;
+        if (state->hooks.interaction_busy) {
+            state->hooks.interaction_busy(state->hooks.context, false);
+        }
         state->model.dirty = true;
     }
 }
@@ -147,6 +198,7 @@ static void tick(esp_gsp_handle_t ui, void *context)
     if (requests) {
         tracker_model_transport(&state->model, (requests & 2U) != 0, false);
     }
+    update_settings(state);
     tracker_model_tick(&state->model, now_ms(state));
     apply_volume(state);
     /* Waveforms retain 20Hz; controls refresh at 10Hz and input is immediate. */
@@ -193,6 +245,8 @@ esp_gsp_err_t app_tracker_create(esp_gsp_handle_t ui,
     }
     state->ui = ui;
     state->hooks = config->hooks;
+    state->usb = config->usb_midi;
+    tracker_settings_init(&state->settings);
     atomic_init(&state->transport_requests, 0);
     atomic_init(&state->frame_index, 0);
     atomic_init(&state->ready, false);
@@ -215,6 +269,8 @@ esp_gsp_err_t app_tracker_create(esp_gsp_handle_t ui,
         return ESP_GSP_ERR_NO_MEM;
     }
     tracker_model_init(&state->model, config->tracker, config->synth, config->audio_bus);
+    state->model.router = config->note_router;
+    update_settings(state);
     tracker_model_tick(&state->model, now_ms(state));
     apply_volume(state);
     render_frame(state);
@@ -279,6 +335,19 @@ esp_gsp_err_t app_tracker_read(app_tracker_t *state, app_tracker_snapshot_t *s)
     return ESP_GSP_OK;
 }
 
+esp_gsp_err_t app_tracker_read_settings(app_tracker_t *state,
+                                        app_tracker_settings_snapshot_t *snapshot)
+{
+    if (!state || !snapshot) {
+        return ESP_GSP_ERR_INVALID_ARG;
+    }
+    snapshot->display = state->settings.display;
+    snapshot->usb = state->settings.usb;
+    snapshot->menu_open = state->settings.open;
+    snapshot->confirmation_open = state->settings.usb_confirm;
+    return ESP_GSP_OK;
+}
+
 void app_tracker_request_transport(app_tracker_t *state, bool restart)
 {
     if (state) {
@@ -320,6 +389,9 @@ void app_tracker_stop(app_tracker_t **handle)
     }
     *handle = NULL;
     tracker_model_cancel_input(&state->model);
+    if (state->hooks.interaction_busy) {
+        state->hooks.interaction_busy(state->hooks.context, false);
+    }
     for (unsigned index = 0; index < 2; ++index) {
         if (state->hooks.free_frame) {
             state->hooks.free_frame(state->hooks.context, state->frames[index]);

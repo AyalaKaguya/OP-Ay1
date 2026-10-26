@@ -8,6 +8,9 @@
 #include "app_audio.h"
 #include "app_display.h"
 #include "app_synth.h"
+#include "app_settings_device.h"
+#include "app_note_router.h"
+#include "app_usb_midi.h"
 #include "app_tracker.h"
 #include "bsp/esp_mosaico.h"
 #include "esp_gsp.h"
@@ -30,6 +33,9 @@ static struct {
     app_synth_t *synth;
     app_audio_bus_t *bus;
     app_tracker_t *controller;
+    app_settings_t *settings;
+    app_note_router_t *router;
+    app_usb_midi_t *usb;
 } application;
 
 /* Only used before audio tasks have successfully borrowed these sources. */
@@ -41,6 +47,28 @@ static void release_audio_sources(void)
     application.bus = NULL;
     application.synth = NULL;
     application.engine = NULL;
+}
+
+/* Once the mirror attaches, GSP and its display remain process-lifetime
+ * objects. On startup failure stop only the new owners that never reached a
+ * controller; audio has already borrowed its sources and stays idle. */
+static void release_unstarted_controls(void)
+{
+    if (application.controller) {
+        return;
+    }
+    if (!app_usb_midi_shutdown(&application.usb, 2000)) {
+        ESP_LOGE(TAG, "USB cleanup pending; retaining its borrowed router");
+        return;
+    }
+    app_note_router_destroy(application.router);
+    application.router = NULL;
+    if (application.settings) {
+        const esp_err_t result = app_settings_stop(&application.settings, 2000);
+        if (result != ESP_OK) {
+            ESP_LOGE(TAG, "Settings cleanup pending (0x%x)", result);
+        }
+    }
 }
 
 void app_main(void)
@@ -94,9 +122,26 @@ void app_main(void)
     ESP_ERROR_CHECK(iris_screen_mirror_init());
     ESP_ERROR_CHECK(esp_gsp_esp_lcd_start(&config, &display, &application.ui));
     ESP_ERROR_CHECK(iris_screen_mirror_attach(application.ui));
+    const esp_err_t settings_error = app_settings_start(application.ui, display.presenter, &application.settings);
+    if (settings_error != ESP_OK) {
+        ESP_LOGE(TAG, "Settings unavailable (0x%x); Vibe Mode RPC remains active", settings_error);
+        return;
+    }
+    application.router = app_note_router_create(application.synth);
+    if (!application.router || !app_usb_midi_create(application.router, &application.usb)) {
+        ESP_LOGE(TAG, "MIDI services unavailable; Vibe Mode RPC remains active");
+        release_unstarted_controls();
+        return;
+    }
 
-    ESP_ERROR_CHECK(app_tracker_start_bus(application.ui, application.engine,
-                                          application.synth, application.bus,
-                                          &application.controller));
+    const esp_err_t controller_error = app_tracker_start_workstation(application.ui, application.engine,
+                                                                     application.synth, application.bus, application.router,
+                                                                     application.usb, application.settings,
+                                                                     &application.controller);
+    if (controller_error != ESP_OK) {
+        ESP_LOGE(TAG, "Workstation unavailable (0x%x); Vibe Mode RPC remains active", controller_error);
+        release_unstarted_controls();
+        return;
+    }
     ESP_LOGI(TAG, "OP-Ay1 ready: %u bytes S3M + 4-voice synth", (unsigned)module_size);
 }

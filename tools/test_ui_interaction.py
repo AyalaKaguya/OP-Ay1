@@ -32,6 +32,7 @@ SOURCES = (
     "components/app_tracker_engine/tracker_mixer.c",
     "components/app_audio/app_audio_bus.c",
     "components/app_synth/app_synth.c",
+    "components/app_note_router/app_note_router.c",
 )
 CASES = ("all", "navigation", "playback", "mixer", "pads", "synth-keys", "synth-controls")
 
@@ -58,6 +59,7 @@ def main() -> int:
             project / "components/app_tracker_engine/include",
             project / "components/app_audio/include",
             project / "components/app_synth/include",
+            project / "components/app_note_router/include",
         )
         sources = [str(ROOT / "tests/ui_interaction.c"), *(str(project / source) for source in SOURCES)]
         if compiler.name.lower() in ("cl", "cl.exe", "clang-cl", "clang-cl.exe"):

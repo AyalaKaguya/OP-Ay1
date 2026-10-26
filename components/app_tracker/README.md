@@ -129,6 +129,37 @@ It posts a one-entry request to the UI task, uses the normal synth command
 channel and fails explicitly if busy. It exists to measure target polyphony
 alongside song playback; it does not add multitouch support or a sequencer.
 
+## Global settings and source ownership
+
+Swipe down from the top 32 logical pixels to open Quick Settings on any page.
+The drawer captures the complete gesture and every menu input; dismissing it
+does not activate a control beneath it. A gesture that starts on a page remains
+owned by that page through release, including when it crosses the top edge.
+Opening or cancelling input releases only touch-owned notes through
+`app_note_router`; external MIDI holds and song playback continue.
+
+The UI borrows `app_settings`, `app_usb_midi` and the note router. Their owners
+outlive the controller and its callbacks. `read_settings`, `request_settings`
+and `interaction_busy` hooks run on the UI thread and must not block. Requests
+are retained until a published hardware snapshot acknowledges their complete
+brightness/angle/lock intent; an old snapshot cannot undo a pending action.
+Actual applied settings remain distinct from an in-flight slider request.
+Stop/cancel clears interaction suppression before the settings owner stops.
+
+Brightness is 5..100%. Angle buttons choose 0/90/180/270 and lock that direction;
+the AUTO/LOCKED button toggles gravity following. Battery data is provided by
+the settings worker, and invalid/stale values display UNAVAILABLE. The menu has
+no OTG power entry. MIDI IO explicitly confirms that the PC USB management
+connection will disconnect; Vendor returns the controller to ESP-Iris.
+
+Read-only `0x2101/3` takes an empty payload and returns the menu/confirmation
+state, applied brightness/rotation/lock, battery validity/staleness/SOC/mV/mA,
+charge state, IMU availability, display error/busy and actual USB owner/state,
+connection and packet/error counters. It has the same 50 ms publication and
+live-identity requirements as `0x2101/1`. It does not change settings or invent
+keyboard/transport availability. Native preview has no hardware sensors or USB
+Host; angle changes there establish UI requests rather than panel transforms.
+
 ## Native verification
 
 Resolve ESP-GSP 1.5.1, then activate a native C compiler and run from the

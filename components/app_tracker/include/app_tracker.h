@@ -4,6 +4,9 @@
 #include "esp_gsp.h"
 #include "app_audio_bus.h"
 #include "app_synth.h"
+#include "app_settings.h"
+#include "app_usb_midi.h"
+#include "app_note_router.h"
 #include "tracker_engine.h"
 
 typedef struct app_tracker app_tracker_t;
@@ -16,12 +19,17 @@ typedef struct {
     void (*set_volume)(void *context, int percent);
     void (*heartbeat)(void *context);
     void (*shutdown)(void *context);
+    bool (*read_settings)(void *context, app_settings_snapshot_t *snapshot);
+    bool (*request_settings)(void *context, int brightness, int rotation, bool locked);
+    void (*interaction_busy)(void *context, bool busy);
 } app_tracker_hooks_t;
 
 typedef struct {
     tracker_engine_t *tracker;
     app_synth_t *synth;
     app_audio_bus_t *audio_bus;
+    app_note_router_t *note_router;
+    app_usb_midi_t *usb_midi;
     app_tracker_hooks_t hooks;
 } app_tracker_config_t;
 
@@ -45,6 +53,13 @@ typedef struct {
     esp_gsp_err_t last_error;
 } app_tracker_snapshot_t;
 
+typedef struct {
+    app_settings_snapshot_t display;
+    app_usb_midi_status_t usb;
+    bool menu_open;
+    bool confirmation_open;
+} app_tracker_settings_snapshot_t;
+
 /* Sources are borrowed. Callbacks and read belong to the UI thread.
  * Hooks and sources outlive the owner. On rare rollback fence failure, a
  * non-NULL output retains ownership for stop() retry even when create fails. */
@@ -53,6 +68,8 @@ esp_gsp_err_t app_tracker_create(esp_gsp_handle_t ui,
                                  app_tracker_t **out_handle);
 esp_gsp_err_t app_tracker_read(app_tracker_t *state,
                                app_tracker_snapshot_t *snapshot);
+esp_gsp_err_t app_tracker_read_settings(app_tracker_t *state,
+                                        app_tracker_settings_snapshot_t *snapshot);
 /* Cross-task hardware requests are drained by the UI callback thread. */
 void app_tracker_request_transport(app_tracker_t *state, bool restart);
 /* UI-thread entry for a platform input queue; uses the same pointer path as
@@ -65,6 +82,13 @@ void app_tracker_cancel_pointer(app_tracker_t *state);
 esp_err_t app_tracker_start_bus(esp_gsp_handle_t ui, tracker_engine_t *engine,
                                 app_synth_t *synth, app_audio_bus_t *bus,
                                 app_tracker_t **out_handle);
+/* Settings/USB services are borrowed, source-owned and process lifetime. */
+struct app_settings;
+esp_err_t app_tracker_start_workstation(esp_gsp_handle_t ui, tracker_engine_t *engine,
+                                        app_synth_t *synth, app_audio_bus_t *bus,
+                                        app_note_router_t *router, app_usb_midi_t *usb,
+                                        struct app_settings *settings,
+                                        app_tracker_t **out_handle);
 /* Compatibility device entry point with tracker only. */
 esp_err_t app_tracker_start(esp_gsp_handle_t ui, tracker_engine_t *engine,
                             app_tracker_t **out_handle);
