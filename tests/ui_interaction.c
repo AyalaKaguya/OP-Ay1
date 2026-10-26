@@ -194,6 +194,7 @@ static void playback(fixture_t *f)
 {
     dot(f, TRACKER_PAGE_PLAYBACK);
     require(!tracker_engine_is_playing(f->tracker), "new song should start paused");
+    dot(f, TRACKER_PAGE_PLAYBACK);
     tap(f, 350, 256);
     require(tracker_engine_is_playing(f->tracker), "PLAY did not start the song");
     require(advance(f, 8192) > 0, "playing the fixture produced no PCM");
@@ -230,6 +231,24 @@ static void settle_scroll(fixture_t *f)
 static void mixer(fixture_t *f)
 {
     dot(f, TRACKER_PAGE_MIXER);
+    /* A manually muted solo must survive adding a second solo. Removing the
+     * final solo later clears the temporary cascade and restores all channels. */
+    tap(f, 414, 196);
+    tap(f, 356, 196);
+    require(f->model.view.soloed[0] && f->model.view.muted[0],
+            "S0 then M0 did not leave channel zero muted");
+    tap(f, 414, 262);
+    require(f->model.view.soloed[0] && f->model.view.soloed[1] &&
+            f->model.view.muted[0] && f->model.view.muted[1],
+            "adding S1 cleared the manual M0 mute");
+    tap(f, 414, 196);
+    require(!f->model.view.soloed[0] && f->model.view.soloed[1] &&
+            f->model.view.muted[0], "removing S0 did not preserve S1 and M0");
+    tap(f, 414, 262);
+    for (int channel = 0; channel < f->model.view.channel_count; ++channel) {
+        require(!f->model.view.soloed[channel] && !f->model.view.muted[channel],
+                "removing the final solo did not restore all channels");
+    }
     unsigned seen_volumes = 0;
     int previous = -1;
     for (int x = 100; x <= 389; ++x) {
@@ -328,6 +347,37 @@ static void pad_tap(fixture_t *f, int pad)
 static void pads(fixture_t *f)
 {
     dot(f, TRACKER_PAGE_PADS);
+    /* Pad blink follows the transport frame clock and effective BPM, rather
+     * than wall-clock values passed to tracker_model_tick(). */
+    dot(f, TRACKER_PAGE_PLAYBACK);
+    tap(f, 409, 362);
+    dot(f, TRACKER_PAGE_PADS);
+    pad_tap(f, 0);
+    tracker_status_t blink_status;
+    tracker_engine_get_status(f->tracker, &blink_status);
+    const bool blink_before = f->model.view.pad_blink;
+    const uint64_t frames_before = blink_status.frames;
+    f->now_ms += 900000;
+    tracker_model_tick(&f->model, f->now_ms);
+    tracker_engine_get_status(f->tracker, &blink_status);
+    require(blink_status.frames == frames_before && f->model.view.pad_blink == blink_before,
+            "pad blink changed when only wall-clock time changed");
+    const float effective_bpm = blink_status.tempo * tracker_engine_speed_multiplier(f->tracker);
+    require(effective_bpm >= 1.0f, "fixture has no effective BPM for pad clock test");
+    const uint64_t half_beat = (uint64_t)(APP_AUDIO_SAMPLE_RATE * 30.0 / effective_bpm);
+    require(half_beat > 0, "effective BPM produced an invalid half-beat");
+    const unsigned to_boundary = (unsigned)(half_beat - blink_status.frames % half_beat);
+    (void)advance(f, to_boundary);
+    require(f->model.view.pad_blink != blink_before,
+            "pad blink did not change at an effective-BPM frame boundary");
+
+    /* Return to a clean paused pad scenario through public controls. */
+    dot(f, TRACKER_PAGE_PLAYBACK);
+    tap(f, 350, 256);
+    tap(f, 350, 256);
+    tap(f, 350, 256);
+    tracker_model_set_page(&f->model, TRACKER_PAGE_PATTERN);
+    tracker_model_set_page(&f->model, TRACKER_PAGE_PADS);
     pad_tap(f, 12);
     require(tracker_engine_launched_pattern(f->tracker) == -1 &&
             !tracker_engine_is_playing(f->tracker), "empty pad started a pattern");
@@ -450,6 +500,35 @@ static void parameter_drag(fixture_t *f, int x1, int y, int x2)
     require(!f->model.synth_view.command_failed, "parameter edit was rejected by the synth");
 }
 
+static void synth_patch_queue_retry(fixture_t *f)
+{
+    synth_tab(f, 0);
+    for (unsigned index = 0; index < APP_SYNTH_COMMAND_CAPACITY; ++index) {
+        require(app_synth_note_on(f->synth, 36 + (int)(index % 48), 0.5f),
+                "could not fill the synth command queue");
+    }
+    app_synth_status_t full = synth_status(f);
+    require(full.queue_depth >= APP_SYNTH_COMMAND_CAPACITY,
+            "synth command queue did not report full before patch retry");
+
+    /* No audio is rendered between this pointer sequence and the assertion:
+     * the model must expose the rejected patch as pending/BUSY. */
+    pointer(f, 429, 191, true);
+    pointer(f, 429, 191, false);
+    require(f->model.synth_view.command_failed,
+            "a full synth command queue did not report a rejected patch");
+    require(synth_status(f).queue_depth > 0,
+            "patch rejection unexpectedly drained the command queue");
+
+    (void)advance(f, BLOCK_FRAMES);
+    require(!f->model.synth_view.command_failed,
+            "model tick did not retry the pending patch after audio drained commands");
+    const app_synth_patch_t accepted = synth_patch(f);
+    require(near(accepted.detune_cents, f->model.synth_view.patch.detune_cents, 0.001f) &&
+            near(accepted.gain, f->model.synth_view.patch.gain, 0.0001f),
+            "DSP patch snapshot diverged from the UI patch after queue retry");
+}
+
 static void synth_controls(fixture_t *f)
 {
     dot(f, TRACKER_PAGE_SYNTH);
@@ -544,6 +623,7 @@ static void synth_controls(fixture_t *f)
     }
     require(f->model.synth_view.octave == 0, "octave down escaped its lower bound");
     require(f->model.view.page == TRACKER_PAGE_SYNTH, "parameter drag changed pages");
+    synth_patch_queue_retry(f);
     draw(f);
 }
 
