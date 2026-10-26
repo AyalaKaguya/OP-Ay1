@@ -191,6 +191,7 @@ static bool resume_display(app_settings_t *s)
         s->display_error = ESP_ERR_INVALID_STATE;
         return false;
     }
+    s->display_error = ESP_OK;
     return true;
 }
 
