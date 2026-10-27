@@ -82,8 +82,21 @@ app_project_error_t project_errno_error(void)
 }
 bool project_path(char out[PROJECT_PATH_BYTES], const char *base, const char *name)
 {
-    const int length = snprintf(out, PROJECT_PATH_BYTES, "%s/%s", base, name);
-    return length > 0 && length < PROJECT_PATH_BYTES;
+    if (!out || !base || !name) return false;
+    const size_t base_size = strlen(base);
+    const size_t name_size = strlen(name);
+    if (base_size > PROJECT_PATH_BYTES - 2U ||
+        name_size > PROJECT_PATH_BYTES - base_size - 2U) return false;
+    /* Callers pack paths into adjacent slices of one allocation, and an
+     * in-place join is also legal. Preserve the suffix before moving the base
+     * so either source may overlap out. This worker-only 384-byte scratch is
+     * covered by its 20 KiB stack budget; there is no extra heap/IO failure. */
+    char suffix[PROJECT_PATH_BYTES];
+    memmove(suffix, name, name_size + 1U);
+    memmove(out, base, base_size);
+    out[base_size] = '/';
+    memmove(out + base_size + 1U, suffix, name_size + 1U);
+    return true;
 }
 
 static bool directory(const char *path)

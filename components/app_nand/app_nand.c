@@ -167,7 +167,7 @@ static esp_err_t mount_volume(void)
     };
     result = spi_bus_add_device(BSP_NAND_SPI_HOST, &device, &nand.spi);
     if (result == ESP_OK) {
-        const spi_nand_flash_config_t config = {
+        spi_nand_flash_config_t config = {
             .device_handle = nand.spi, .gc_factor = 0,
             .io_mode = SPI_NAND_IO_MODE_SIO, .flags = SPI_DEVICE_HALFDUPLEX,
         };
