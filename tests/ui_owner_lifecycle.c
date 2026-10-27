@@ -220,6 +220,17 @@ static void tap(int x, int y)
     pointer_callback(&fake_ui, x, y, false, pointer_context);
 }
 
+static void drag(int x1, int y1, int x2, int y2)
+{
+    CHECK(pointer_callback != NULL);
+    pointer_callback(&fake_ui, x1, y1, true, pointer_context);
+    for (int step = 1; step <= 6; ++step) {
+        pointer_callback(&fake_ui, x1 + (x2 - x1) * step / 6,
+                         y1 + (y2 - y1) * step / 6, true, pointer_context);
+    }
+    pointer_callback(&fake_ui, x2, y2, false, pointer_context);
+}
+
 static void advance(fixture_t *f, unsigned milliseconds)
 {
     f->clock_ms += milliseconds;
@@ -230,7 +241,7 @@ static void advance(fixture_t *f, unsigned milliseconds)
 static void open_synth_from_home(fixture_t *f, app_tracker_t *owner)
 {
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME);
-    tap(436, 460);
+    drag(400, 460, 80, 460);
     advance(f, 250);
     CHECK(owner->workspace.home_page == 1);
     tap(352, 176);
@@ -285,8 +296,8 @@ static void test_motion(const uint8_t *module, size_t size)
     advance(f, 50);
     CHECK(owner->page_motion.active && owner->page_motion.current > 0);
     memcpy(f->capture, published(owner), FRAME_BYTES);
-    tap(232, 460);
-    CHECK(owner->model.view.page == 2 && owner->page_motion.active);
+    drag(80, 460, 400, 460);
+    CHECK(owner->model.view.page == 4 && owner->page_motion.active);
     CHECK(memcmp(published(owner) + 78U * 480U, f->capture + 78U * 480U,
                  480U * (432U - 78U) * sizeof(uint16_t)) == 0);
     advance(f, 200);
@@ -309,7 +320,7 @@ static void test_motion(const uint8_t *module, size_t size)
     CHECK(!owner->drawer_motion.active && owner->drawer_motion.current == 0);
     expected_controls(f, owner);
     CHECK(memcmp(published(owner), f->expected, 480U * 432U * sizeof(uint16_t)) == 0);
-    tap(280, 460);
+    drag(400, 460, 80, 460);
     CHECK(owner->page_motion.active && owner->model.view.page == 5);
     pointer_callback(&fake_ui, 56, 419, true, pointer_context);
     CHECK(owner->motion_gesture && owner->model.synth_view.note == -1);
@@ -365,6 +376,97 @@ static void test_wake_capture(const uint8_t *module, size_t size)
     puts("UI owner: first wake consumes whole key/menu gesture and cancel releases capture PASS");
 }
 
+static void test_edge_navigation(const uint8_t *module, size_t size)
+{
+    fixture_t *f = fixture_create(module, size);
+    app_tracker_t *owner = NULL;
+    CHECK(app_tracker_create(&fake_ui, &f->config, &owner) == ESP_GSP_OK);
+    CHECK(owner->workspace.home_page == 0 && owner->navigation_hint_until == 0);
+    tap(436, 460);
+    tap(225, 460);
+    CHECK(owner->workspace.home_page == 0 && owner->navigation_hint_until == 0);
+
+    drag(80, 460, 400, 460);
+    CHECK(owner->workspace.home_page == 2 && owner->navigation_hint_until == f->clock_ms + 1200);
+    advance(f, 250);
+    memcpy(f->capture, published(owner), FRAME_BYTES);
+    advance(f, 949);
+    CHECK(memcmp(published(owner) + 440U * 480U, f->capture + 440U * 480U,
+                 480U * 40U * sizeof(uint16_t)) == 0);
+    advance(f, 1);
+    CHECK(memcmp(published(owner) + 440U * 480U, f->capture + 440U * 480U,
+                 480U * 40U * sizeof(uint16_t)) != 0);
+    tap(225, 455);
+    CHECK(owner->workspace.home_page == 2 && owner->navigation_hint_until <= f->clock_ms);
+    drag(400, 460, 80, 460);
+    CHECK(owner->workspace.home_page == 0);
+    advance(f, 250);
+    tap(352, 176); /* SETTINGS opens through the ordinary HOME tile. */
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS && owner->navigation_hint_until == 0);
+    advance(f, 250);
+    tap(35, 12);
+    tap(64, 458);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
+    drag(240, 460, 240, 410);
+    drag(240, 460, 300, 380);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS && owner->navigation_hint_until == 0);
+    drag(240, 460, 240, 350);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME && owner->workspace.home_page == 0);
+    CHECK(owner->navigation_hint_until == 0 && !owner->navigation_pointer && !f->busy);
+    advance(f, 250);
+
+    tap(128, 334); /* PLAYBACK. */
+    advance(f, 250);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY && owner->model.view.page == 2);
+    tracker_engine_play(f->tracker);
+    const uint64_t generation = owner->workspace.session_generation;
+    const uint32_t revision = owner->model.edit_revision;
+    drag(240, 460, 240, 350);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME && owner->workspace.home_page == 0);
+    CHECK(tracker_engine_is_playing(f->tracker) && owner->workspace.session_generation == generation);
+    CHECK(owner->model.edit_revision == revision && owner->navigation_hint_until == 0);
+    advance(f, 250);
+    tap(352, 334); /* MIXER content owns an upward list drag. */
+    advance(f, 250);
+    drag(456, 390, 456, 190);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY && owner->model.view.page == 3);
+    CHECK(owner->model.view.mix_scroll > 0 && !owner->navigation_pointer);
+
+    /* A bottom-edge gesture stays captured when it crosses into content. */
+    pointer_callback(&fake_ui, 240, 460, true, pointer_context);
+    CHECK(owner->navigation_pointer && f->busy);
+    pointer_callback(&fake_ui, 240, 380, true, pointer_context);
+    CHECK(owner->navigation_pointer && !owner->model.pointer_down && !owner->motion_gesture);
+    app_tracker_cancel_pointer(owner);
+    CHECK(!owner->navigation_pointer && !f->busy);
+    pointer_callback(&fake_ui, 240, 350, false, pointer_context);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY);
+
+    /* The drawer owns its closing gesture; it cannot fall through to HOME. */
+    drag(220, 12, 225, 90);
+    CHECK(owner->settings.open);
+    advance(f, 250);
+    drag(240, 460, 240, 350);
+    CHECK(!owner->settings.open && owner->workspace.screen == TRACKER_WORKSPACE_LEGACY);
+    CHECK(!owner->navigation_pointer);
+    advance(f, 250);
+
+    /* The first gesture after screen-off only wakes, even at the system edge. */
+    f->display.screen_off = true;
+    f->display.effective_brightness = 0;
+    update_settings(owner);
+    repaint(owner);
+    drag(240, 460, 240, 350);
+    CHECK(!owner->wake_gesture && !owner->navigation_pointer);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY);
+    drag(240, 460, 240, 350);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME && owner->workspace.home_page == 0);
+    CHECK(tracker_engine_is_playing(f->tracker));
+    app_tracker_stop(&owner);
+    fixture_destroy(f);
+    puts("UI owner: inert taps, timed swipe hints, edge HOME, drawer/wake and control capture PASS");
+}
+
 int main(int argc, char **argv)
 {
     CHECK(argc == 2);
@@ -378,6 +480,7 @@ int main(int argc, char **argv)
     test_allocations(module, (size_t)size);
     test_motion(module, (size_t)size);
     test_wake_capture(module, (size_t)size);
+    test_edge_navigation(module, (size_t)size);
     free(module);
     puts("production UI owner lifecycle and motion tests: PASS");
     return 0;

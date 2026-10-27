@@ -188,8 +188,15 @@ def main() -> int:
                 pointer(x2, y2, False)
 
             def page(index):
-                tap(200 + index * 16, 460)
-                return state(lambda s: s["page"] == index and not s["page_motion"])
+                current = state(lambda s: not s["page_motion"] and not s["menu_motion"])
+                assert current["workspace"] == 11, current
+                for _ in range(6):
+                    if current["page"] == index:
+                        return current
+                    forward = current["page"] < index
+                    drag(400 if forward else 80, 460, 80 if forward else 400, 460)
+                    current = state(lambda s: not s["page_motion"])
+                raise AssertionError(f"Tracker swipe failed to reach page {index}: {current}")
 
             def screenshot(name):
                 time.sleep(0.2)
@@ -217,7 +224,12 @@ def main() -> int:
             for i in range(6):
                 page(i)
                 screenshot(f"page-{i}")
-            results.append("six page navigation and native RGB565 captures")
+            for i in range(6):
+                tap(200 + i * 16, 460)
+                assert state()["page"] == 5, "Former navigation points must be inert"
+            tap(64, 458)
+            assert state()["workspace"] == 11, "Removed HOME button must be inert"
+            results.append("six pages reached by swipes; former navigation points and HOME button are inert")
 
             page(2)
             tap(340, 250)
@@ -346,14 +358,16 @@ def main() -> int:
             state(lambda s: not s["playing"])
             results.append("USB confirmation cancel, truthful native unsupported error and Vendor retry")
 
-            page(1)
-            rpc.call("feed_pointer", {"x": 280, "y": 460, "pressed": True})
-            rpc.call("feed_pointer", {"x": 280, "y": 460, "pressed": False})
-            state(lambda s: s["page"] == 5 and s["page_motion"] == 1)
+            page(2)
+            rpc.call("feed_pointer", {"x": 400, "y": 460, "pressed": True})
+            rpc.call("feed_pointer", {"x": 80, "y": 460, "pressed": True})
+            rpc.call("feed_pointer", {"x": 80, "y": 460, "pressed": False})
+            state(lambda s: s["page"] == 3 and s["page_motion"] == 1)
             rpc.call("screenshot", {"path": str(output / "page-slide.png"), "format": "png"})
             # A second navigation target is accepted while the old slide runs.
-            rpc.call("feed_pointer", {"x": 232, "y": 460, "pressed": True})
-            rpc.call("feed_pointer", {"x": 232, "y": 460, "pressed": False})
+            rpc.call("feed_pointer", {"x": 80, "y": 460, "pressed": True})
+            rpc.call("feed_pointer", {"x": 400, "y": 460, "pressed": True})
+            rpc.call("feed_pointer", {"x": 400, "y": 460, "pressed": False})
             state(lambda s: s["page"] == 2 and s["page_motion"] == 1)
             state(lambda s: s["page"] == 2 and s["page_motion"] == 0)
             results.append("page slide intermediate frames and rapid navigation retarget")

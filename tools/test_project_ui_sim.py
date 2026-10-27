@@ -141,12 +141,14 @@ class Session:
     def home(self, page=0):
         current = self.settled()
         if current["workspace"] != HOME:
-            self.tap(64, 458)
+            self.drag(240, 460, 240, 350)
         current = self.settled(HOME)
-        while current["home_page"] != page:
-            self.tap(437, 458)
+        for _ in range(3):
+            if current["home_page"] == page:
+                return current
+            self.drag(400, 460, 80, 460)
             current = self.settled(HOME)
-        return current
+        raise AssertionError(f"HOME swipe failed to reach page {page}: {current}")
 
     def module(self, index):
         self.home(index // 4)
@@ -192,9 +194,14 @@ class Session:
     def legacy(self, page):
         current = self.settled()
         if current["workspace"] != LEGACY:
-            self.module(2)
-        self.tap(200 + page * 16, 460)
-        return self.read(lambda s: s["workspace"] == LEGACY and s["page"] == page and not s["page_motion"])
+            current = self.module(2)
+        for _ in range(6):
+            if current["page"] == page:
+                return current
+            forward = current["page"] < page
+            self.drag(400 if forward else 80, 460, 80 if forward else 400, 460)
+            current = self.settled(LEGACY)
+        raise AssertionError(f"Tracker swipe failed to reach page {page}: {current}")
 
     @staticmethod
     def legacy_y(y):
@@ -291,13 +298,25 @@ def run(s: Session, args):
     s.module(1)
     s.settled(SETTINGS)
     s.screenshot("settings-global")
+    s.tap(35, 12)
+    s.tap(64, 458)
+    assert s.settled()["workspace"] == SETTINGS, "Removed HOME buttons must be inert"
+    s.drag(240, 460, 240, 410)
+    assert s.settled()["workspace"] == SETTINGS, "A short upward drag must not navigate"
+    s.drag(240, 460, 300, 380)
+    assert s.settled()["workspace"] == SETTINGS, "A diagonal drag must not navigate"
     s.home()
     for page in range(3):
         s.home(page)
         s.screenshot(f"home-{page + 1}")
     s.tap(352, 176)  # empty HOME page 3 slot
     assert s.settled()["workspace"] == HOME
+    s.drag(400, 460, 80, 460)
+    assert s.settled()["home_page"] == 0, "HOME must wrap forward"
+    s.drag(80, 460, 400, 460)
+    assert s.settled()["home_page"] == 2, "HOME must wrap backward"
     s.checks.append("three ordered HOME pages, inert empty slots, real initial ARYX project and global settings access")
+    s.checks.append("bottom-edge up returns HOME; former HOME taps, short and diagonal drags are inert; HOME swipes wrap")
 
     blank = s.new()
     assert blank["project_name"] == "UNTITLED" and blank["project_dirty"] and blank["sample_trim_end"] == 0

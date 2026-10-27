@@ -126,10 +126,13 @@ static void drag(fixture_t *f, int x1, int y1, int x2, int y2)
     pointer(f, x2, y2, false);
 }
 
-static void dot(fixture_t *f, int page)
+static void navigate_page(fixture_t *f, int page)
 {
-    tap(f, 200 + page * 16, 460);
-    require(f->model.view.page == page, "navigation dot center selected the wrong page");
+    for (unsigned step = 0; step < TRACKER_PAGE_COUNT && f->model.view.page != page; ++step) {
+        const bool next = f->model.view.page < page;
+        drag(f, next ? 400 : 80, 460, next ? 80 : 400, 460);
+    }
+    require(f->model.view.page == page, "horizontal navigation selected the wrong page");
 }
 
 static uint64_t advance(fixture_t *f, unsigned frames)
@@ -178,12 +181,20 @@ static void silence_after_release(fixture_t *f)
 static void navigation(fixture_t *f)
 {
     for (int page = 0; page < TRACKER_PAGE_COUNT; ++page) {
-        dot(f, page);
+        navigate_page(f, page);
         draw(f);
     }
+    for (int page = 0; page < TRACKER_PAGE_COUNT; ++page) {
+        tap(f, 200 + page * 16, 460);
+        require(f->model.view.page == TRACKER_PAGE_SYNTH, "former navigation dot still changes pages");
+    }
     tap(f, 100, 460);
-    require(f->model.view.page == TRACKER_PAGE_SYNTH, "outside-dot footer tap changed pages");
-    dot(f, TRACKER_PAGE_WAVES);
+    require(f->model.view.page == TRACKER_PAGE_SYNTH, "footer tap changed pages");
+    drag(f, 400, 460, 80, 460);
+    require(f->model.view.page == TRACKER_PAGE_SYNTH, "last tracker page wrapped forward");
+    navigate_page(f, TRACKER_PAGE_WAVES);
+    drag(f, 80, 460, 400, 460);
+    require(f->model.view.page == TRACKER_PAGE_WAVES, "first tracker page wrapped backward");
     drag(f, 400, 400, 80, 400);
     require(f->model.view.page == TRACKER_PAGE_PATTERN, "horizontal navigation did not advance a page");
     drag(f, 80, 400, 400, 400);
@@ -192,9 +203,9 @@ static void navigation(fixture_t *f)
 
 static void playback(fixture_t *f)
 {
-    dot(f, TRACKER_PAGE_PLAYBACK);
+    navigate_page(f, TRACKER_PAGE_PLAYBACK);
     require(!tracker_engine_is_playing(f->tracker), "new song should start paused");
-    dot(f, TRACKER_PAGE_PLAYBACK);
+    navigate_page(f, TRACKER_PAGE_PLAYBACK);
     tap(f, 350, 256);
     require(tracker_engine_is_playing(f->tracker), "PLAY did not start the song");
     require(advance(f, 8192) > 0, "playing the fixture produced no PCM");
@@ -230,7 +241,7 @@ static void settle_scroll(fixture_t *f)
 
 static void mixer(fixture_t *f)
 {
-    dot(f, TRACKER_PAGE_MIXER);
+    navigate_page(f, TRACKER_PAGE_MIXER);
     /* A manually muted solo must survive adding a second solo. Removing the
      * final solo later clears the temporary cascade and restores all channels. */
     tap(f, 414, 196);
@@ -346,12 +357,12 @@ static void pad_tap(fixture_t *f, int pad)
 
 static void pads(fixture_t *f)
 {
-    dot(f, TRACKER_PAGE_PADS);
+    navigate_page(f, TRACKER_PAGE_PADS);
     /* Pad blink follows the transport frame clock and effective BPM, rather
      * than wall-clock values passed to tracker_model_tick(). */
-    dot(f, TRACKER_PAGE_PLAYBACK);
+    navigate_page(f, TRACKER_PAGE_PLAYBACK);
     tap(f, 409, 362);
-    dot(f, TRACKER_PAGE_PADS);
+    navigate_page(f, TRACKER_PAGE_PADS);
     pad_tap(f, 0);
     tracker_status_t blink_status;
     tracker_engine_get_status(f->tracker, &blink_status);
@@ -372,7 +383,7 @@ static void pads(fixture_t *f)
             "pad blink did not change at an effective-BPM frame boundary");
 
     /* Return to a clean paused pad scenario through public controls. */
-    dot(f, TRACKER_PAGE_PLAYBACK);
+    navigate_page(f, TRACKER_PAGE_PLAYBACK);
     tap(f, 350, 256);
     tap(f, 350, 256);
     tap(f, 350, 256);
@@ -414,15 +425,15 @@ static void pads(fixture_t *f)
             !tracker_engine_pattern_stop_pending(f->tracker), "queued stop did not close at the audio boundary");
     pad_tap(f, 1);
     require(tracker_engine_is_playing(f->tracker), "pad did not restart after boundary stop");
-    dot(f, TRACKER_PAGE_PLAYBACK);
+    navigate_page(f, TRACKER_PAGE_PLAYBACK);
     tap(f, 350, 256);
     require(!tracker_engine_is_playing(f->tracker) && tracker_engine_launched_pattern(f->tracker) == 1,
             "pause must preserve the running pad mode");
-    dot(f, TRACKER_PAGE_PADS);
+    navigate_page(f, TRACKER_PAGE_PADS);
     pad_tap(f, 1);
     require(tracker_engine_is_playing(f->tracker) && tracker_engine_launched_pattern(f->tracker) == 1,
             "same pad did not resume while paused");
-    dot(f, TRACKER_PAGE_PLAYBACK);
+    navigate_page(f, TRACKER_PAGE_PLAYBACK);
     tap(f, 350, 256);
     tap(f, 350, 256);
     require(tracker_engine_is_playing(f->tracker) && tracker_engine_launched_pattern(f->tracker) == -1,
@@ -432,7 +443,7 @@ static void pads(fixture_t *f)
 
 static void synth_keys(fixture_t *f)
 {
-    dot(f, TRACKER_PAGE_SYNTH);
+    navigate_page(f, TRACKER_PAGE_SYNTH);
     require(!tracker_engine_is_playing(f->tracker), "synth test requires a paused tracker");
     pointer(f, 50, 420, true);
     require(f->model.synth_view.note == 60, "C4 press did not send MIDI note 60");
@@ -461,7 +472,7 @@ static void synth_keys(fixture_t *f)
     require(f->model.synth_view.note == -1 && !f->model.pointer_down,
             "page change did not release keyboard ownership");
     silence_after_release(f);
-    dot(f, TRACKER_PAGE_SYNTH);
+    navigate_page(f, TRACKER_PAGE_SYNTH);
 
     pointer(f, 50, 420, true);
     (void)advance(f, 4096);
@@ -531,7 +542,7 @@ static void synth_patch_queue_retry(fixture_t *f)
 
 static void synth_controls(fixture_t *f)
 {
-    dot(f, TRACKER_PAGE_SYNTH);
+    navigate_page(f, TRACKER_PAGE_SYNTH);
     for (int tab = 0; tab < 4; ++tab) {
         synth_tab(f, tab);
     }
