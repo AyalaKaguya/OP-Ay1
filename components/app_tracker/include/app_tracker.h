@@ -68,6 +68,20 @@ typedef struct {
     bool project_busy;
     bool project_dirty;
     uint64_t project_generation;
+    int sampler_tab;
+    unsigned sample_count;
+    unsigned sample_index;
+    bool sample_edit_active;
+    bool sample_edit_dirty;
+    uint32_t sample_trim_start;
+    uint32_t sample_trim_end;
+    uint32_t sample_loop_start;
+    uint32_t sample_loop_end;
+    uint32_t sample_c2;
+    float sample_gain;
+    bool sample_loop_enabled;
+    int record_state;
+    uint32_t record_frames;
     esp_gsp_err_t last_error;
 } app_tracker_snapshot_t;
 
