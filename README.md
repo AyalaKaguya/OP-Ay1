@@ -3,6 +3,13 @@
 A handheld tracker and music workstation for **ESP-Mosaico**: native synthesis,
 S3M playback and a pixel UI on a 480×480 touch display.
 
+The local `codex/project-workstation` implementation adds the approved 2×2 HOME
+launcher, a shared project session with NAND save/load, and a sample editor with
+WAV import and microphone recording. This implementation has not been built,
+tested or installed on hardware yet, at the user's request. See the
+[implementation record](docs/project-workstation-implementation.zh-CN.md) for
+storage ownership, import paths and the pending verification boundary.
+
 **Current source:** [main](https://github.com/AyalaKaguya/OP-Ay1/tree/main)
 contains the six-page UI, four-voice synthesizer and display settings described
 below. The existing
