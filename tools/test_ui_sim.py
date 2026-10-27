@@ -205,15 +205,19 @@ def main() -> int:
 
             def page(index):
                 current = state(lambda s: not s["page_motion"] and not s["menu_motion"])
-                assert current["workspace"] == 11, current
-                for _ in range(6):
-                    if current["page"] == index:
-                        return current
-                    forward = current["page"] < index
-                    expected = current["page"] + (1 if forward else -1)
-                    drag(400 if forward else 80, 460, 80 if forward else 400, 460)
-                    current = state(lambda s: s["page"] == expected and not s["page_motion"])
-                raise AssertionError(f"Tracker swipe failed to reach page {index}: {current}")
+                if current["workspace"] != 0:
+                    drag(240, 460, 240, 350)
+                    current = state(lambda s: s["workspace"] == 0 and not s["page_motion"])
+                module = (8, 7, 2, 3, 4, 5)[index]
+                for _ in range(3):
+                    if current["home_page"] == module // 4:
+                        break
+                    expected = (current["home_page"] + 1) % 3
+                    drag(400, 460, 80, 460)
+                    current = state(lambda s: s["workspace"] == 0 and s["home_page"] == expected and not s["page_motion"])
+                assert current["home_page"] == module // 4, current
+                tap(352 if module % 2 else 128, 334 if module % 4 >= 2 else 176)
+                return state(lambda s: s["workspace"] == 11 and s["page"] == index and not s["page_motion"])
 
             def screenshot(name):
                 time.sleep(0.2)
@@ -237,12 +241,16 @@ def main() -> int:
             for i in range(6):
                 page(i)
                 screenshot(f"page-{i}")
+                drag(400, 460, 80, 460)
+                drag(80, 460, 400, 460)
+                drag(400, 310, 80, 310)
+                assert state()["workspace"] == 11 and state()["page"] == i, "Module horizontal drag navigated"
             for i in range(6):
                 tap(200 + i * 16, 460)
                 assert state()["page"] == 5, "Former navigation points must be inert"
             tap(64, 458)
             assert state()["workspace"] == 11, "Removed HOME button must be inert"
-            results.append("six pages reached by swipes; former navigation points and HOME button are inert")
+            results.append("six modules entered through HOME; horizontal swipes and former navigation points are inert")
 
             page(2)
             tap(340, 250)
@@ -372,18 +380,14 @@ def main() -> int:
             results.append("USB confirmation cancel, truthful native unsupported error and Vendor retry")
 
             page(2)
-            rpc.call("feed_pointer", {"x": 400, "y": 460, "pressed": True})
-            rpc.call("feed_pointer", {"x": 80, "y": 460, "pressed": True})
-            rpc.call("feed_pointer", {"x": 80, "y": 460, "pressed": False})
-            state(lambda s: s["page"] == 3 and s["page_motion"] == 1)
-            rpc.call("screenshot", {"path": str(output / "page-slide.png"), "format": "png"})
-            # A second navigation target is accepted while the old slide runs.
-            rpc.call("feed_pointer", {"x": 80, "y": 460, "pressed": True})
-            rpc.call("feed_pointer", {"x": 400, "y": 460, "pressed": True})
-            rpc.call("feed_pointer", {"x": 400, "y": 460, "pressed": False})
-            state(lambda s: s["page"] == 2 and s["page_motion"] == 1)
-            state(lambda s: s["page"] == 2 and s["page_motion"] == 0)
-            results.append("page slide intermediate frames and rapid navigation retarget")
+            rpc.call("feed_pointer", {"x": 240, "y": 460, "pressed": True})
+            rpc.call("feed_pointer", {"x": 240, "y": 350, "pressed": True})
+            rpc.call("feed_pointer", {"x": 240, "y": 350, "pressed": False})
+            state(lambda s: s["workspace"] == 0 and s["page_motion"] == 1)
+            rpc.call("screenshot", {"path": str(output / "home-up-slide.png"), "format": "png"})
+            state(lambda s: s["workspace"] == 0 and not s["page_motion"])
+            results.append("upward HOME return exposes intermediate animation frames")
+            page(2)
 
             drag(220, 12, 225, 90)
             settings(lambda s: s["open"] == 1)

@@ -241,8 +241,10 @@ static void advance(fixture_t *f, unsigned milliseconds)
 static void open_synth_from_home(fixture_t *f, app_tracker_t *owner)
 {
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME);
-    drag(400, 460, 80, 460);
-    advance(f, 250);
+    for (int attempt = 0; attempt < 3 && owner->workspace.home_page != 1; ++attempt) {
+        drag(400, 460, 80, 460);
+        advance(f, 250);
+    }
     CHECK(owner->workspace.home_page == 1);
     tap(352, 176);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY && owner->model.view.page == 5);
@@ -250,7 +252,11 @@ static void open_synth_from_home(fixture_t *f, app_tracker_t *owner)
 
 static void expected_controls(fixture_t *f, app_tracker_t *owner)
 {
-    tracker_render_controls(f->expected, &owner->model.view);
+    if (owner->model.view.page == TRACKER_PAGE_SYNTH) {
+        tracker_render_synth(f->expected, &owner->model.synth_view);
+    } else {
+        tracker_render_controls(f->expected, &owner->model.view);
+    }
     tracker_workspace_fit_legacy(f->expected);
     memcpy(f->capture, f->expected, FRAME_BYTES);
     tracker_workspace_render_header(f->expected, &owner->workspace, &owner->model);
@@ -298,31 +304,25 @@ static void test_motion(const uint8_t *module, size_t size)
     advance(f, 50);
     CHECK(owner->page_motion.active && owner->page_motion.current > 0);
     memcpy(f->capture, published(owner), FRAME_BYTES);
-    drag(80, 460, 400, 460);
-    CHECK(owner->model.view.page == 4 && owner->page_motion.active);
-    CHECK(memcmp(published(owner), f->capture, 480U * 440U * sizeof(uint16_t)) == 0);
+    drag(240, 460, 240, 350);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME && owner->page_motion.active && owner->page_vertical);
+    CHECK(memcmp(published(owner), f->capture, FRAME_BYTES) == 0);
+    tracker_workspace_render(f->expected, &owner->workspace, &owner->model);
+    tracker_workspace_render_header(f->expected, &owner->workspace, &owner->model);
+    advance(f, 50);
+    const int offset = tracker_transition_pixels(owner->page_motion.current, 480);
+    CHECK(offset > 0 && offset < 480);
+    for (int row = 0; row < 480; ++row) {
+        const uint16_t *source = row + offset < 480
+                                 ? f->capture + (size_t)(row + offset) * 480U
+                                 : f->expected + (size_t)(row + offset - 480) * 480U;
+        CHECK(memcmp(published(owner) + (size_t)row * 480U, source, 480U * sizeof(uint16_t)) == 0);
+    }
     advance(f, 200);
     CHECK(!owner->page_motion.active);
-    expected_controls(f, owner);
-    CHECK(memcmp(published(owner), f->expected, 480U * 440U * sizeof(uint16_t)) == 0);
-    pointer_callback(&fake_ui, 220, 12, true, pointer_context);
-    pointer_callback(&fake_ui, 225, 90, true, pointer_context);
-    pointer_callback(&fake_ui, 225, 90, false, pointer_context);
-    CHECK(owner->settings.open && owner->drawer_motion.active && !owner->page_motion.active);
-    advance(f, 90);
-    memcpy(f->capture, published(owner), FRAME_BYTES);
-    /* Direct UI-thread state reversal exercises the compositing contract even
-     * though normal gestures are intentionally captured during drawer motion. */
-    owner->settings.open = false;
-    repaint(owner);
-    CHECK(owner->drawer_motion.active);
-    CHECK(memcmp(published(owner), f->capture, FRAME_BYTES) == 0);
-    advance(f, 180);
-    CHECK(!owner->drawer_motion.active && owner->drawer_motion.current == 0);
-    expected_controls(f, owner);
-    CHECK(memcmp(published(owner), f->expected, 480U * 440U * sizeof(uint16_t)) == 0);
-    drag(400, 460, 80, 460);
-    CHECK(owner->page_motion.active && owner->model.view.page == 5);
+    CHECK(memcmp(published(owner), f->expected, FRAME_BYTES) == 0);
+    open_synth_from_home(f, owner);
+    CHECK(owner->page_motion.active && !owner->page_vertical && owner->model.view.page == 5);
     pointer_callback(&fake_ui, 56, 419, true, pointer_context);
     CHECK(owner->motion_gesture && owner->model.synth_view.note == -1);
     advance(f, 250);
@@ -334,10 +334,26 @@ static void test_motion(const uint8_t *module, size_t size)
     CHECK(owner->model.synth_view.note == 60);
     pointer_callback(&fake_ui, 56, 419, false, pointer_context);
     CHECK(owner->model.synth_view.note == -1);
+    pointer_callback(&fake_ui, 220, 12, true, pointer_context);
+    pointer_callback(&fake_ui, 225, 90, true, pointer_context);
+    pointer_callback(&fake_ui, 225, 90, false, pointer_context);
+    CHECK(owner->settings.open && owner->drawer_motion.active && !owner->page_motion.active);
+    advance(f, 90);
+    memcpy(f->capture, published(owner), FRAME_BYTES);
+    /* Direct UI-thread state reversal exercises drawer compositing independently
+     * of the complete-gesture capture used by ordinary input. */
+    owner->settings.open = false;
+    repaint(owner);
+    CHECK(owner->drawer_motion.active);
+    CHECK(memcmp(published(owner), f->capture, FRAME_BYTES) == 0);
+    advance(f, 180);
+    CHECK(!owner->drawer_motion.active && owner->drawer_motion.current == 0);
+    expected_controls(f, owner);
+    CHECK(memcmp(published(owner), f->expected, FRAME_BYTES) == 0);
     app_tracker_stop(&owner);
     CHECK(owner == NULL && f->free_calls == 3);
     fixture_destroy(f);
-    puts("UI owner: current-published rapid retarget, shared drawer snapshot and final frames PASS");
+    puts("UI owner: upward HOME pixels, interrupted-frame retarget and drawer snapshot PASS");
 }
 
 static void test_wake_capture(const uint8_t *module, size_t size)
@@ -462,6 +478,11 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
     drag(456, 390, 456, 190);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY && owner->model.view.page == 3);
     CHECK(owner->model.view.mix_scroll > 0 && !owner->navigation_pointer);
+    drag(400, 460, 80, 460);
+    drag(80, 460, 400, 460);
+    drag(400, 310, 80, 310);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY && owner->model.view.page == 3);
+    CHECK(owner->navigation_hint_until == 0 && !owner->page_motion.active);
 
     /* A bottom-edge gesture stays captured when it crosses into content. */
     pointer_callback(&fake_ui, 240, 460, true, pointer_context);

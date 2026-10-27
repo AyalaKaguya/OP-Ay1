@@ -128,11 +128,10 @@ static void drag(fixture_t *f, int x1, int y1, int x2, int y2)
 
 static void navigate_page(fixture_t *f, int page)
 {
-    for (unsigned step = 0; step < TRACKER_PAGE_COUNT && f->model.view.page != page; ++step) {
-        const bool next = f->model.view.page < page;
-        drag(f, next ? 400 : 80, 460, next ? 80 : 400, 460);
-    }
-    require(f->model.view.page == page, "horizontal navigation selected the wrong page");
+    /* This unit fixture exercises an individual module. Product module entry
+     * is covered through HOME pointers by the real-owner and simulator tests. */
+    tracker_model_set_page(&f->model, page);
+    require(f->model.view.page == page, "public module selection failed");
 }
 
 static uint64_t advance(fixture_t *f, unsigned frames)
@@ -183,22 +182,17 @@ static void navigation(fixture_t *f)
     for (int page = 0; page < TRACKER_PAGE_COUNT; ++page) {
         navigate_page(f, page);
         draw(f);
+        for (int dot = 0; dot < TRACKER_PAGE_COUNT; ++dot) {
+            tap(f, 200 + dot * 16, 460);
+            require(f->model.view.page == page, "former navigation dot still changes modules");
+        }
+        drag(f, 400, 460, 80, 460);
+        drag(f, 80, 460, 400, 460);
+        require(f->model.view.page == page, "bottom horizontal drag changed modules");
+        drag(f, 400, 310, 80, 310);
+        drag(f, 80, 310, 400, 310);
+        require(f->model.view.page == page, "content horizontal drag changed modules");
     }
-    for (int page = 0; page < TRACKER_PAGE_COUNT; ++page) {
-        tap(f, 200 + page * 16, 460);
-        require(f->model.view.page == TRACKER_PAGE_SYNTH, "former navigation dot still changes pages");
-    }
-    tap(f, 100, 460);
-    require(f->model.view.page == TRACKER_PAGE_SYNTH, "footer tap changed pages");
-    drag(f, 400, 460, 80, 460);
-    require(f->model.view.page == TRACKER_PAGE_SYNTH, "last tracker page wrapped forward");
-    navigate_page(f, TRACKER_PAGE_WAVES);
-    drag(f, 80, 460, 400, 460);
-    require(f->model.view.page == TRACKER_PAGE_WAVES, "first tracker page wrapped backward");
-    drag(f, 400, 400, 80, 400);
-    require(f->model.view.page == TRACKER_PAGE_PATTERN, "horizontal navigation did not advance a page");
-    drag(f, 80, 400, 400, 400);
-    require(f->model.view.page == TRACKER_PAGE_WAVES, "horizontal navigation did not return a page");
 }
 
 static void playback(fixture_t *f)

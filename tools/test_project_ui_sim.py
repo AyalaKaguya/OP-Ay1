@@ -213,17 +213,10 @@ class Session:
         return self.read(lambda s: not s["project_busy"] and not s["project_dirty"])
 
     def legacy(self, page):
-        current = self.settled()
-        if current["workspace"] != LEGACY:
-            current = self.module(2)
-        for _ in range(6):
-            if current["page"] == page:
-                return current
-            forward = current["page"] < page
-            expected = current["page"] + (1 if forward else -1)
-            self.drag(400 if forward else 80, 460, 80 if forward else 400, 460)
-            current = self.read(lambda s: s["workspace"] == LEGACY and s["page"] == expected and not s["page_motion"])
-        raise AssertionError(f"Tracker swipe failed to reach page {page}: {current}")
+        modules = (8, 7, 2, 3, 4, 5)
+        current = self.module(modules[page])
+        assert current["workspace"] == LEGACY and current["page"] == page, current
+        return current
 
     def legacy_tap(self, x, y):
         self.tap(x, y)
@@ -364,9 +357,14 @@ def run(s: Session, args):
         assert current["workspace"] == expected[index]
         if index in pages:
             assert current["page"] == pages[index]
+            self_page = current["page"]
+            s.drag(400, 460, 80, 460)
+            s.drag(80, 460, 400, 460)
+            s.drag(400, 310, 80, 310)
+            current = s.read(lambda v: v["workspace"] == LEGACY and v["page"] == self_page and not v["page_motion"])
         assert current["project_generation"] == original_generation and current["project_name"] == "SONG A"
         assert not current["project_dirty"]
-    s.checks.append("ARYX import preserves raw module and nine slots; all nine HOME entries share one clean session")
+    s.checks.append("ARYX import preserves nine slots; HOME selects every module; module horizontal swipes never navigate")
 
     s.legacy(2)
     s.legacy_tap(340, 250)
