@@ -608,6 +608,8 @@ static void test_hierarchy_back(const uint8_t *module, size_t size)
     CHECK(published(owner)[240U * 480U + 17U] == C_CYAN);
     const uint64_t generation = owner->workspace.session_generation;
     const uint32_t revision = owner->model.edit_revision;
+    /* Inactive Settings subpage state must not swallow another page's Back. */
+    owner->settings.timeouts_open = true;
 
     drag(8, 210, 45, 210); /* Incomplete edge gestures never leak a row tap. */
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_IMPORT && !owner->back_pointer);
@@ -615,6 +617,8 @@ static void test_hierarchy_back(const uint8_t *module, size_t size)
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_IMPORT && !owner->back_pointer);
     drag(8, 210, 140, 210);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_PROJECTS);
+    CHECK(owner->settings.timeouts_open);
+    owner->settings.timeouts_open = false;
     CHECK(owner->workspace.session_generation == generation && owner->model.edit_revision == revision);
     advance(f, 250);
 
