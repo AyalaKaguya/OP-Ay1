@@ -40,6 +40,7 @@ struct app_tracker {
     int16_t wave_scratch[TRACKER_WAVEFORM_SAMPLES];
     void *timer;
     atomic_uint transport_requests;
+    uint64_t transport_generation;
     atomic_bool ready;
     uint64_t elapsed_ms;
     unsigned ticks;
@@ -221,7 +222,17 @@ static void finish_source_edit(app_tracker_t *state, uint32_t before)
 
 static void tick_sources(app_tracker_t *state)
 {
+    if (tracker_workspace_busy(&state->workspace)) {
+        (void)atomic_exchange_explicit(&state->transport_requests, 0, memory_order_acquire);
+        return;
+    }
     if (!tracker_workspace_begin_source_edit(&state->workspace)) return;
+    if (state->transport_generation != state->workspace.session_generation) {
+        /* A button request made for the old/busy session cannot start the new
+         * project after a successful replacement. */
+        (void)atomic_exchange_explicit(&state->transport_requests, 0, memory_order_acquire);
+        state->transport_generation = state->workspace.session_generation;
+    }
     const uint32_t before = state->model.edit_revision;
     const unsigned requests = atomic_exchange_explicit(&state->transport_requests,
                                                        0, memory_order_acquire);
@@ -393,6 +404,7 @@ esp_gsp_err_t app_tracker_create(esp_gsp_handle_t ui,
     atomic_init(&state->transport_requests, 0);
     atomic_init(&state->frame_index, 0);
     atomic_init(&state->ready, false);
+    state->transport_generation = UINT64_MAX;
     state->applied_volume = -1;
     for (unsigned index = 0; index < 2; ++index) {
         state->frames[index] = state->hooks.allocate_frame ?
