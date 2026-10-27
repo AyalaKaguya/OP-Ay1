@@ -167,15 +167,35 @@ bool tracker_transition_expand_center_rgb565(uint16_t *dest,
     }
     const int left = (width - scaled_width) / 2;
     const int top = (viewport_height - scaled_height) / 2;
+    const unsigned x_step = (unsigned)width / (unsigned)scaled_width;
+    const unsigned x_remainder = (unsigned)width % (unsigned)scaled_width;
+    const unsigned y_step = (unsigned)viewport_height / (unsigned)scaled_height;
+    const unsigned y_remainder = (unsigned)viewport_height % (unsigned)scaled_height;
+    unsigned source_y = 0;
+    unsigned y_error = 0;
     for (int y = 0; y < scaled_height; ++y) {
-        const size_t source_y = (size_t)((uint64_t)(unsigned)y * (unsigned)viewport_height /
-                                         (unsigned)scaled_height);
-        const uint16_t *source = new_frame + source_y * line;
+        const uint16_t *source = new_frame + (size_t)source_y * line;
         uint16_t *out = dest + (size_t)(top + y) * line + (unsigned)left;
+        unsigned source_x = 0;
+        unsigned x_error = 0;
         for (int x = 0; x < scaled_width; ++x) {
-            const size_t source_x = (size_t)((uint64_t)(unsigned)x * (unsigned)width /
-                                             (unsigned)scaled_width);
             out[x] = source[source_x];
+            /* Quotient/remainder stepping exactly preserves floor(x * width /
+             * scaled_width), without a 64-bit division for every output pixel.
+             * Errors remain below their scaled extent; adding the remainder
+             * is at most 2 * INT_MAX - 2 and fits an unsigned 32-bit integer. */
+            source_x += x_step;
+            x_error += x_remainder;
+            if (x_error >= (unsigned)scaled_width) {
+                ++source_x;
+                x_error -= (unsigned)scaled_width;
+            }
+        }
+        source_y += y_step;
+        y_error += y_remainder;
+        if (y_error >= (unsigned)scaled_height) {
+            ++source_y;
+            y_error -= (unsigned)scaled_height;
         }
     }
     return true;
