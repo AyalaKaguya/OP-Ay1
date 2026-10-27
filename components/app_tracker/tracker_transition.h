@@ -57,6 +57,18 @@ bool tracker_transition_slide_up_rgb565(uint16_t *dest,
                                         int width, int frame_height,
                                         int viewport_height, uint16_t progress);
 
+/* Scales the new page from a centered zero-size rectangle to the viewport,
+ * using nearest-neighbor samples. The old page stays fixed outside the growing
+ * rectangle. Zero progress reproduces old_frame; FULL reproduces new_frame.
+ * All three complete frame buffers must be distinct; partial overlap is not
+ * supported. Rows >=viewport_height stay untouched. Invalid arguments or exact
+ * aliases return false without writes. No scratch buffer or allocation is used. */
+bool tracker_transition_expand_center_rgb565(uint16_t *dest,
+                                             const uint16_t *old_frame,
+                                             const uint16_t *new_frame,
+                                             int width, int frame_height,
+                                             int viewport_height, uint16_t progress);
+
 /* Slides the menu panel down from y=-panel_height to y=0. full_menu contains
  * the completely rendered panel in its top panel_height rows. base_frame is
  * the independent background snapshot. dest==full_menu is supported: the

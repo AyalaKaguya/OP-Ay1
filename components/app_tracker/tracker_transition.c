@@ -142,6 +142,45 @@ bool tracker_transition_slide_up_rgb565(uint16_t *dest,
     return true;
 }
 
+bool tracker_transition_expand_center_rgb565(uint16_t *dest,
+                                             const uint16_t *old_frame,
+                                             const uint16_t *new_frame,
+                                             int width, int frame_height,
+                                             int viewport_height, uint16_t progress)
+{
+    if (dest == NULL || old_frame == NULL || new_frame == NULL ||
+            dest == old_frame || dest == new_frame || old_frame == new_frame ||
+            !valid_frame(width, frame_height, viewport_height)) {
+        return false;
+    }
+    const size_t line = (size_t)width;
+    const size_t viewport_bytes = line * (size_t)viewport_height * sizeof(*dest);
+    if (progress == TRACKER_TRANSITION_FULL) {
+        memcpy(dest, new_frame, viewport_bytes);
+        return true;
+    }
+    memcpy(dest, old_frame, viewport_bytes);
+    const int scaled_width = tracker_transition_pixels(progress, width);
+    const int scaled_height = tracker_transition_pixels(progress, viewport_height);
+    if (scaled_width == 0 || scaled_height == 0) {
+        return true;
+    }
+    const int left = (width - scaled_width) / 2;
+    const int top = (viewport_height - scaled_height) / 2;
+    for (int y = 0; y < scaled_height; ++y) {
+        const size_t source_y = (size_t)((uint64_t)(unsigned)y * (unsigned)viewport_height /
+                                         (unsigned)scaled_height);
+        const uint16_t *source = new_frame + source_y * line;
+        uint16_t *out = dest + (size_t)(top + y) * line + (unsigned)left;
+        for (int x = 0; x < scaled_width; ++x) {
+            const size_t source_x = (size_t)((uint64_t)(unsigned)x * (unsigned)width /
+                                             (unsigned)scaled_width);
+            out[x] = source[source_x];
+        }
+    }
+    return true;
+}
+
 static uint16_t dim_pixel(uint16_t pixel, unsigned keep)
 {
     /* Scale the three channels independently; multiplying packed RGB565 would

@@ -302,6 +302,81 @@ static void test_upward_home(void)
     puts("ui transitions: upward HOME motion, endpoints, aliasing, clipping and guards PASS");
 }
 
+static void expand_case(images_t *images, int viewport, uint16_t progress)
+{
+    for (size_t i = 0; i < images->count; ++i) {
+        images->next[i] = new_pixel(i);
+        images->out[i] = GUARD_VALUE;
+    }
+    CHECK(tracker_transition_expand_center_rgb565(images->out, images->old, images->next,
+                                                  images->width, images->height, viewport, progress));
+    /* Derive geometry and every source pixel independently of the compositor. */
+    const unsigned scaled_width = ((uint64_t)progress * (unsigned)images->width + UINT16_MAX / 2U) / UINT16_MAX;
+    const unsigned scaled_height = ((uint64_t)progress * (unsigned)viewport + UINT16_MAX / 2U) / UINT16_MAX;
+    const int left = (images->width - (int)scaled_width) / 2;
+    const int top = (viewport - (int)scaled_height) / 2;
+    for (int y = 0; y < images->height; ++y) {
+        for (int x = 0; x < images->width; ++x) {
+            const size_t i = (size_t)y * (unsigned)images->width + (unsigned)x;
+            uint16_t expected = GUARD_VALUE;
+            if (y < viewport) {
+                expected = old_pixel(i);
+                if (scaled_width && scaled_height && x >= left && y >= top &&
+                        x < left + (int)scaled_width && y < top + (int)scaled_height) {
+                    const unsigned source_x = (unsigned)(x - left) * (unsigned)images->width / scaled_width;
+                    const unsigned source_y = (unsigned)(y - top) * (unsigned)viewport / scaled_height;
+                    expected = new_pixel((size_t)source_y * (unsigned)images->width + source_x);
+                }
+            }
+            CHECK(images->out[i] == expected);
+            CHECK(images->next[i] == new_pixel(i));
+        }
+    }
+    guards(images);
+}
+
+static void test_center_expansion(void)
+{
+    images_t *small = images_create(17, 11);
+    for (unsigned progress = 0; progress <= UINT16_MAX; progress += 127U) {
+        expand_case(small, 9, (uint16_t)progress);
+    }
+    expand_case(small, 9, TRACKER_TRANSITION_FULL);
+    expand_case(small, 0, 30000);
+    expand_case(small, 0, TRACKER_TRANSITION_FULL);
+    expand_case(small, 1, 32768);
+    memcpy(small->snapshot, small->out, small->count * sizeof(uint16_t));
+    CHECK(!tracker_transition_expand_center_rgb565(NULL, small->old, small->next, 17, 11, 9, 100));
+    CHECK(!tracker_transition_expand_center_rgb565(small->out, NULL, small->next, 17, 11, 9, 100));
+    CHECK(!tracker_transition_expand_center_rgb565(small->out, small->old, NULL, 17, 11, 9, 100));
+    CHECK(!tracker_transition_expand_center_rgb565(small->out, small->old, small->next, 0, 11, 9, 100));
+    CHECK(!tracker_transition_expand_center_rgb565(small->out, small->old, small->next, 17, 0, 0, 100));
+    CHECK(!tracker_transition_expand_center_rgb565(small->out, small->old, small->next, 17, 11, -1, 100));
+    CHECK(!tracker_transition_expand_center_rgb565(small->out, small->old, small->next, 17, 11, 12, 100));
+    CHECK(!tracker_transition_expand_center_rgb565(small->old, small->old, small->next, 17, 11, 9, 100));
+    CHECK(!tracker_transition_expand_center_rgb565(small->next, small->old, small->next, 17, 11, 9, 100));
+    CHECK(!tracker_transition_expand_center_rgb565(small->out, small->old, small->old, 17, 11, 9, 100));
+    CHECK(memcmp(small->out, small->snapshot, small->count * sizeof(uint16_t)) == 0);
+    for (size_t i = 0; i < small->count; ++i) {
+        CHECK(small->next[i] == new_pixel(i));
+    }
+    images_destroy(small);
+    images_t *single = images_create(1, 1);
+    expand_case(single, 1, 0);
+    expand_case(single, 1, 1);
+    expand_case(single, 1, 32768);
+    expand_case(single, 1, TRACKER_TRANSITION_FULL);
+    images_destroy(single);
+    images_t *full = images_create(480, 480);
+    static const uint16_t positions[] = {0, 1, 16384, 32768, 57343, 65534, TRACKER_TRANSITION_FULL};
+    for (unsigned i = 0; i < sizeof(positions) / sizeof(positions[0]); ++i) {
+        expand_case(full, 432, positions[i]);
+        expand_case(full, 480, positions[i]);
+    }
+    images_destroy(full);
+    puts("ui transitions: centered scaled opening, exact source pixels, clipping, aliases and guards PASS");
+}
+
 static void test_retarget_capture_and_invalid(void)
 {
     images_t *images = images_create(480, 480);
@@ -333,6 +408,7 @@ int main(void)
     test_slides();
     test_drawer();
     test_upward_home();
+    test_center_expansion();
     test_retarget_capture_and_invalid();
     puts("portable UI transitions: PASS");
     return 0;
