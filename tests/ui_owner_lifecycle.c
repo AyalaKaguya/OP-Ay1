@@ -252,7 +252,7 @@ static bool overlay_pixel(int x, int y)
 }
 
 static void check_center_open(fixture_t *f, app_tracker_t *owner,
-                               const uint16_t *old, const uint16_t *next)
+                              const uint16_t *old, const uint16_t *next)
 {
     const int width = tracker_transition_pixels(owner->page_motion.current, 480);
     const int height = tracker_transition_pixels(owner->page_motion.current, 480);
