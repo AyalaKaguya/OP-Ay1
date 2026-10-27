@@ -50,7 +50,7 @@ void tracker_sampler_ui_poll(tracker_workspace_t *w)
     w->sampler_revision = revision;
     if (w->sample >= count) w->sample = count ? count - 1U : 0U;
     if (w->sample_first > w->sample) w->sample_first = w->sample / 4U * 4U;
-    app_sampler_sample_info_t next;
+    app_sampler_sample_info_t next = {0};
     const bool valid = count && app_sampler_get_info(w->sampler, w->sample, &next);
     if (valid != w->sample_valid || (valid && memcmp(&next, &w->sample_info, sizeof(next)))) {
         if (valid) w->sample_info = next;
