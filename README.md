@@ -42,6 +42,10 @@ Pads, Synth, Sampler and Pattern; then Waves. Empty tiles are inactive.
   appears briefly and has no tap action.
 - Swipe up from the **bottom edge** to return HOME; the module moves upward.
   Horizontal drags inside modules operate controls without switching pages.
+- Modules use the full screen. A short home-gesture line appears briefly on
+  entry; nested pages keep a rightward arrow for left-edge swipe-back. BOOT
+  returns to the previous page (GPIO61 on this board), and pages open with a
+  centered expansion.
 - The project name, unsaved marker and Save entry appear **only on HOME**.
   Navigation keeps the active session and does not restart the song.
 - Swipe down from the top edge for Quick Settings. The AI button toggles

@@ -11,7 +11,8 @@ directory, not beside the source.
 ## Responsibilities and dependencies
 
 - `tracker_ui.c` adapts the public GSP Canvas/input/timer API and owns two
-  reusable 480x480 frames, one shared transition snapshot and scope scratch.
+  reusable 480x480 frames, one shared transition snapshot, one opening frame
+  and scope scratch.
   It publishes only complete frames and allocates nothing during animation.
 - `tracker_model.c` owns transport, mixer mute/solo, pad selection, input
   capture, navigation, parameter retry and the render snapshots.
@@ -77,7 +78,7 @@ Startup shows the approved three-page, 2x2 HOME grid. All modules borrow one
 active project and audio graph. Only HOME shows the project name, dirty star
 and save state. Swipe up from the bottom edge to return without loading another
 song. Modules have no workspace title, project strip, save shortcut or menu
-overlay. Tracker and settings content use rows 0..439; the project and sampler
+overlay. Tracker and settings content use rows 0..479; the project and sampler
 screens expand their own content into that same area, with matching inverse
 input mapping. Existing page slides, drawer
 animation and screen-off wake consumption remain in the shared UI owner.
@@ -131,7 +132,7 @@ rotation or display timeouts. Storage usage is displayed only when the backend
 has measured it; unknown capacity remains unknown.
 
 Modules are WAVES, PATTERN, PLAYBACK, MIXER, SECTION PADS and SYNTH, selected
-from HOME. Horizontal drags do not switch modules. The bottom 40 pixels reserve a
+from HOME. Horizontal drags do not switch modules. The bottom 12 pixels capture a
 system gesture: an upward drag of at least 64 pixels, with vertical travel more
 than twice horizontal travel, returns HOME. The outgoing module moves upward
 and HOME enters from below, including its complete header. A horizontal edge
@@ -139,6 +140,23 @@ drag on HOME uses the same threshold to wrap across its three launcher pages.
 Content controls keep their entire pointer sequence, including a keyboard or
 waveform drag that later crosses the bottom edge. The drawer and a screen-off
 wake retain precedence and consume their complete gesture.
+
+Content fills all 480 rows under the gesture overlay; there is no reserved
+footer. Entering a module shows a 52x3 home-gesture line for 1200 ms; HOME has
+no such line. A page with a parent keeps a small right-pointing edge arrow.
+Left-edge drags starting within 18 pixels and moving right by at least 64 pixels
+return to that parent. BOOT posts the same Back intent to the UI thread; this
+board's `BSP_BUTTON_BOOT_GPIO` is GPIO61, distinct from the GPIO7 AI button.
+Settings confirmations/drawer/subpages consume Back before workspace navigation.
+Wake consumes the first Back without navigating. Hidden settings state cannot
+intercept another module's Back. Returning retracts unsubmitted navigation only;
+admitted I/O completes, with its result retained and no forced successful jump.
+
+Opening a page scales its destination from the center over the last published
+frame. The preallocated opening frame remains separate from both published
+buffers and the retarget snapshot; no animation allocation or in-place scale
+can overwrite an image still being read. Going HOME remains an upward slide;
+parent Back slides right. Four frame allocation/rollback paths are tested.
 
 HOME page indicators float for 1200 ms after a successful horizontal swipe and are
 drawn over the final composited frame. They have no tap action; programmatic
