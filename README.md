@@ -14,6 +14,7 @@ synthesizer, project storage and a microphone/WAV sampler on a 480×480 touch di
 - **Projects on NAND** — create a blank project or import S3M, save the complete
   session and open it later. Save As creates a separate copy. Projects include
   the source module, sample PCM, synth patch, mixer and instrument mappings.
+  Project and import-file selectors use freely scrolling lists with tap selection.
 - **Sampler** — import WAV or record the onboard microphone. Browse large,
   vertically scrolling sample cards with real waveforms at the right. Preview,
   trim, loop, adjust gain/C2 rate, Apply, Cancel or Undo; explicitly assign a

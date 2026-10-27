@@ -90,6 +90,14 @@ persisted across process/device restarts. Refresh queries the real catalog and
 owned inbox. Import offers the built-in ARYX source, inbox S3M modules and WAV
 sample copies. Nothing in this UI invents PC/USB upload success.
 
+Project and import-file selectors scroll continuously with a vertical drag.
+The offset remains at the release position; dragging never changes selection.
+Short taps select a card, while the fixed OPEN/SAVE AS/IMPORT actions remain
+separate. Project rows use 72-pixel pitch, file rows 64, with clipped partial
+cards and a scroll thumb. There are no previous/next page buttons. Recent/all
+and S3M/WAV filters reset their offsets; refresh and shorter catalogs clamp
+both position and selection to valid entries.
+
 Save As uses a 24-character ASCII touch keyboard and creates a fresh project
 ID. Stored UTF-8 names are preserved in service state and diagnostics; the
 existing ASCII pixel font shows unsupported characters as `?`. Dirty switching
