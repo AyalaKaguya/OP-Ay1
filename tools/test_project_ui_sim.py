@@ -237,7 +237,7 @@ class Session:
         before = self.read()
         for row in range(2):
             self.browser()
-            self.tap(150, 162 + row * 50)
+            self.tap(150, 162 + row * 72)
             self.tap(126, 400)
             current = self.settled()
             if current["workspace"] == SWITCH or current["project_generation"] != before["project_generation"]:
