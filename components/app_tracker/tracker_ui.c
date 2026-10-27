@@ -340,9 +340,11 @@ static void tick_sources(app_tracker_t *state)
 static bool go_back(app_tracker_t *state)
 {
     const int before = view_route(state);
-    if (state->settings.usb_confirm) {
+    const bool settings_context = state->settings.open ||
+                                  state->workspace.screen == TRACKER_WORKSPACE_SETTINGS;
+    if (settings_context && state->settings.usb_confirm) {
         state->settings.usb_confirm = false;
-    } else if (state->settings.timeouts_open) {
+    } else if (settings_context && state->settings.timeouts_open) {
         state->settings.timeouts_open = false;
     } else if (state->settings.open) {
         state->settings.open = false;
