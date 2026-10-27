@@ -34,8 +34,8 @@ typedef struct {
     unsigned allocation_calls;
     unsigned fail_allocation;
     unsigned free_calls;
-    void *allocated[3];
-    bool freed[3];
+    void *allocated[4];
+    bool freed[4];
     bool force_wake;
     bool busy;
     unsigned activity_calls;
@@ -117,7 +117,7 @@ static void *allocate_frame(void *context, size_t bytes)
 {
     fixture_t *f = context;
     CHECK(bytes == 480U * 480U * sizeof(uint16_t));
-    CHECK(f->allocation_calls < 3);
+    CHECK(f->allocation_calls < 4);
     const unsigned slot = f->allocation_calls++;
     if (f->allocation_calls == f->fail_allocation) {
         return NULL;
@@ -133,7 +133,7 @@ static void free_frame(void *context, void *frame)
     fixture_t *f = context;
     CHECK(frame != NULL);
     bool found = false;
-    for (unsigned slot = 0; slot < 3; ++slot) {
+    for (unsigned slot = 0; slot < 4; ++slot) {
         if (f->allocated[slot] == frame) {
             CHECK(!f->freed[slot]);
             f->freed[slot] = true;
@@ -238,11 +238,48 @@ static void advance(fixture_t *f, unsigned milliseconds)
     timer_callback(&fake_ui, timer_context);
 }
 
+static void advance_past_hint(fixture_t *f)
+{
+    for (unsigned tick = 0; tick < 26; ++tick) {
+        advance(f, 50);
+    }
+}
+
+static bool overlay_pixel(int x, int y)
+{
+    return (x >= 214 && x < 266 && y >= 472 && y < 475) ||
+           (x >= 7 && x <= 17 && y >= 230 && y <= 250);
+}
+
+static void check_center_open(fixture_t *f, app_tracker_t *owner,
+                               const uint16_t *old, const uint16_t *next)
+{
+    const int width = tracker_transition_pixels(owner->page_motion.current, 480);
+    const int height = tracker_transition_pixels(owner->page_motion.current, 480);
+    CHECK(owner->page_zoom && width > 0 && width < 480 && height > 0 && height < 480);
+    const int left = (480 - width) / 2;
+    const int top = (480 - height) / 2;
+    for (int y = 0; y < 480; ++y) {
+        for (int x = 0; x < 480; ++x) {
+            if (overlay_pixel(x, y)) {
+                continue;
+            }
+            const bool inside = x >= left && x < left + width && y >= top && y < top + height;
+            const uint16_t expected = inside
+                                      ? next[(size_t)((y - top) * 480 / height) * 480U +
+                                             (unsigned)((x - left) * 480 / width)]
+                                      : old[(size_t)y * 480U + (unsigned)x];
+            CHECK(published(owner)[(size_t)y * 480U + (unsigned)x] == expected);
+        }
+    }
+    (void)f;
+}
+
 static void open_synth_from_home(fixture_t *f, app_tracker_t *owner)
 {
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME);
     for (int attempt = 0; attempt < 3 && owner->workspace.home_page != 1; ++attempt) {
-        drag(400, 460, 80, 460);
+        drag(400, 474, 80, 474);
         advance(f, 250);
     }
     CHECK(owner->workspace.home_page == 1);
@@ -265,12 +302,12 @@ static void expected_controls(fixture_t *f, app_tracker_t *owner)
 
 static void test_allocations(const uint8_t *module, size_t size)
 {
-    for (unsigned failure = 1; failure <= 3; ++failure) {
+    for (unsigned failure = 1; failure <= 4; ++failure) {
         fixture_t *f = fixture_create(module, size);
         f->fail_allocation = failure;
         app_tracker_t *owner = NULL;
         CHECK(app_tracker_create(&fake_ui, &f->config, &owner) == ESP_GSP_ERR_NO_MEM);
-        CHECK(owner == NULL && f->allocation_calls == 3 && f->free_calls == 2);
+        CHECK(owner == NULL && f->allocation_calls == 4 && f->free_calls == 3);
         fixture_destroy(f);
     }
     fixture_t *retained = fixture_create(module, size);
@@ -281,17 +318,17 @@ static void test_allocations(const uint8_t *module, size_t size)
     CHECK(retained_owner != NULL && retained->free_calls == 0 && canvas_callback != NULL);
     retained->fail_stop = false;
     app_tracker_stop(&retained_owner);
-    CHECK(retained_owner == NULL && retained->free_calls == 3);
+    CHECK(retained_owner == NULL && retained->free_calls == 4);
     fixture_destroy(retained);
     for (unsigned failure = 1; failure <= 3; ++failure) {
         fixture_t *f = fixture_create(module, size);
         f->fail_gsp_stage = failure;
         app_tracker_t *owner = NULL;
         CHECK(app_tracker_create(&fake_ui, &f->config, &owner) == ESP_GSP_ERR_NO_MEM);
-        CHECK(owner == NULL && f->free_calls == 3);
+        CHECK(owner == NULL && f->free_calls == 4);
         fixture_destroy(f);
     }
-    puts("UI owner: all 3 frame OOM and callback/timer rollback free non-NULL frames once PASS");
+    puts("UI owner: all 4 frame OOM and callback/timer rollback free non-NULL frames once PASS");
 }
 
 static void test_motion(const uint8_t *module, size_t size)
@@ -300,11 +337,15 @@ static void test_motion(const uint8_t *module, size_t size)
     app_tracker_t *owner = NULL;
     CHECK(app_tracker_create(&fake_ui, &f->config, &owner) == ESP_GSP_OK);
     open_synth_from_home(f, owner);
-    CHECK(owner->model.view.page == 5 && owner->page_motion.active);
+    CHECK(owner->model.view.page == 5 && owner->page_motion.active && owner->page_zoom);
+    memcpy(f->capture, owner->motion_frame, FRAME_BYTES);
+    tracker_render_synth(f->expected, &owner->model.synth_view);
+    tracker_workspace_fit_legacy(f->expected);
     advance(f, 50);
     CHECK(owner->page_motion.active && owner->page_motion.current > 0);
+    check_center_open(f, owner, f->capture, f->expected);
     memcpy(f->capture, published(owner), FRAME_BYTES);
-    drag(240, 460, 240, 350);
+    drag(240, 474, 240, 350);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME && owner->page_motion.active && owner->page_vertical);
     CHECK(memcmp(published(owner), f->capture, FRAME_BYTES) == 0);
     tracker_workspace_render(f->expected, &owner->workspace, &owner->model);
@@ -348,12 +389,20 @@ static void test_motion(const uint8_t *module, size_t size)
     CHECK(memcmp(published(owner), f->capture, FRAME_BYTES) == 0);
     advance(f, 180);
     CHECK(!owner->drawer_motion.active && owner->drawer_motion.current == 0);
+    advance_past_hint(f);
     expected_controls(f, owner);
     CHECK(memcmp(published(owner), f->expected, FRAME_BYTES) == 0);
+    unsigned lower_content_pixels = 0;
+    for (unsigned y = 440; y < 468; ++y) {
+        for (unsigned x = 0; x < 480; ++x) {
+            lower_content_pixels += published(owner)[y * 480U + x] != C_BG;
+        }
+    }
+    CHECK(lower_content_pixels > 0); /* No reserved 40-pixel footer remains. */
     app_tracker_stop(&owner);
-    CHECK(owner == NULL && f->free_calls == 3);
+    CHECK(owner == NULL && f->free_calls == 4);
     fixture_destroy(f);
-    puts("UI owner: upward HOME pixels, interrupted-frame retarget and drawer snapshot PASS");
+    puts("UI owner: centered opening pixels, upward HOME retarget and drawer snapshot PASS");
 }
 
 static void test_wake_capture(const uint8_t *module, size_t size)
@@ -399,11 +448,11 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
     app_tracker_t *owner = NULL;
     CHECK(app_tracker_create(&fake_ui, &f->config, &owner) == ESP_GSP_OK);
     CHECK(owner->workspace.home_page == 0 && owner->navigation_hint_until == 0);
-    tap(436, 460);
-    tap(225, 460);
+    tap(436, 474);
+    tap(225, 474);
     CHECK(owner->workspace.home_page == 0 && owner->navigation_hint_until == 0);
 
-    drag(80, 460, 400, 460);
+    drag(80, 474, 400, 474);
     CHECK(owner->workspace.home_page == 2 && owner->navigation_hint_until == f->clock_ms + 1200);
     advance(f, 250);
     memcpy(f->capture, published(owner), FRAME_BYTES);
@@ -419,12 +468,17 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
                  480U * 40U * sizeof(uint16_t)) != 0);
     tap(225, 455);
     CHECK(owner->workspace.home_page == 2 && owner->navigation_hint_until <= f->clock_ms);
-    drag(400, 460, 80, 460);
+    drag(400, 474, 80, 474);
     CHECK(owner->workspace.home_page == 0);
     advance(f, 250);
     tap(352, 176); /* SETTINGS opens through the ordinary HOME tile. */
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS && owner->navigation_hint_until == 0);
     advance(f, 250);
+    CHECK(owner->home_hint_until > f->clock_ms);
+    memcpy(f->capture, published(owner), FRAME_BYTES);
+    CHECK(published(owner)[473U * 480U + 240U] == C_MUTED);
+    advance_past_hint(f);
+    CHECK(owner->home_hint_until <= f->clock_ms);
     memset(f->expected, 0, FRAME_BYTES);
     tracker_settings_render_page(f->expected, &owner->settings);
     tracker_workspace_fit_content(f->expected, &owner->workspace);
@@ -433,19 +487,19 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
     tracker_workspace_render_header(f->expected, &owner->workspace, &owner->model);
     CHECK(memcmp(f->capture, f->expected, FRAME_BYTES) == 0);
     tap(35, 12);
-    tap(64, 458);
+    tap(64, 474);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
     tap(300, 20); /* Header space outside the module's STORAGE action. */
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
     drag(250, 380, 250, 270);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS && !owner->settings.open);
-    drag(240, 460, 240, 410);
-    drag(240, 460, 300, 380);
+    drag(240, 474, 240, 424);
+    drag(240, 474, 300, 380);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS && owner->navigation_hint_until == 0);
     tap(400, 20);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_STORAGE);
     advance(f, 250);
-    drag(240, 460, 240, 350);
+    drag(240, 474, 240, 350);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME && owner->workspace.home_page == 0);
     CHECK(owner->navigation_hint_until == 0 && !owner->navigation_pointer && !f->busy);
     advance(f, 250);
@@ -464,7 +518,7 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
     CHECK(app_note_router_touch_note_on(f->router, 64, 0.8f));
     const uint64_t generation = owner->workspace.session_generation;
     const uint32_t revision = owner->model.edit_revision;
-    drag(240, 460, 240, 350);
+    drag(240, 474, 240, 350);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME && owner->workspace.home_page == 0);
     CHECK(tracker_engine_is_playing(f->tracker) && owner->workspace.session_generation == generation);
     CHECK(owner->model.edit_revision == revision && owner->navigation_hint_until == 0);
@@ -478,14 +532,14 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
     drag(456, 390, 456, 190);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY && owner->model.view.page == 3);
     CHECK(owner->model.view.mix_scroll > 0 && !owner->navigation_pointer);
-    drag(400, 460, 80, 460);
-    drag(80, 460, 400, 460);
+    drag(400, 474, 80, 474);
+    drag(80, 474, 400, 474);
     drag(400, 310, 80, 310);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY && owner->model.view.page == 3);
     CHECK(owner->navigation_hint_until == 0 && !owner->page_motion.active);
 
     /* A bottom-edge gesture stays captured when it crosses into content. */
-    pointer_callback(&fake_ui, 240, 460, true, pointer_context);
+    pointer_callback(&fake_ui, 240, 474, true, pointer_context);
     CHECK(owner->navigation_pointer && f->busy);
     pointer_callback(&fake_ui, 240, 380, true, pointer_context);
     CHECK(owner->navigation_pointer && !owner->model.pointer_down && !owner->motion_gesture);
@@ -498,7 +552,7 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
     drag(220, 12, 225, 90);
     CHECK(owner->settings.open);
     advance(f, 250);
-    drag(240, 460, 240, 350);
+    drag(240, 474, 240, 350);
     CHECK(!owner->settings.open && owner->workspace.screen == TRACKER_WORKSPACE_LEGACY);
     CHECK(!owner->navigation_pointer);
     advance(f, 250);
@@ -508,15 +562,114 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
     f->display.effective_brightness = 0;
     update_settings(owner);
     repaint(owner);
-    drag(240, 460, 240, 350);
+    drag(240, 474, 240, 350);
     CHECK(!owner->wake_gesture && !owner->navigation_pointer);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY);
-    drag(240, 460, 240, 350);
+    drag(240, 474, 240, 350);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME && owner->workspace.home_page == 0);
     CHECK(tracker_engine_is_playing(f->tracker));
     app_tracker_stop(&owner);
     fixture_destroy(f);
     puts("UI owner: inert taps, timed swipe hints, edge HOME, drawer/wake and control capture PASS");
+}
+
+static int body_y(int logical_y)
+{
+    return ((logical_y - 78) * 480 + 353) / 354;
+}
+
+static void test_hierarchy_back(const uint8_t *module, size_t size)
+{
+    fixture_t *f = fixture_create(module, size);
+    app_tracker_t *owner = NULL;
+    CHECK(app_tracker_create(&fake_ui, &f->config, &owner) == ESP_GSP_OK);
+    CHECK(owner->home_hint_until == 0);
+    tracker_workspace_render(f->expected, &owner->workspace, &owner->model);
+    tracker_workspace_render_header(f->expected, &owner->workspace, &owner->model);
+    CHECK(memcmp(published(owner), f->expected, FRAME_BYTES) == 0);
+
+    tap(128, 176); /* Root project browser. */
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_PROJECTS);
+    advance(f, 250);
+    CHECK(!tracker_workspace_has_parent(&owner->workspace));
+    tap(210, body_y(110)); /* Import is nested under Projects. */
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_IMPORT);
+    CHECK(tracker_workspace_has_parent(&owner->workspace));
+    advance(f, 250);
+    CHECK(published(owner)[240U * 480U + 17U] == C_CYAN);
+    CHECK(published(owner)[473U * 480U + 240U] == C_MUTED);
+    advance_past_hint(f);
+    CHECK(owner->home_hint_until <= f->clock_ms);
+    CHECK(published(owner)[240U * 480U + 17U] == C_CYAN);
+    const uint64_t generation = owner->workspace.session_generation;
+    const uint32_t revision = owner->model.edit_revision;
+
+    drag(8, 210, 45, 210); /* Incomplete edge gestures never leak a row tap. */
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_IMPORT && !owner->back_pointer);
+    drag(8, 210, 95, 270); /* Diagonal is not a back gesture. */
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_IMPORT && !owner->back_pointer);
+    drag(8, 210, 140, 210);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_PROJECTS);
+    CHECK(owner->workspace.session_generation == generation && owner->model.edit_revision == revision);
+    advance(f, 250);
+
+    tap(80, body_y(110));
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_NEW);
+    advance(f, 250);
+    app_tracker_request_back(owner); /* Same public request posted by BOOT. */
+    advance(f, 50);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_PROJECTS);
+    advance(f, 250);
+    app_tracker_request_back(owner);
+    advance(f, 50);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME);
+    advance(f, 250);
+    CHECK(owner->home_hint_until == 0);
+    tap(352, 176);
+    advance(f, 250);
+    tap(400, 20);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_STORAGE);
+    advance(f, 250);
+    app_tracker_request_back(owner);
+    advance(f, 50);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
+    advance(f, 250);
+
+    tap(240, 188); /* Embedded display timers have a local parent. */
+    CHECK(owner->settings.timeouts_open);
+    app_tracker_request_back(owner);
+    advance(f, 50);
+    CHECK(!owner->settings.timeouts_open && owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
+    tap(130, 413); /* Cancel a USB-role confirmation through the same back request. */
+    CHECK(owner->settings.usb_confirm);
+    app_tracker_request_back(owner);
+    advance(f, 50);
+    CHECK(!owner->settings.usb_confirm && owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
+    drag(220, 12, 225, 90);
+    CHECK(owner->settings.open);
+    advance(f, 250);
+    app_tracker_request_back(owner);
+    advance(f, 50);
+    CHECK(!owner->settings.open && owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
+    advance(f, 250);
+
+    /* BOOT first wakes an off display and does not navigate in that event. */
+    f->display.screen_off = true;
+    f->display.effective_brightness = 0;
+    update_settings(owner);
+    repaint(owner);
+    app_tracker_request_back(owner);
+    advance(f, 50);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS && !owner->settings.display.screen_off);
+    app_tracker_request_back(owner);
+    advance(f, 50);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME);
+    advance(f, 250);
+    CHECK(owner->home_hint_until == 0);
+    CHECK(owner->workspace.session_generation == generation && owner->model.edit_revision == revision);
+    app_tracker_stop(&owner);
+    fixture_destroy(f);
+    puts("UI owner: persistent hierarchy arrow, edge BACK, BOOT request, full-screen content and wake priority PASS");
 }
 
 int main(int argc, char **argv)
@@ -533,6 +686,7 @@ int main(int argc, char **argv)
     test_motion(module, (size_t)size);
     test_wake_capture(module, (size_t)size);
     test_edge_navigation(module, (size_t)size);
+    test_hierarchy_back(module, (size_t)size);
     free(module);
     puts("production UI owner lifecycle and motion tests: PASS");
     return 0;

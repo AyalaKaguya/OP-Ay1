@@ -181,17 +181,17 @@ def main() -> int:
                 if pressed and pointer_space is None:
                     current = state()
                     drawer = settings()["open"]
-                    if y >= 440 or drawer or current["workspace"] == 0:
+                    if y >= 468 or drawer or current["workspace"] == 0:
                         pointer_space = "physical"
                     elif current["workspace"] in (9, 11):
                         pointer_space = "full"
                     else:
                         pointer_space = "body"
                 if pointer_space == "full" and y < 432:
-                    y = (y * 440 + 431) // 432
+                    y = (y * 480 + 431) // 432
                 elif pointer_space == "body" and y < 432:
                     assert y >= 78, "Workspace shell coordinates are available on HOME only"
-                    y = ((y - 78) * 440 + 353) // 354
+                    y = ((y - 78) * 480 + 353) // 354
                 rpc.call("feed_pointer", {"x": x, "y": y, "pressed": pressed})
                 time.sleep(pause)
                 if not pressed:
@@ -206,14 +206,14 @@ def main() -> int:
             def page(index):
                 current = state(lambda s: not s["page_motion"] and not s["menu_motion"])
                 if current["workspace"] != 0:
-                    drag(240, 460, 240, 350)
+                    drag(240, 474, 240, 350)
                     current = state(lambda s: s["workspace"] == 0 and not s["page_motion"])
                 module = (8, 7, 2, 3, 4, 5)[index]
                 for _ in range(3):
                     if current["home_page"] == module // 4:
                         break
                     expected = (current["home_page"] + 1) % 3
-                    drag(400, 460, 80, 460)
+                    drag(400, 474, 80, 474)
                     current = state(
                         lambda s: s["workspace"] == 0 and s["home_page"] == expected and not s["page_motion"]
                     )
@@ -243,14 +243,14 @@ def main() -> int:
             for i in range(6):
                 page(i)
                 screenshot(f"page-{i}")
-                drag(400, 460, 80, 460)
-                drag(80, 460, 400, 460)
+                drag(400, 474, 80, 474)
+                drag(80, 474, 400, 474)
                 drag(400, 310, 80, 310)
                 assert state()["workspace"] == 11 and state()["page"] == i, "Module horizontal drag navigated"
             for i in range(6):
-                tap(200 + i * 16, 460)
+                tap(200 + i * 16, 474)
                 assert state()["page"] == 5, "Former navigation points must be inert"
-            tap(64, 458)
+            tap(64, 474)
             assert state()["workspace"] == 11, "Removed HOME button must be inert"
             results.append("six modules entered through HOME; horizontal swipes and former navigation points are inert")
 
@@ -328,7 +328,7 @@ def main() -> int:
                 page(index)
                 drag(220, 12, 225, 90)
                 settings(lambda s: s["open"] == 1)
-                tap(248, 460)  # Dismiss outside; the page nav must not receive it.
+                tap(248, 474)  # Dismiss outside; the page nav must not receive it.
                 settings(lambda s: s["open"] == 0)
                 state(lambda s: s["page"] == index)
             results.append("global top swipe on all six pages and no dismissal passthrough")
@@ -382,7 +382,7 @@ def main() -> int:
             results.append("USB confirmation cancel, truthful native unsupported error and Vendor retry")
 
             page(2)
-            rpc.call("feed_pointer", {"x": 240, "y": 460, "pressed": True})
+            rpc.call("feed_pointer", {"x": 240, "y": 474, "pressed": True})
             rpc.call("feed_pointer", {"x": 240, "y": 350, "pressed": True})
             rpc.call("feed_pointer", {"x": 240, "y": 350, "pressed": False})
             state(lambda s: s["workspace"] == 0 and s["page_motion"] == 1)

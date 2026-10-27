@@ -122,13 +122,13 @@ class Session:
         if pressed and self.pointer_space is None:
             screen = self.read()["workspace"]
             self.pointer_space = (
-                "physical" if y >= 440 or screen == HOME else "full" if screen in (LEGACY, SETTINGS) else "body"
+                "physical" if y >= 468 or screen == HOME else "full" if screen in (LEGACY, SETTINGS) else "body"
             )
         if self.pointer_space == "full" and y < 432:
-            y = (y * 440 + 431) // 432
+            y = (y * 480 + 431) // 432
         elif self.pointer_space == "body" and y < 432:
             assert y >= 78, "Workspace shell coordinates are available on HOME only"
-            y = ((y - 78) * 440 + 353) // 354
+            y = ((y - 78) * 480 + 353) // 354
         self.rpc.call("feed_pointer", {"x": x, "y": y, "pressed": pressed})
         time.sleep(pause)
         if not pressed:
@@ -154,17 +154,21 @@ class Session:
     def home(self, page=0):
         current = self.settled()
         if current["workspace"] != HOME:
-            self.drag(240, 460, 240, 350)
+            self.drag(240, 474, 240, 350)
         current = self.settled(HOME)
         for _ in range(3):
             if current["home_page"] == page:
                 return current
             expected = (current["home_page"] + 1) % 3
-            self.drag(400, 460, 80, 460)
+            self.drag(400, 474, 80, 474)
             current = self.read(
                 lambda s: s["workspace"] == HOME and s["home_page"] == expected and not s["page_motion"]
             )
         raise AssertionError(f"HOME swipe failed to reach page {page}: {current}")
+
+    def back(self, screen):
+        self.drag(8, 220, 140, 220)
+        return self.settled(screen)
 
     def module(self, index):
         self.home(index // 4)
@@ -313,32 +317,46 @@ def run(s: Session, args):
     s.settled(SETTINGS)
     s.screenshot("settings-global")
     s.tap(35, 12)
-    s.tap(64, 458)
+    s.tap(64, 474)
     assert s.settled()["workspace"] == SETTINGS, "Removed HOME buttons must be inert"
     s.tap(300, 20)
     s.drag(250, 380, 250, 270)
     assert s.settled()["workspace"] == SETTINGS, "Embedded settings dismissal must not return HOME"
-    s.drag(240, 460, 240, 410)
+    s.drag(240, 474, 240, 424)
     assert s.settled()["workspace"] == SETTINGS, "A short upward drag must not navigate"
-    s.drag(240, 460, 300, 380)
+    s.drag(240, 474, 300, 380)
     assert s.settled()["workspace"] == SETTINGS, "A diagonal drag must not navigate"
     s.tap(400, 20)
     s.settled(STORAGE)
     s.screenshot("storage")
+    s.back(SETTINGS)
+    s.screenshot("storage-back-to-settings")
     s.home()
     for page in range(3):
         s.home(page)
         s.screenshot(f"home-{page + 1}")
     s.tap(352, 176)  # empty HOME page 3 slot
     assert s.settled()["workspace"] == HOME
-    s.drag(400, 460, 80, 460)
+    s.drag(400, 474, 80, 474)
     assert s.settled()["home_page"] == 0, "HOME must wrap forward"
-    s.drag(80, 460, 400, 460)
+    s.drag(80, 474, 400, 474)
     assert s.settled()["home_page"] == 2, "HOME must wrap backward"
     s.checks.append("three ordered HOME pages, inert empty slots, real initial ARYX project and global settings access")
     s.checks.append(
         "bottom-edge up returns HOME; former HOME taps, short and diagonal drags are inert; HOME swipes wrap"
     )
+
+    before = s.browser()
+    s.tap(210, 110)
+    s.settled(IMPORT)
+    s.screenshot("import-back-arrow")
+    returned = s.back(PROJECTS)
+    assert returned["project_generation"] == before["project_generation"]
+    assert returned["project_name"] == before["project_name"] and returned["project_dirty"] == before["project_dirty"]
+    s.tap(80, 110)
+    s.settled(NEW)
+    s.back(PROJECTS)
+    s.checks.append("rightward edge gestures return through Import/New/Storage parents without changing the project")
 
     blank = s.new()
     assert blank["project_name"] == "UNTITLED" and blank["project_dirty"] and blank["sample_trim_end"] == 0
@@ -361,8 +379,8 @@ def run(s: Session, args):
         if index in pages:
             assert current["page"] == pages[index]
             self_page = current["page"]
-            s.drag(400, 460, 80, 460)
-            s.drag(80, 460, 400, 460)
+            s.drag(400, 474, 80, 474)
+            s.drag(80, 474, 400, 474)
             s.drag(400, 310, 80, 310)
             current = s.read(lambda v: v["workspace"] == LEGACY and v["page"] == self_page and not v["page_motion"])
         assert current["project_generation"] == original_generation and current["project_name"] == "SONG A"
