@@ -4,10 +4,14 @@
 
 #include "bsp/esp_mosaico.h"
 #include "esp_check.h"
+#include "esp_display_present.h"
 #include "esp_log.h"
 #include "sdkconfig.h"
 
 static const char *TAG = "gsp_board";
+/* One application-owned presenter borrows the singleton BSP's panel/touch.
+ * GSP borrows this presenter and must stop before app_display_deinit(). */
+static esp_display_presenter_t *display_presenter;
 
 static esp_err_t board_display_init(esp_display_present_target_config_t *out_target)
 {
@@ -70,6 +74,8 @@ static esp_err_t board_touch_init(esp_lcd_touch_handle_t *out_touch)
 esp_err_t app_display_init(esp_gsp_esp_lcd_config_t *out_config)
 {
     ESP_RETURN_ON_FALSE(out_config != NULL, ESP_ERR_INVALID_ARG, TAG, "output is null");
+    ESP_RETURN_ON_FALSE(display_presenter == NULL, ESP_ERR_INVALID_STATE, TAG,
+                        "application presenter is already initialized");
     esp_gsp_esp_lcd_config_t config = ESP_GSP_ESP_LCD_CONFIG_INIT();
     /* CO5300 QSPI requires both the X origin and width in multiples of 4 pixels.
      * GSP defaults to no expansion; the BSP rounder only covers LVGL. */
@@ -88,6 +94,32 @@ esp_err_t app_display_init(esp_gsp_esp_lcd_config_t *out_config)
      * the touch queue alive regardless of INT state. */
     config.touch_input_mode = ESP_GSP_TOUCH_INPUT_POLLING;
     config.perf_log = true;
+    /* Boot runs on the existing 20 KiB main-task stack. This configuration
+     * aggregate is copied by create; no pointer to stack storage is retained. */
+    const esp_display_presenter_config_t presenter_config = {
+        .width = BSP_LCD_H_RES,
+        .height = BSP_LCD_V_RES,
+        .pixel_format = ESP_DISPLAY_PRESENT_PIXEL_FORMAT_RGB565,
+        .max_damage_areas = 32,
+        .target = config.display,
+    };
+    esp_display_presenter_t *presenter = NULL;
+    ESP_RETURN_ON_ERROR(esp_display_presenter_create(&presenter_config, &presenter),
+                        TAG, "create application presenter");
+    display_presenter = presenter;
+    config.presenter = presenter;
     *out_config = config;
     return ESP_OK;
+}
+
+esp_err_t app_display_deinit(void)
+{
+    if (display_presenter == NULL) {
+        return ESP_OK;
+    }
+    const esp_err_t result = esp_display_presenter_delete(display_presenter);
+    if (result == ESP_OK) {
+        display_presenter = NULL;
+    }
+    return result;
 }

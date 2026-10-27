@@ -3,8 +3,9 @@
 A handheld tracker and music workstation for **ESP-Mosaico**: native synthesis,
 S3M playback and a pixel UI on a 480×480 touch display.
 
-**Current development:** [codex/synthesizer](https://github.com/AyalaKaguya/OP-Ay1/tree/codex/synthesizer)
-contains the six-page UI and four-voice synthesizer described below. The existing
+**Current source:** [main](https://github.com/AyalaKaguya/OP-Ay1/tree/main)
+contains the six-page UI, four-voice synthesizer and display settings described
+below. The existing
 [v1.0.0 release](https://github.com/AyalaKaguya/OP-Ay1/releases/tag/v1.0.0)
 is the earlier five-page tracker player; its downloadable firmware has not been replaced.
 
@@ -66,6 +67,31 @@ The Pad capture shows the state after a Pattern switch has completed.
   then hold or slide across the keyboard. PANIC clears voices. Edits stay in RAM.
 - **AI button:** short press toggles song playback; long press pauses and rewinds.
 
+Swipe down from the top edge to open Quick Settings for battery status,
+brightness, automatic/manual rotation and USB MIDI Host / Vendor selection.
+The [settings implementation record](docs/global-settings-plan.zh-CN.md)
+tracks its own build and device acceptance separately from the earlier release.
+
+The drawer includes independently configurable idle dimming and display-off
+timers, both disabled by default. Pages slide and the drawer opens/closes with
+short transitions. See the
+[display timeout and animation record](docs/display-idle-motion.zh-CN.md).
+
+## USB Host product exception
+
+In this application's normal mode, MIDI IO temporarily assigns the S31 USB
+controller to a class-compliant USB-MIDI 1.0 keyboard. Vendor restores the
+ESP-Iris dual-CDC device used by the PC. Switching requires an on-screen
+confirmation; PC USB disconnect is expected. Vendor is the default after reboot,
+and USB role is not saved. OTG power is handled by the board hardware.
+
+Iris UART0 control/log/RPC remains enabled on the board's default UART pins at
+115200 baud. Use the product CLI and coordinate Gateway ownership for a UART
+adapter; this build does not prove an attached UART cable or live TCP network.
+Firmware delivery still requires Vendor USB's separate data link. Return to
+Vendor on the device before reconnecting to the PC. The retained Vibe Mode
+always uses Iris USB, with its partitions, identity and OTA writer unchanged.
+
 ## Build and preview
 
 This repository is the application. Place it at `projects/OP-Ay1` inside an
@@ -76,11 +102,17 @@ Activate the workspace's exact ESP-IDF checkout before building:
 - ESP-IDF: `7b9cc1ac79f865983f59bb8ff3ff43eb74ff1dbe`.
 - ESP-GSP: `1.5.1`; GSPC: `0.6.1`.
 
+This source also requires the workspace's ESP-Iris USB pause/resume integration,
+validated with utils revision `f37a7d39447104e5e07f0fc2d6851c595c739c3e`
+(workspace integration commit `ff623f5`). The earlier upstream utils revision
+`be151ae` does not provide `esp_iris_usb_set_enabled()`; keep the integrated
+utility checkout when building this version.
+
 From the workspace root, select the current development source and use the
 product CLI for installation and native preview:
 
 ```sh
-git -C projects/OP-Ay1 switch codex/synthesizer
+git -C projects/OP-Ay1 switch main
 python mosaico.py iris system-update --project projects/OP-Ay1
 python mosaico.py project sim --project projects/OP-Ay1 --interactive
 ```
@@ -98,8 +130,8 @@ python tools/test_ui_renderer.py
 python tools/test_ui_interaction.py
 ```
 
-See the [UI and simulator contract](https://github.com/AyalaKaguya/OP-Ay1/blob/codex/synthesizer/components/app_tracker/README.md)
-and [device verification record](https://github.com/AyalaKaguya/OP-Ay1/blob/codex/synthesizer/docs/implementation-validation.zh-CN.md)
+See the [UI and simulator contract](https://github.com/AyalaKaguya/OP-Ay1/blob/main/components/app_tracker/README.md)
+and [device verification record](https://github.com/AyalaKaguya/OP-Ay1/blob/main/docs/implementation-validation.zh-CN.md)
 for ownership, test coverage and evidence. Native regression tests, simulator
 input checks and real-device installation/playback checks have passed; the
 single-note synth level was increased by 6 dB after listening feedback.
@@ -108,8 +140,11 @@ single-note synth level was increased by 6 dB after listening feedback.
 
 - Touch input currently supports one pointer. Four DSP voices do not imply
   independent multitouch chord input.
-- Patch persistence, sample recording/import, a step sequencer and USB MIDI
-  are future work. Section Pads currently launch Patterns rather than edit steps.
+- Patch persistence, sample recording/import and a step sequencer are future
+  work. Section Pads currently launch Patterns rather than edit steps.
+- USB MIDI Host device acceptance failed and further MIDI work is paused.
+  Display timers and animations passed native/simulator checks and the pinned
+  SDK build; physical display-off/wake and animation load remain unverified.
 - The bundled song has 12 Patterns and 12 channels; Pad and mixer slots 0C–0F are empty.
 - Long-duration maximum-load stability and browser focus-loss cancellation remain
   outside the completed checks. Occasional waveform-page timing spikes are

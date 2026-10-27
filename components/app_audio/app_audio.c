@@ -1,31 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
-/*
- * Two-stage playback pipeline:
- *
- *   DSP task (core 1, priority 7)  ->  chunk ring  ->  I2S writer task (core 1)
- *
- * The DSP task only synthesises tracker samples into a small ring of chunks;
- * the writer task owns the blocking esp_codec_dev_write() call, whose buffer is
- * drained by the I2S DMA engine. Splitting the two keeps synthesis jitter away
- * from DMA refills and gives the renderer room to run ahead.
- */
-
+/* A single DSP owner feeds a bounded PCM ring. Only the writer owns codec I/O.
+ * Task startup is gated until all resources exist, so failed init rolls back
+ * without interrupting a renderer while it owns a source lock. */
 #include "app_audio.h"
 
 #include <stdatomic.h>
-#include <string.h>
 
 #include "bsp/esp_mosaico.h"
-#include "esp_check.h"
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "freertos/task.h"
 
-#define AUDIO_SAMPLE_RATE 48000
 #define AUDIO_CHANNELS 2
-#define AUDIO_CHUNK_FRAMES 512
+#define AUDIO_CHUNK_FRAMES APP_AUDIO_BLOCK_FRAMES
 #define AUDIO_RING_CHUNKS 4
 #define AUDIO_DSP_STACK 4096
 #define AUDIO_WRITER_STACK 3072
@@ -40,36 +29,31 @@
 #define AUDIO_STATS_PERIOD_US (5 * 1000 * 1000)
 
 static const char *TAG = "app_audio";
-
 typedef int16_t audio_chunk_t[AUDIO_CHUNK_FRAMES * AUDIO_CHANNELS];
 
+/* Process-lifetime singleton; init is called by the composition task only.
+ * The bus is borrowed except for the compatibility init() wrapper. */
 static struct {
     esp_codec_dev_handle_t codec;
-    tracker_engine_t *engine;
+    app_audio_bus_t *bus;
+    app_audio_bus_t *owned_bus;
     TaskHandle_t dsp_task;
     TaskHandle_t writer_task;
     SemaphoreHandle_t free_chunks;
     SemaphoreHandle_t ready_chunks;
     audio_chunk_t ring[AUDIO_RING_CHUNKS];
+    /* The same semaphore ownership transfer as PCM protects each timing slot. */
+    int64_t render_us[AUDIO_RING_CHUNKS];
     atomic_int volume_req;
-    atomic_bool running;
     int applied_volume;
-    /* diagnostics */
-    int64_t dsp_max_us;
-    int64_t write_max_us;
-    int64_t dsp_total_us;
-    int64_t write_total_us;
-    int64_t stats_start_us;
-    unsigned dsp_chunks;
+    bool ready;
 } s_audio = {.volume_req = AUDIO_DEFAULT_VOLUME, .applied_volume = -1};
 
 static void apply_volume(void)
 {
     const int volume = atomic_load(&s_audio.volume_req);
-    if (volume == s_audio.applied_volume) {
-        return;
-    }
-    if (esp_codec_dev_set_out_vol(s_audio.codec, volume) == ESP_CODEC_DEV_OK) {
+    if (volume != s_audio.applied_volume &&
+            esp_codec_dev_set_out_vol(s_audio.codec, volume) == ESP_CODEC_DEV_OK) {
         s_audio.applied_volume = volume;
     }
 }
@@ -77,67 +61,175 @@ static void apply_volume(void)
 static void dsp_task(void *argument)
 {
     (void)argument;
+    (void)ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
     int head = 0;
-    while (atomic_load(&s_audio.running)) {
+    for (;;) {
         if (xSemaphoreTake(s_audio.free_chunks, portMAX_DELAY) != pdTRUE) {
-            break;
+            continue;
         }
         const int64_t start = esp_timer_get_time();
-        tracker_engine_render(s_audio.engine, s_audio.ring[head],
-                              AUDIO_CHUNK_FRAMES);
-        const int64_t elapsed = esp_timer_get_time() - start;
-        s_audio.dsp_total_us += elapsed;
-        if (elapsed > s_audio.dsp_max_us) {
-            s_audio.dsp_max_us = elapsed;
-        }
-        ++s_audio.dsp_chunks;
+        app_audio_bus_render(s_audio.bus, s_audio.ring[head], AUDIO_CHUNK_FRAMES);
+        s_audio.render_us[head] = esp_timer_get_time() - start;
         head = (head + 1) % AUDIO_RING_CHUNKS;
-        xSemaphoreGive(s_audio.ready_chunks);
+        (void)xSemaphoreGive(s_audio.ready_chunks);
     }
-    vTaskDelete(NULL);
 }
 
 static void writer_task(void *argument)
 {
     (void)argument;
+    (void)ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
     int tail = 0;
-    while (atomic_load(&s_audio.running)) {
+    /* Statistics have one owner. Timings arrive alongside the matching PCM
+     * chunk instead of racing with a reset in another task. */
+    int64_t stats_start = esp_timer_get_time();
+    int64_t dsp_total = 0;
+    int64_t dsp_max = 0;
+    int64_t write_total = 0;
+    int64_t write_max = 0;
+    int64_t ready_wait_max = 0;
+    unsigned late_blocks = 0;
+    unsigned chunks = 0;
+    for (;;) {
+        const int64_t ready_start = esp_timer_get_time();
         if (xSemaphoreTake(s_audio.ready_chunks, portMAX_DELAY) != pdTRUE) {
-            break;
+            continue;
+        }
+        const int64_t ready_wait = esp_timer_get_time() - ready_start;
+        if (ready_wait > ready_wait_max) {
+            ready_wait_max = ready_wait;
+        }
+        const int64_t render_us = s_audio.render_us[tail];
+        if (render_us > (int64_t)APP_AUDIO_BLOCK_FRAMES * 1000000 / APP_AUDIO_SAMPLE_RATE) {
+            ++late_blocks;
+        }
+        dsp_total += render_us;
+        if (render_us > dsp_max) {
+            dsp_max = render_us;
         }
         apply_volume();
         const int64_t start = esp_timer_get_time();
         const int result = esp_codec_dev_write(s_audio.codec, s_audio.ring[tail],
                                                sizeof(audio_chunk_t));
         const int64_t elapsed = esp_timer_get_time() - start;
-        s_audio.write_total_us += elapsed;
-        if (elapsed > s_audio.write_max_us) {
-            s_audio.write_max_us = elapsed;
+        write_total += elapsed;
+        if (elapsed > write_max) {
+            write_max = elapsed;
         }
+        ++chunks;
         tail = (tail + 1) % AUDIO_RING_CHUNKS;
-        xSemaphoreGive(s_audio.free_chunks);
+        (void)xSemaphoreGive(s_audio.free_chunks);
         if (result != ESP_CODEC_DEV_OK) {
             ESP_LOGW(TAG, "codec write failed: %d", result);
             vTaskDelay(pdMS_TO_TICKS(5));
         }
-
         const int64_t now = esp_timer_get_time();
-        if (now - s_audio.stats_start_us >= AUDIO_STATS_PERIOD_US &&
-            s_audio.dsp_chunks > 0) {
-            ESP_LOGI(TAG, "dsp avg=%lldus max=%lldus | write avg=%lldus max=%lldus",
-                     (long long)(s_audio.dsp_total_us / s_audio.dsp_chunks),
-                     (long long)s_audio.dsp_max_us,
-                     (long long)(s_audio.write_total_us / s_audio.dsp_chunks),
-                     (long long)s_audio.write_max_us);
-            s_audio.stats_start_us = now;
-            s_audio.dsp_max_us = 0;
-            s_audio.write_max_us = 0;
-            s_audio.dsp_total_us = 0;
-            s_audio.write_total_us = 0;
-            s_audio.dsp_chunks = 0;
+        if (now - stats_start >= AUDIO_STATS_PERIOD_US) {
+            ESP_LOGI(TAG, "dsp avg=%lldus max=%lldus | write avg=%lldus max=%lldus | ready_wait=%lldus late=%u",
+                     (long long)(dsp_total / chunks), (long long)dsp_max,
+                     (long long)(write_total / chunks), (long long)write_max,
+                     (long long)ready_wait_max, late_blocks);
+            stats_start = now;
+            dsp_total = 0;
+            dsp_max = 0;
+            write_total = 0;
+            write_max = 0;
+            ready_wait_max = 0;
+            late_blocks = 0;
+            chunks = 0;
         }
     }
-    vTaskDelete(NULL);
+}
+
+/* Only used while both task entry points are still waiting for notification. */
+static void rollback_init(bool codec_open)
+{
+    if (s_audio.dsp_task != NULL) {
+        vTaskDelete(s_audio.dsp_task);
+        s_audio.dsp_task = NULL;
+    }
+    if (s_audio.writer_task != NULL) {
+        vTaskDelete(s_audio.writer_task);
+        s_audio.writer_task = NULL;
+    }
+    if (s_audio.free_chunks != NULL) {
+        vSemaphoreDelete(s_audio.free_chunks);
+        s_audio.free_chunks = NULL;
+    }
+    if (s_audio.ready_chunks != NULL) {
+        vSemaphoreDelete(s_audio.ready_chunks);
+        s_audio.ready_chunks = NULL;
+    }
+    if (codec_open) {
+        (void)esp_codec_dev_set_out_mute(s_audio.codec, true);
+        (void)esp_codec_dev_close(s_audio.codec);
+    }
+    /* BSP owns the cached codec handle and its I2S interfaces. */
+    s_audio.codec = NULL;
+    s_audio.bus = NULL;
+    s_audio.applied_volume = -1;
+}
+
+esp_err_t app_audio_init_bus(app_audio_bus_t *bus)
+{
+    if (bus == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    if (s_audio.ready) {
+        return s_audio.bus == bus ? ESP_OK : ESP_ERR_INVALID_STATE;
+    }
+    esp_err_t error = ESP_FAIL;
+    bool codec_open = false;
+    s_audio.codec = bsp_audio_codec_speaker_init();
+    if (s_audio.codec == NULL) {
+        ESP_LOGE(TAG, "speaker init failed");
+        goto fail;
+    }
+    esp_codec_dev_sample_info_t format = {
+        .sample_rate = APP_AUDIO_SAMPLE_RATE,
+        .bits_per_sample = 16,
+        .channel = AUDIO_CHANNELS,
+    };
+    if (esp_codec_dev_open(s_audio.codec, &format) != ESP_CODEC_DEV_OK) {
+        ESP_LOGE(TAG, "codec open failed");
+        goto fail;
+    }
+    codec_open = true;
+    if (esp_codec_dev_set_out_vol(s_audio.codec, AUDIO_DEFAULT_VOLUME) !=
+            ESP_CODEC_DEV_OK ||
+            esp_codec_dev_set_out_mute(s_audio.codec, false) != ESP_CODEC_DEV_OK) {
+        ESP_LOGE(TAG, "codec volume/unmute failed");
+        goto fail;
+    }
+    s_audio.applied_volume = AUDIO_DEFAULT_VOLUME;
+    s_audio.bus = bus;
+    s_audio.free_chunks = xSemaphoreCreateCounting(AUDIO_RING_CHUNKS,
+                                                   AUDIO_RING_CHUNKS);
+    s_audio.ready_chunks = xSemaphoreCreateCounting(AUDIO_RING_CHUNKS, 0);
+    error = ESP_ERR_NO_MEM;
+    if (s_audio.free_chunks == NULL || s_audio.ready_chunks == NULL) {
+        ESP_LOGE(TAG, "chunk semaphores failed");
+        goto fail;
+    }
+    if (xTaskCreatePinnedToCore(dsp_task, "audio_dsp", AUDIO_DSP_STACK, NULL,
+                                AUDIO_DSP_PRIORITY, &s_audio.dsp_task,
+                                AUDIO_TASK_CORE) != pdPASS ||
+            xTaskCreatePinnedToCore(writer_task, "audio_i2s", AUDIO_WRITER_STACK, NULL,
+                                    AUDIO_WRITER_PRIORITY, &s_audio.writer_task,
+                                    AUDIO_TASK_CORE) != pdPASS) {
+        ESP_LOGE(TAG, "audio task create failed");
+        goto fail;
+    }
+    s_audio.ready = true;
+    (void)xTaskNotifyGive(s_audio.dsp_task);
+    (void)xTaskNotifyGive(s_audio.writer_task);
+    ESP_LOGI(TAG, "ES8311 ready: %d Hz stereo, %d frame chunks, %d chunk ring",
+             APP_AUDIO_SAMPLE_RATE, AUDIO_CHUNK_FRAMES, AUDIO_RING_CHUNKS);
+    return ESP_OK;
+
+fail:
+    rollback_init(codec_open);
+    return error;
 }
 
 esp_err_t app_audio_init(tracker_engine_t *engine)
@@ -145,50 +237,20 @@ esp_err_t app_audio_init(tracker_engine_t *engine)
     if (engine == NULL) {
         return ESP_ERR_INVALID_ARG;
     }
-    if (s_audio.codec != NULL) {
-        return ESP_OK;
+    if (s_audio.ready) {
+        return app_audio_bus_tracker(s_audio.bus) == engine
+               ? ESP_OK : ESP_ERR_INVALID_STATE;
     }
-
-    esp_codec_dev_handle_t speaker = bsp_audio_codec_speaker_init();
-    ESP_RETURN_ON_FALSE(speaker != NULL, ESP_FAIL, TAG, "speaker init failed");
-
-    esp_codec_dev_sample_info_t format = {
-        .sample_rate = AUDIO_SAMPLE_RATE,
-        .bits_per_sample = 16,
-        .channel = AUDIO_CHANNELS,
-    };
-    ESP_RETURN_ON_FALSE(esp_codec_dev_open(speaker, &format) == ESP_CODEC_DEV_OK,
-                        ESP_FAIL, TAG, "codec open failed");
-
-    s_audio.codec = speaker;
-    s_audio.engine = engine;
-    ESP_RETURN_ON_FALSE(esp_codec_dev_set_out_vol(speaker, AUDIO_DEFAULT_VOLUME) ==
-                            ESP_CODEC_DEV_OK, ESP_FAIL, TAG, "volume failed");
-    s_audio.applied_volume = AUDIO_DEFAULT_VOLUME;
-    ESP_RETURN_ON_FALSE(esp_codec_dev_set_out_mute(speaker, false) == ESP_CODEC_DEV_OK,
-                        ESP_FAIL, TAG, "unmute failed");
-
-    s_audio.free_chunks = xSemaphoreCreateCounting(AUDIO_RING_CHUNKS,
-                                                   AUDIO_RING_CHUNKS);
-    s_audio.ready_chunks = xSemaphoreCreateCounting(AUDIO_RING_CHUNKS, 0);
-    ESP_RETURN_ON_FALSE(s_audio.free_chunks != NULL && s_audio.ready_chunks != NULL,
-                        ESP_ERR_NO_MEM, TAG, "chunk semaphores failed");
-
-    atomic_store(&s_audio.running, true);
-    s_audio.stats_start_us = esp_timer_get_time();
-    ESP_RETURN_ON_FALSE(xTaskCreatePinnedToCore(
-                            dsp_task, "tracker_dsp", AUDIO_DSP_STACK, NULL,
-                            AUDIO_DSP_PRIORITY, &s_audio.dsp_task,
-                            AUDIO_TASK_CORE) == pdPASS,
-                        ESP_ERR_NO_MEM, TAG, "dsp task create failed");
-    ESP_RETURN_ON_FALSE(xTaskCreatePinnedToCore(
-                            writer_task, "tracker_i2s", AUDIO_WRITER_STACK, NULL,
-                            AUDIO_WRITER_PRIORITY, &s_audio.writer_task,
-                            AUDIO_TASK_CORE) == pdPASS,
-                        ESP_ERR_NO_MEM, TAG, "writer task create failed");
-
-    ESP_LOGI(TAG, "ES8311 ready: %d Hz stereo, %d frame chunks, %d chunk ring",
-             AUDIO_SAMPLE_RATE, AUDIO_CHUNK_FRAMES, AUDIO_RING_CHUNKS);
+    app_audio_bus_t *bus = app_audio_bus_create(engine, NULL);
+    if (bus == NULL) {
+        return ESP_ERR_NO_MEM;
+    }
+    const esp_err_t error = app_audio_init_bus(bus);
+    if (error != ESP_OK) {
+        app_audio_bus_destroy(bus);
+        return error;
+    }
+    s_audio.owned_bus = bus;
     return ESP_OK;
 }
 
@@ -204,14 +266,16 @@ void app_audio_set_volume(int percent)
 
 void app_audio_play(void)
 {
-    if (s_audio.engine != NULL) {
-        tracker_engine_play(s_audio.engine);
+    tracker_engine_t *engine = app_audio_bus_tracker(s_audio.bus);
+    if (engine != NULL) {
+        tracker_engine_play(engine);
     }
 }
 
 void app_audio_pause(void)
 {
-    if (s_audio.engine != NULL) {
-        tracker_engine_pause(s_audio.engine);
+    tracker_engine_t *engine = app_audio_bus_tracker(s_audio.bus);
+    if (engine != NULL) {
+        tracker_engine_pause(engine);
     }
 }
