@@ -166,6 +166,10 @@ static void submit_request(tracker_workspace_t *w)
     if (!request_ready(w)) {
         return;
     }
+    if (w->screen != TRACKER_WORKSPACE_ERROR) {
+        w->operation_return = w->screen == TRACKER_WORKSPACE_SWITCH ?
+                              w->switch_return : w->screen;
+    }
     w->retry = w->request;
     w->waiting_operation = w->project_view.operation_generation;
     const app_project_error_t result = app_project_request(w->project, &w->request);
@@ -206,6 +210,7 @@ void tracker_workspace_request(tracker_workspace_t *w, app_project_action_t acti
          * candidate. Only a successful bank commit clears that preview. */
         if (w->project_view.dirty && !w->request.discard_dirty) {
             w->pending_switch = w->request;
+            w->switch_return = w->screen;
             show(w, TRACKER_WORKSPACE_SWITCH);
             return;
         }
@@ -221,6 +226,9 @@ void tracker_workspace_init(tracker_workspace_t *w,
     w->sampler = sampler;
     w->screen = TRACKER_WORKSPACE_HOME;
     w->return_screen = TRACKER_WORKSPACE_HOME;
+    w->import_return = TRACKER_WORKSPACE_PROJECTS;
+    w->switch_return = TRACKER_WORKSPACE_PROJECTS;
+    w->operation_return = TRACKER_WORKSPACE_HOME;
     w->assign_slot = 1;
     w->session_generation = UINT64_MAX;
     w->sampler_error = APP_SAMPLER_OK;
@@ -416,6 +424,96 @@ void tracker_workspace_swipe_home(tracker_workspace_t *w, tracker_model_t *model
     page_home(w, model, w->home_page + (direction < 0 ? 2 : 1));
 }
 
+bool tracker_workspace_has_parent(const tracker_workspace_t *w)
+{
+    if (!w) {
+        return false;
+    }
+    switch (w->screen) {
+    case TRACKER_WORKSPACE_NEW:
+    case TRACKER_WORKSPACE_IMPORT:
+    case TRACKER_WORKSPACE_NAME:
+    case TRACKER_WORKSPACE_SAVE:
+    case TRACKER_WORKSPACE_SWITCH:
+    case TRACKER_WORKSPACE_ERROR:
+    case TRACKER_WORKSPACE_STORAGE:
+        return true;
+    case TRACKER_WORKSPACE_SAMPLER:
+        return w->sampler_tab == TRACKER_SAMPLE_ASSIGN;
+    default:
+        return false;
+    }
+}
+
+void tracker_workspace_open_import(tracker_workspace_t *w, bool wav)
+{
+    w->import_return = w->screen == TRACKER_WORKSPACE_SAMPLER ?
+                       TRACKER_WORKSPACE_SAMPLER : TRACKER_WORKSPACE_PROJECTS;
+    w->import_wav = wav;
+    show(w, TRACKER_WORKSPACE_IMPORT);
+}
+
+bool tracker_workspace_back(tracker_workspace_t *w, tracker_model_t *model)
+{
+    if (!w || !model || w->screen == TRACKER_WORKSPACE_HOME) {
+        return false;
+    }
+    const bool busy = tracker_workspace_busy(w);
+    tracker_workspace_screen_t target = TRACKER_WORKSPACE_HOME;
+    switch (w->screen) {
+    case TRACKER_WORKSPACE_NEW:
+        target = TRACKER_WORKSPACE_PROJECTS;
+        break;
+    case TRACKER_WORKSPACE_IMPORT:
+        target = w->import_return;
+        break;
+    case TRACKER_WORKSPACE_NAME:
+        target = w->name_return;
+        w->editing_name = false;
+        break;
+    case TRACKER_WORKSPACE_SAVE:
+        target = w->return_screen;
+        break;
+    case TRACKER_WORKSPACE_SWITCH:
+        target = w->switch_return;
+        break;
+    case TRACKER_WORKSPACE_ERROR:
+        target = w->operation_return;
+        break;
+    case TRACKER_WORKSPACE_STORAGE:
+        target = TRACKER_WORKSPACE_SETTINGS;
+        break;
+    case TRACKER_WORKSPACE_SAMPLER:
+        if (w->sampler_tab == TRACKER_SAMPLE_ASSIGN) {
+            tracker_workspace_cancel_input(w);
+            w->sampler_tab = TRACKER_SAMPLE_LIBRARY;
+            w->dirty = true;
+            return true;
+        }
+        break;
+    default:
+        break;
+    }
+    /* Back only retracts the unsubmitted follow-up switch. An already admitted
+     * save/import continues and publishes its actual completion/error. */
+    w->switch_after_save = false;
+    tracker_workspace_cancel_input(w);
+    tracker_model_cancel_input(model);
+    if (target < TRACKER_WORKSPACE_HOME || target > TRACKER_WORKSPACE_LEGACY ||
+            target == w->screen || target == TRACKER_WORKSPACE_ERROR) {
+        target = TRACKER_WORKSPACE_HOME;
+    }
+    if (target == TRACKER_WORKSPACE_HOME) {
+        tracker_workspace_home(w, model);
+    } else {
+        show(w, target);
+        if (busy) {
+            w->job_background = true;
+        }
+    }
+    return true;
+}
+
 static void home_open(tracker_workspace_t *w, tracker_model_t *model, int index)
 {
     static const int modules[] = {-1, -2, TRACKER_PAGE_PLAYBACK, TRACKER_PAGE_MIXER,
@@ -515,8 +613,7 @@ static void tap(tracker_workspace_t *w, tracker_model_t *model,
         if (inside(x, y, 24, 92, 124, 36)) {
             show(w, TRACKER_WORKSPACE_NEW);
         } else if (inside(x, y, 156, 92, 124, 36)) {
-            w->import_wav = false;
-            show(w, TRACKER_WORKSPACE_IMPORT);
+            tracker_workspace_open_import(w, false);
         } else if (inside(x, y, 288, 92, 80, 36)) {
             w->show_recent = !w->show_recent;
             w->selected_project = w->project_first = 0;
@@ -588,8 +685,7 @@ static void tap(tracker_workspace_t *w, tracker_model_t *model,
         }
     } else if (w->screen == TRACKER_WORKSPACE_NAME) {
         if (inside(x, y, 24, 378, 208, 44)) {
-            w->switch_after_save = false;
-            show(w, w->name_return);
+            (void)tracker_workspace_back(w, model);
         } else if (inside(x, y, 248, 378, 208, 44)) {
             bool has_name = false;
             for (const char *p = w->typed_name; *p; ++p) if (*p != ' ') {
@@ -607,7 +703,7 @@ static void tap(tracker_workspace_t *w, tracker_model_t *model,
         }
     } else if (w->screen == TRACKER_WORKSPACE_SAVE) {
         if (inside(x, y, 24, 292, 208, 48)) {
-            show(w, w->return_screen);
+            (void)tracker_workspace_back(w, model);
         } else if (inside(x, y, 248, 292, 208, 48)) {
             memset(&w->request, 0, sizeof(w->request));
             tracker_workspace_request(w, APP_PROJECT_SAVE);
@@ -627,19 +723,17 @@ static void tap(tracker_workspace_t *w, tracker_model_t *model,
             w->request.discard_dirty = true;
             tracker_workspace_request(w, w->request.action);
         } else if (inside(x, y, 24, 370, 432, 48)) {
-            w->switch_after_save = false;
-            show(w, TRACKER_WORKSPACE_PROJECTS);
+            (void)tracker_workspace_back(w, model);
         }
     } else if (w->screen == TRACKER_WORKSPACE_ERROR) {
         if (inside(x, y, 24, 310, 208, 48)) {
             w->request = w->retry;
             submit_request(w); /* Keep SAVE AS / SAVE+SWITCH intent on retry. */
         } else if (inside(x, y, 248, 310, 208, 48)) {
-            w->switch_after_save = false;
-            show(w, TRACKER_WORKSPACE_PROJECTS);
+            (void)tracker_workspace_back(w, model);
         }
     } else if (w->screen == TRACKER_WORKSPACE_STORAGE && inside(x, y, 24, 374, 432, 44)) {
-        show(w, TRACKER_WORKSPACE_SETTINGS);
+        (void)tracker_workspace_back(w, model);
     }
     (void)settings;
 }

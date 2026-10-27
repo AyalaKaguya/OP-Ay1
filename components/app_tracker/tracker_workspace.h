@@ -60,6 +60,9 @@ typedef struct {
     tracker_workspace_screen_t screen;
     tracker_workspace_screen_t return_screen;
     tracker_workspace_screen_t name_return;
+    tracker_workspace_screen_t import_return;
+    tracker_workspace_screen_t switch_return;
+    tracker_workspace_screen_t operation_return;
     app_project_snapshot_t project_view;
     app_project_request_t request;
     app_project_request_t retry;
@@ -140,6 +143,11 @@ void tracker_workspace_cancel_input(tracker_workspace_t *workspace);
 void tracker_workspace_home(tracker_workspace_t *workspace, tracker_model_t *model);
 void tracker_workspace_swipe_home(tracker_workspace_t *workspace,
                                   tracker_model_t *model, int direction);
+/* Nested pages expose a back cue. Root modules still return HOME on Back.
+ * Navigation never commits/discards a draft or cancels admitted background IO. */
+bool tracker_workspace_has_parent(const tracker_workspace_t *workspace);
+bool tracker_workspace_back(tracker_workspace_t *workspace, tracker_model_t *model);
+void tracker_workspace_open_import(tracker_workspace_t *workspace, bool wav);
 bool tracker_workspace_pointer(tracker_workspace_t *workspace, tracker_model_t *model,
                                tracker_settings_t *settings, int x, int y,
                                bool pressed);

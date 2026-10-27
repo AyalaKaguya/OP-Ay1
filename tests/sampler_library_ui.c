@@ -30,6 +30,12 @@ void tracker_workspace_request(tracker_workspace_t *w, app_project_action_t acti
     (void)w; (void)action;
     CHECK(false);
 }
+void tracker_workspace_open_import(tracker_workspace_t *w, bool wav)
+{
+    w->import_return = w->screen;
+    w->import_wav = wav;
+    w->screen = TRACKER_WORKSPACE_IMPORT;
+}
 void tracker_workspace_message(tracker_workspace_t *w, const char *message)
 {
     snprintf(w->message, sizeof(w->message), "%s", message);

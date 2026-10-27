@@ -44,9 +44,11 @@ typedef struct {
 typedef struct {
     esp_timer_handle_t watchdog;
     button_handle_t buttons[BSP_BUTTON_NUM];
+    button_handle_t boot_button;
     int button_count;
     atomic_uint ticks;
     atomic_uint transport_requests;
+    atomic_bool back_requested;
     atomic_bool cancel_input;
     atomic_bool active;
     atomic_bool snapshot_ready;
@@ -103,6 +105,9 @@ static void heartbeat(void *context)
                                                        0, memory_order_acquire);
     if (requests) {
         app_tracker_request_transport(device->controller, (requests & 2U) != 0);
+    }
+    if (atomic_exchange_explicit(&device->back_requested, false, memory_order_acquire)) {
+        app_tracker_request_back(device->controller);
     }
     tracker_pointer_t pointer;
     for (unsigned i = 0; i < POINTER_QUEUE_CAPACITY &&
@@ -408,6 +413,41 @@ static void ai_long(void *button, void *context)
     atomic_fetch_or_explicit(&device->transport_requests, 2U, memory_order_release);
 }
 
+static void boot_back(void *button, void *context)
+{
+    (void)button;
+    tracker_device_t *device = context;
+    if (!atomic_load_explicit(&device->active, memory_order_acquire) || record_activity(device)) {
+        return;
+    }
+    atomic_store_explicit(&device->back_requested, true, memory_order_release);
+}
+
+static void create_boot_button(tracker_device_t *device)
+{
+    const button_config_t common = {0};
+    const button_gpio_config_t gpio = {
+        .gpio_num = BSP_BUTTON_BOOT_GPIO, .active_level = BSP_BUTTON_ACTIVE_LEVEL,
+        .enable_power_save = false, .disable_pull = false,
+    };
+    const esp_err_t created = iot_button_new_gpio_device(&common, &gpio, &device->boot_button);
+    if (created != ESP_OK) {
+        ESP_LOGW(TAG, "BOOT back button unavailable (GPIO %d, %d)", BSP_BUTTON_BOOT_GPIO, created);
+        return;
+    }
+    const esp_err_t registered = iot_button_register_cb(device->boot_button, BUTTON_SINGLE_CLICK,
+                                                        NULL, boot_back, device);
+    if (registered != ESP_OK) {
+        const esp_err_t deleted = iot_button_delete(device->boot_button);
+        if (deleted == ESP_OK) {
+            device->boot_button = NULL;
+        }
+        ESP_LOGW(TAG, "BOOT back callback unavailable (%d; cleanup %d)", registered, deleted);
+    } else {
+        ESP_LOGI(TAG, "BOOT back button ready on GPIO %d", BSP_BUTTON_BOOT_GPIO);
+    }
+}
+
 static void shutdown(void *context)
 {
     tracker_device_t *device = context;
@@ -438,6 +478,7 @@ esp_err_t app_tracker_start_workstation(esp_gsp_handle_t ui, tracker_engine_t *e
     }
     atomic_init(&device->ticks, 0);
     atomic_init(&device->transport_requests, 0);
+    atomic_init(&device->back_requested, false);
     atomic_init(&device->cancel_input, false);
     atomic_init(&device->active, false);
     atomic_init(&device->snapshot_ready, false);
@@ -517,6 +558,7 @@ esp_err_t app_tracker_start_workstation(esp_gsp_handle_t ui, tracker_engine_t *e
             ESP_LOGW(TAG, "AI button callback unavailable");
         }
     }
+    create_boot_button(device);
     return ESP_OK;
 }
 

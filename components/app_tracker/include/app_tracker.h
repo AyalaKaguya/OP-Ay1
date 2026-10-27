@@ -105,6 +105,8 @@ esp_gsp_err_t app_tracker_read_settings(app_tracker_t *state,
                                         app_tracker_settings_snapshot_t *snapshot);
 /* Cross-task hardware requests are drained by the UI callback thread. */
 void app_tracker_request_transport(app_tracker_t *state, bool restart);
+/* Cross-task BOOT/Back request, consumed on the UI callback thread. */
+void app_tracker_request_back(app_tracker_t *state);
 /* UI-thread entry for a platform input queue; uses the same pointer path as
  * mapped GSP input. Device RPC tasks must enqueue rather than call directly. */
 void app_tracker_feed_pointer(app_tracker_t *state, int x, int y, bool pressed);

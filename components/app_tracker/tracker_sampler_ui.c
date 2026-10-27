@@ -268,8 +268,7 @@ static void tap_library(tracker_workspace_t *w, int x, int y)
             w->sample = index;
         }
     } else if (inside(x, y, 345, 125, 111, 15)) {
-        w->import_wav = true;
-        w->screen = TRACKER_WORKSPACE_IMPORT;
+        tracker_workspace_open_import(w, true);
     } else if (inside(x, y, 24, 382, 136, 40)) {
         audition(w);
     } else if (inside(x, y, 172, 382, 136, 40)) {
