@@ -6,6 +6,7 @@ Uses an isolated real filesystem root and verifies committed project resources.
 No RPC mutates application state; only feed_pointer and screenshots are used.
 Build the native backend first. Microphone/hardware behavior is not simulated.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -41,24 +42,53 @@ class Session:
         self.rpc = None
         ready = self.output / f"ready-{time.time_ns()}.json"
         flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
-        self.sim = subprocess.Popen([
-            str(args.sim.resolve()), "--bundle", str(args.build_dir.resolve() / "op_ay1_backend_assets/app.gspb"),
-            "--frames", "0", "--headless", "--backend-required", "--backend-listen", "tcp://127.0.0.1:0",
-            "--api-listen", "tcp://127.0.0.1:0", "--ready-file", str(ready),
-        ], cwd=args.project_dir, stdout=self.logs[0], stderr=subprocess.STDOUT, creationflags=flags)
+        self.sim = subprocess.Popen(
+            [
+                str(args.sim.resolve()),
+                "--bundle",
+                str(args.build_dir.resolve() / "op_ay1_backend_assets/app.gspb"),
+                "--frames",
+                "0",
+                "--headless",
+                "--backend-required",
+                "--backend-listen",
+                "tcp://127.0.0.1:0",
+                "--api-listen",
+                "tcp://127.0.0.1:0",
+                "--ready-file",
+                str(ready),
+            ],
+            cwd=args.project_dir,
+            stdout=self.logs[0],
+            stderr=subprocess.STDOUT,
+            creationflags=flags,
+        )
         deadline = time.monotonic() + 30
         while not ready.exists():
             if self.sim.poll() is not None or time.monotonic() > deadline:
                 raise RuntimeError("Simulator failed to become ready; see sim.log")
             time.sleep(0.05)
         info = json.loads(ready.read_text(encoding="utf-8"))
-        env = dict(os.environ, OP_AY1_SIM_STATE_LOG=str(self.state_path),
-                   OP_AY1_SIM_SETTINGS_LOG=str(self.settings_path), OP_AY1_SIM_AUDIO="0",
-                   OP_AY1_SIM_STOP_FILE=str(self.stop), OP_AY1_PROJECT_ROOT=str(self.storage))
-        self.backend = subprocess.Popen([
-            str(args.build_dir.resolve() / ("op_ay1_backend.exe" if os.name == "nt" else "op_ay1_backend")),
-            "--endpoint", info["backend"],
-        ], cwd=args.project_dir, env=env, stdout=self.logs[1], stderr=subprocess.STDOUT, creationflags=flags)
+        env = dict(
+            os.environ,
+            OP_AY1_SIM_STATE_LOG=str(self.state_path),
+            OP_AY1_SIM_SETTINGS_LOG=str(self.settings_path),
+            OP_AY1_SIM_AUDIO="0",
+            OP_AY1_SIM_STOP_FILE=str(self.stop),
+            OP_AY1_PROJECT_ROOT=str(self.storage),
+        )
+        self.backend = subprocess.Popen(
+            [
+                str(args.build_dir.resolve() / ("op_ay1_backend.exe" if os.name == "nt" else "op_ay1_backend")),
+                "--endpoint",
+                info["backend"],
+            ],
+            cwd=args.project_dir,
+            env=env,
+            stdout=self.logs[1],
+            stderr=subprocess.STDOUT,
+            creationflags=flags,
+        )
         self.rpc = Rpc(info["api"])
         self.checks = []
 
@@ -83,8 +113,9 @@ class Session:
         raise AssertionError(f"Expected state not reached; last={last}")
 
     def settled(self, screen=None):
-        return self.read(lambda s: not s["project_busy"] and not s["page_motion"] and
-                         (screen is None or s["workspace"] == screen))
+        return self.read(
+            lambda s: not s["project_busy"] and not s["page_motion"] and (screen is None or s["workspace"] == screen)
+        )
 
     def pointer(self, x, y, pressed, pause=0.06):
         self.rpc.call("feed_pointer", {"x": x, "y": y, "pressed": pressed})
@@ -201,12 +232,16 @@ class Session:
             stored_name = manifest[56:120].split(b"\0", 1)[0].decode("utf-8")
             if stored_name != name:
                 continue
-            module, bank, state = [(version / item).read_bytes() for item in ("module.s3m", "samples.bank", "state.bin")]
+            module, bank, state = [
+                (version / item).read_bytes() for item in ("module.s3m", "samples.bank", "state.bin")
+            ]
             assert len(module) == struct.unpack_from("<Q", manifest, 28)[0]
             assert len(bank) == struct.unpack_from("<Q", manifest, 36)[0]
             for data, offset in ((module, 44), (bank, 48), (state, 52)):
                 assert zlib.crc32(data) == struct.unpack_from("<I", manifest, offset)[0]
-            matches.append({"id": project.name, "version": version.name, "module": module, "bank": bank, "state": state})
+            matches.append(
+                {"id": project.name, "version": version.name, "module": module, "bank": bank, "state": state}
+            )
         assert matches, name
         return matches
 
@@ -220,8 +255,7 @@ class Session:
             fields = struct.unpack_from("<14I", bank, cursor + 64)
             frames, assigned = fields[1], fields[11]
             cursor += 120
-            entries.append({"frames": frames, "assigned_slot": assigned,
-                            "pcm": bank[cursor:cursor + frames * 2]})
+            entries.append({"frames": frames, "assigned_slot": assigned, "pcm": bank[cursor : cursor + frames * 2]})
             cursor += frames * 2
         assert cursor == len(bank)
         return entries
@@ -278,8 +312,7 @@ def run(s: Session, args):
     assert song["id"] != blank_archive["id"]
     assert song["module"] == (args.project_dir / "main/assets/aryx.s3m").read_bytes()
     original_generation = s.read()["project_generation"]
-    expected = {0: PROJECTS, 1: SETTINGS, 2: LEGACY, 3: LEGACY, 4: LEGACY,
-                5: LEGACY, 6: SAMPLER, 7: LEGACY, 8: LEGACY}
+    expected = {0: PROJECTS, 1: SETTINGS, 2: LEGACY, 3: LEGACY, 4: LEGACY, 5: LEGACY, 6: SAMPLER, 7: LEGACY, 8: LEGACY}
     pages = {2: 2, 3: 3, 4: 4, 5: 5, 7: 1, 8: 0}
     for index in range(9):
         current = s.module(index)
@@ -312,13 +345,17 @@ def run(s: Session, args):
     same = s.settled(HOME)
     assert same["project_name"] == "SONG A" and same["project_dirty"] and same["gain"] == changed["gain"]
     assert same["project_generation"] == changed["project_generation"]
-    s.browser(); s.tap(326, 110)  # back to all verified projects
+    s.browser()
+    s.tap(326, 110)  # back to all verified projects
     s.other_project()
     s.settled(SWITCH)
     s.screenshot("dirty-switch")
     s.tap(240, 394)  # cancel
-    s.read(lambda v: v["project_dirty"] and v["project_name"] == "SONG A" and
-           v["project_generation"] == changed["project_generation"])
+    s.read(
+        lambda v: v["project_dirty"]
+        and v["project_name"] == "SONG A"
+        and v["project_generation"] == changed["project_generation"]
+    )
     s.other_project()
     s.tap(240, 274)  # save + switch
     switched = s.read(lambda v: v["workspace"] == HOME and not v["project_busy"] and v["project_name"] == "BLANK A")
@@ -378,7 +415,10 @@ def run(s: Session, args):
     fixture = inbox / "fixture.wav"
     pcm = b"".join(struct.pack("<h", round(math.sin(i / 11) * 12000)) for i in range(480))
     with wave.open(str(fixture), "wb") as wav:
-        wav.setnchannels(1); wav.setsampwidth(2); wav.setframerate(48000); wav.writeframes(pcm)
+        wav.setnchannels(1)
+        wav.setsampwidth(2)
+        wav.setframerate(48000)
+        wav.writeframes(pcm)
     s.browser()
     s.tap(416, 110)  # real catalog/inbox refresh
     s.tap(217, 110)
@@ -389,7 +429,7 @@ def run(s: Session, args):
     assert imported["sample_index"] == 9 and imported["sample_trim_end"] == 480 and imported["project_dirty"]
     s.tap(387, 402)  # explicit ASSIGN view
     s.read(lambda v: v["sampler_tab"] == 3)
-    s.tap(46, 230)   # choose tracker slot 1
+    s.tap(46, 230)  # choose tracker slot 1
     s.tap(352, 402)
     s.read(lambda v: v["sampler_tab"] == 0 and not v["project_busy"])
     s.save()
@@ -399,14 +439,23 @@ def run(s: Session, args):
     assert imported_entries[9]["assigned_slot"] == 1 and imported_entries[9]["pcm"] == pcm
     assert sum(entry["assigned_slot"] == 1 for entry in imported_entries) == 1
     assert persisted["module"] == song["module"], "Assignment overlay preserves original S3M/pattern/effect bytes"
-    s.checks.append("WAV inbox imports real PCM; explicit slot assignment persists without rewriting the original module")
+    s.checks.append(
+        "WAV inbox imports real PCM; explicit slot assignment persists without rewriting the original module"
+    )
 
     fixture.write_bytes(b"RIFF corrupt input")
     before = s.read()
-    s.browser(); s.tap(416, 110); s.tap(217, 110); s.tap(348, 110)
-    s.tap(130, 212); s.tap(240, 400)
+    s.browser()
+    s.tap(416, 110)
+    s.tap(217, 110)
+    s.tap(348, 110)
+    s.tap(130, 212)
+    s.tap(240, 400)
     failed = s.settled(ERROR)
-    assert failed["project_name"] == before["project_name"] and failed["project_generation"] == before["project_generation"]
+    assert (
+        failed["project_name"] == before["project_name"]
+        and failed["project_generation"] == before["project_generation"]
+    )
     assert failed["sample_count"] == 10 and not failed["project_dirty"]
     assert s.archive("SONG A")[0]["bank"] == persisted["bank"]
     s.screenshot("invalid-wav-retains-project")
@@ -428,14 +477,20 @@ def run(s: Session, args):
     assert len(copies) == 2 and copies[0]["id"] != copies[1]["id"]
     s.checks.append("Save As with an existing name creates a distinct verified project ID")
     s.screenshot("save-as-copy")
-    observed = [json.loads(line) for line in s.state_path.read_text(encoding="utf-8").splitlines() if line.endswith("}")]
+    observed = [
+        json.loads(line) for line in s.state_path.read_text(encoding="utf-8").splitlines() if line.endswith("}")
+    ]
     assert any(v["project_busy"] and v["workspace"] in (NAME, SAVE, IMPORT, SAMPLER) for v in observed)
     generations = [v["project_generation"] for v in observed]
     assert generations == sorted(generations)
     s.checks.append("async save/import busy states are observed and session generations never regress")
-    return {"passed": True, "checks": s.checks, "storage": str(s.storage),
-            "input": "GSP feed_pointer only; state logs and archives are read-only observations",
-            "unverified": ["device microphone/capture", "physical touch/USB/NAND", "power-loss durability"]}
+    return {
+        "passed": True,
+        "checks": s.checks,
+        "storage": str(s.storage),
+        "input": "GSP feed_pointer only; state logs and archives are read-only observations",
+        "unverified": ["device microphone/capture", "physical touch/USB/NAND", "power-loss durability"],
+    }
 
 
 def main():

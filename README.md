@@ -3,10 +3,12 @@
 A handheld tracker and music workstation for **ESP-Mosaico**: native synthesis,
 S3M playback and a pixel UI on a 480×480 touch display.
 
-The local `codex/project-workstation` implementation adds the approved 2×2 HOME
+The local `codex/project-build-tests` branch adds the approved 2×2 HOME
 launcher, a shared project session with NAND save/load, and a sample editor with
-WAV import and microphone recording. This implementation has not been built,
-tested or installed on hardware yet, at the user's request. See the
+WAV import and microphone recording. Portable regression tests, native GSP input
+checks and the pinned ESP-IDF firmware build passed on 2026-10-27. Board NAND,
+microphone capture and power-loss recovery still require hardware acceptance.
+See the
 [implementation record](docs/project-workstation-implementation.zh-CN.md) for
 storage ownership, import paths and the pending verification boundary.
 
@@ -147,8 +149,9 @@ single-note synth level was increased by 6 dB after listening feedback.
 
 - Touch input currently supports one pointer. Four DSP voices do not imply
   independent multitouch chord input.
-- Patch persistence, sample recording/import and a step sequencer are future
-  work. Section Pads currently launch Patterns rather than edit steps.
+- Project persistence and sample recording/import are implemented on this local
+  branch; their device paths still require hardware acceptance. A step sequencer
+  remains future work. Section Pads launch Patterns rather than edit steps.
 - USB MIDI Host device acceptance failed and further MIDI work is paused.
   Display timers and animations passed native/simulator checks and the pinned
   SDK build; physical display-off/wake and animation load remain unverified.

@@ -204,11 +204,13 @@ def main() -> int:
 
             state(lambda s: s["workspace"] == 0 and not s["project_busy"])
             tap(100, 176)  # HOME / OPEN PROJECT
-            tap(80, 110)   # NEW
+            tap(80, 110)  # NEW
             tap(240, 296)  # built-in ARYX import
             if state()["workspace"] == 6:
                 tap(240, 334)  # discard the initial unsaved demo session
-            state(lambda s: s["workspace"] == 0 and s["project_opened"] and not s["project_busy"] and not s["page_motion"])
+            state(
+                lambda s: s["workspace"] == 0 and s["project_opened"] and not s["project_busy"] and not s["page_motion"]
+            )
             tap(120, 330)  # HOME / PLAYBACK
             state(lambda s: s["workspace"] == 11 and not s["page_motion"])
             page(1)
