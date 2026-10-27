@@ -64,7 +64,9 @@ The Pad capture shows the state after a Pattern switch has completed.
 
 ## Controls
 
-- **Navigation:** tap a bottom page dot or swipe outside captured controls.
+- **Navigation:** swipe horizontally outside captured controls to change pages;
+  swipe up from the bottom edge to return HOME. Page dots briefly indicate the
+  selected page after a horizontal swipe.
 - **Playback:** play/pause is immediate; RESTART pauses and rewinds the song.
   Speed presets are 0.5×, 1×, 1.5× and 2×.
 - **Mixer:** drag a fader horizontally; drag the list vertically to scroll.

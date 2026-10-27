@@ -74,10 +74,12 @@ preserves a context whose detach could not be confirmed until process exit.
 ## Interaction contracts
 
 Startup shows the approved three-page, 2x2 HOME grid. All modules borrow one
-active project and audio graph. The shared project strip shows its stored name,
-dirty star and save state; the bottom-left HOME entry returns without loading
-another song. Legacy page content is fitted from rows 40..431 into 78..431,
-with the inverse mapping applied to input. Existing page slides, drawer
+active project and audio graph. Only HOME shows the project name, dirty star
+and save state. Swipe up from the bottom edge to return without loading another
+song. Modules have no workspace title, project strip, save shortcut or menu
+overlay. Tracker and settings content use rows 0..439; the project and sampler
+screens expand their own content into that same area, with matching inverse
+input mapping. Existing page slides, drawer
 animation and screen-off wake consumption remain in the shared UI owner.
 
 OPEN PROJECT lists the backend's verified catalog; RECENT retains four IDs
@@ -121,14 +123,25 @@ borrowed settings service. Project save/switch cannot change brightness,
 rotation or display timeouts. Storage usage is displayed only when the backend
 has measured it; unknown capacity remains unknown.
 
-This implementation pass intentionally does not run builds, tests, simulator
-or hardware validation, per the user's request. The shared production paths
-are implemented; native/device behavior and storage/capture acceptance remain
-unverified in this pass.
+Page order: WAVES, PATTERN, PLAYBACK, MIXER, SECTION PADS, SYNTH. Horizontal
+drags outside captured controls switch pages. The bottom 40 pixels reserve a
+system gesture: an upward drag of at least 64 pixels, with vertical travel more
+than twice horizontal travel, returns HOME. A horizontal edge drag uses the
+same distance and directional threshold to switch adjacent pages. HOME wraps
+across its three pages; the six tracker pages retain their existing bounds.
+Content controls keep their entire pointer sequence, including a keyboard or
+waveform drag that later crosses the bottom edge. The drawer and a screen-off
+wake retain precedence and consume their complete gesture.
 
-Page order: WAVES, PATTERN, PLAYBACK, MIXER, SECTION PADS, SYNTH. Navigation dots
-have wider invisible touch zones. Horizontal drags outside captured controls
-switch pages. The mixer decides between vertical scrolling and horizontal
+Page indicators float for 1200 ms after a successful horizontal swipe and are
+drawn over the final composited frame. They have no tap action; programmatic
+module selection and upward HOME navigation do not show them. HOME buttons,
+footer arrows and persistent navigation dots are removed. SETTINGS exposes
+STORAGE in its own header at the top right; its embedded panel has no drawer close button.
+Background I/O completes after HOME navigation without restoring the screen
+the user left. Failure still presents its explicit error.
+
+The mixer decides between vertical scrolling and horizontal
 fader movement; its right gutter is reserved for scrolling. Rows snap at
 66-pixel boundaries after momentum. Blank tracker channels cannot change gain,
 mute or solo.
