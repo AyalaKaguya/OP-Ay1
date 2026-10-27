@@ -112,6 +112,7 @@ def main() -> int:
                 str(compiler),
                 "/nologo",
                 "/std:c11",
+                "/experimental:c11atomics",
                 "/W4",
                 "/WX",
                 "/D_CRT_SECURE_NO_WARNINGS",

@@ -124,7 +124,10 @@ static void report_state(esp_gsp_handle_t ui, void *context)
                 "\"launched\":%d,\"pending\":%d,\"stop\":%s,\"voices\":%u,"
                 "\"peak\":%.6f,\"frames\":%llu,\"gain\":[%d,%d,%d,%d],"
                 "\"mute\":[%d,%d,%d,%d],\"solo\":[%d,%d,%d,%d],\"error\":%d,\"page_motion\":%d,\"menu_motion\":%d,\"progress\":%u,"
-                "\"workspace\":%d,\"home_page\":%d,\"project_opened\":%d,\"project_busy\":%d,\"project_dirty\":%d,\"project_generation\":%llu,\"project_name\":",
+                "\"workspace\":%d,\"home_page\":%d,\"project_opened\":%d,\"project_busy\":%d,\"project_dirty\":%d,\"project_generation\":%llu,"
+                "\"sampler_tab\":%d,\"sample_count\":%u,\"sample_index\":%u,\"sample_edit_active\":%d,\"sample_edit_dirty\":%d,"
+                "\"sample_trim_start\":%lu,\"sample_trim_end\":%lu,\"sample_loop_start\":%lu,\"sample_loop_end\":%lu,"
+                "\"sample_loop_enabled\":%d,\"sample_c2\":%lu,\"sample_gain\":%.6f,\"record_state\":%d,\"record_frames\":%lu,\"project_name\":",
                 (unsigned long long)gsp_sim_bridge_time_ms(), s->page, s->volume,
                 s->mix_scroll, s->held_note, s->synth_tab, s->preset,
                 s->playing ? "true" : "false", s->launched_pattern,
@@ -136,7 +139,12 @@ static void report_state(esp_gsp_handle_t ui, void *context)
                 s->soloed[0], s->soloed[1], s->soloed[2], s->soloed[3], s->last_error,
                 s->page_animating, s->menu_animating, (unsigned)s->transition_progress,
                 s->workspace_screen, s->home_page, s->project_opened, s->project_busy,
-                s->project_dirty, (unsigned long long)s->project_generation);
+                s->project_dirty, (unsigned long long)s->project_generation,
+                s->sampler_tab, s->sample_count, s->sample_index, s->sample_edit_active, s->sample_edit_dirty,
+                (unsigned long)s->sample_trim_start, (unsigned long)s->sample_trim_end,
+                (unsigned long)s->sample_loop_start, (unsigned long)s->sample_loop_end,
+                s->sample_loop_enabled, (unsigned long)s->sample_c2, (double)s->sample_gain,
+                s->record_state, (unsigned long)s->record_frames);
         write_json_name(backend.state_log, s->project_name);
         fputs("}\n", backend.state_log);
         fflush(backend.state_log);
