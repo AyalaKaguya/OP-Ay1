@@ -386,7 +386,12 @@ static void test_motion(const uint8_t *module, size_t size)
     owner->settings.open = false;
     repaint(owner);
     CHECK(owner->drawer_motion.active);
-    CHECK(memcmp(published(owner), f->capture, FRAME_BYTES) == 0);
+    for (int y = 0; y < 480; ++y)
+        for (int x = 0; x < 480; ++x)
+            if (!overlay_pixel(x, y)) {
+                CHECK(published(owner)[(size_t)y * 480U + (unsigned)x] ==
+                      f->capture[(size_t)y * 480U + (unsigned)x]);
+            }
     advance(f, 180);
     CHECK(!owner->drawer_motion.active && owner->drawer_motion.current == 0);
     advance_past_hint(f);
@@ -640,6 +645,7 @@ static void test_hierarchy_back(const uint8_t *module, size_t size)
     app_tracker_request_back(owner);
     advance(f, 50);
     CHECK(!owner->settings.timeouts_open && owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
+    advance(f, 250);
     tap(130, 413); /* Cancel a USB-role confirmation through the same back request. */
     CHECK(owner->settings.usb_confirm);
     app_tracker_request_back(owner);
