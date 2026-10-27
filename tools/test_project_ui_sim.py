@@ -146,8 +146,11 @@ class Session:
         for _ in range(3):
             if current["home_page"] == page:
                 return current
+            expected = (current["home_page"] + 1) % 3
             self.drag(400, 460, 80, 460)
-            current = self.settled(HOME)
+            current = self.read(
+                lambda s: s["workspace"] == HOME and s["home_page"] == expected and not s["page_motion"]
+            )
         raise AssertionError(f"HOME swipe failed to reach page {page}: {current}")
 
     def module(self, index):
@@ -199,8 +202,9 @@ class Session:
             if current["page"] == page:
                 return current
             forward = current["page"] < page
+            expected = current["page"] + (1 if forward else -1)
             self.drag(400 if forward else 80, 460, 80 if forward else 400, 460)
-            current = self.settled(LEGACY)
+            current = self.read(lambda s: s["workspace"] == LEGACY and s["page"] == expected and not s["page_motion"])
         raise AssertionError(f"Tracker swipe failed to reach page {page}: {current}")
 
     @staticmethod

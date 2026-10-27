@@ -430,12 +430,19 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
     advance(f, 250);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY && owner->model.view.page == 2);
     tracker_engine_play(f->tracker);
+    const uint8_t midi_note_on[4] = {0x09, 0x90, 60, 100};
+    CHECK(app_note_router_midi_packet(f->router, midi_note_on));
+    CHECK(app_note_router_touch_note_on(f->router, 64, 0.8f));
     const uint64_t generation = owner->workspace.session_generation;
     const uint32_t revision = owner->model.edit_revision;
     drag(240, 460, 240, 350);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME && owner->workspace.home_page == 0);
     CHECK(tracker_engine_is_playing(f->tracker) && owner->workspace.session_generation == generation);
     CHECK(owner->model.edit_revision == revision && owner->navigation_hint_until == 0);
+    app_note_router_status_t notes = {0};
+    app_note_router_get_status(f->router, &notes);
+    CHECK(notes.touch_notes == 0 && notes.midi_notes == 1);
+    app_note_router_midi_disconnect(f->router);
     advance(f, 250);
     tap(352, 334); /* MIXER content owns an upward list drag. */
     advance(f, 250);

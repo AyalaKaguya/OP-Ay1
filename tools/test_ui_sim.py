@@ -194,8 +194,9 @@ def main() -> int:
                     if current["page"] == index:
                         return current
                     forward = current["page"] < index
+                    expected = current["page"] + (1 if forward else -1)
                     drag(400 if forward else 80, 460, 80 if forward else 400, 460)
-                    current = state(lambda s: not s["page_motion"])
+                    current = state(lambda s: s["page"] == expected and not s["page_motion"])
                 raise AssertionError(f"Tracker swipe failed to reach page {index}: {current}")
 
             def screenshot(name):
