@@ -153,11 +153,11 @@ def main() -> int:
                     time.sleep(0.03)
                 raise AssertionError(f"Expected UI state not reached; last={last}")
 
+            pointer_space = None
+
             def tap(x, y):
-                y = legacy_y(y)
-                rpc.call("feed_pointer", {"x": x, "y": y, "pressed": True})
-                time.sleep(0.06)
-                rpc.call("feed_pointer", {"x": x, "y": y, "pressed": False})
+                pointer(x, y, True, pause=0.06)
+                pointer(x, y, False, pause=0)
                 time.sleep(0.25)
 
             def settings(predicate=lambda s: True, timeout=5):
@@ -176,10 +176,26 @@ def main() -> int:
                     time.sleep(0.03)
                 raise AssertionError(f"Expected settings state not reached; last={last}")
 
-            def pointer(x, y, pressed):
-                y = legacy_y(y)
+            def pointer(x, y, pressed, pause=0.12):
+                nonlocal pointer_space
+                if pressed and pointer_space is None:
+                    current = state()
+                    drawer = settings()["open"]
+                    if y >= 440 or drawer or current["workspace"] == 0:
+                        pointer_space = "physical"
+                    elif current["workspace"] in (9, 11):
+                        pointer_space = "full"
+                    else:
+                        pointer_space = "body"
+                if pointer_space == "full" and y < 432:
+                    y = (y * 440 + 431) // 432
+                elif pointer_space == "body" and y < 432:
+                    assert y >= 78, "Workspace shell coordinates are available on HOME only"
+                    y = ((y - 78) * 440 + 353) // 354
                 rpc.call("feed_pointer", {"x": x, "y": y, "pressed": pressed})
-                time.sleep(0.12)
+                time.sleep(pause)
+                if not pressed:
+                    pointer_space = None
 
             def drag(x1, y1, x2, y2):
                 pointer(x1, y1, True)
@@ -202,13 +218,6 @@ def main() -> int:
             def screenshot(name):
                 time.sleep(0.2)
                 rpc.call("screenshot", {"path": str(output / (name + ".png")), "format": "png"})
-
-            def legacy_y(y):
-                # Existing regression coordinates describe the original page
-                # band. The product now fits it below the global project strip.
-                current = state()
-                opened = settings()["open"]
-                return 78 + (y - 40) * 354 // 392 if current["workspace"] == 11 and not opened and 40 <= y < 432 else y
 
             state(lambda s: s["workspace"] == 0 and not s["project_busy"])
             tap(100, 176)  # HOME / OPEN PROJECT

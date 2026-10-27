@@ -252,7 +252,6 @@ static void expected_controls(fixture_t *f, app_tracker_t *owner)
 {
     tracker_render_controls(f->expected, &owner->model.view);
     tracker_workspace_fit_legacy(f->expected);
-    tracker_workspace_render_header(f->expected, &owner->workspace, &owner->model);
 }
 
 static void test_allocations(const uint8_t *module, size_t size)
@@ -298,12 +297,11 @@ static void test_motion(const uint8_t *module, size_t size)
     memcpy(f->capture, published(owner), FRAME_BYTES);
     drag(80, 460, 400, 460);
     CHECK(owner->model.view.page == 4 && owner->page_motion.active);
-    CHECK(memcmp(published(owner) + 78U * 480U, f->capture + 78U * 480U,
-                 480U * (432U - 78U) * sizeof(uint16_t)) == 0);
+    CHECK(memcmp(published(owner), f->capture, 480U * 440U * sizeof(uint16_t)) == 0);
     advance(f, 200);
     CHECK(!owner->page_motion.active);
     expected_controls(f, owner);
-    CHECK(memcmp(published(owner), f->expected, 480U * 432U * sizeof(uint16_t)) == 0);
+    CHECK(memcmp(published(owner), f->expected, 480U * 440U * sizeof(uint16_t)) == 0);
     pointer_callback(&fake_ui, 220, 12, true, pointer_context);
     pointer_callback(&fake_ui, 225, 90, true, pointer_context);
     pointer_callback(&fake_ui, 225, 90, false, pointer_context);
@@ -319,7 +317,7 @@ static void test_motion(const uint8_t *module, size_t size)
     advance(f, 180);
     CHECK(!owner->drawer_motion.active && owner->drawer_motion.current == 0);
     expected_controls(f, owner);
-    CHECK(memcmp(published(owner), f->expected, 480U * 432U * sizeof(uint16_t)) == 0);
+    CHECK(memcmp(published(owner), f->expected, 480U * 440U * sizeof(uint16_t)) == 0);
     drag(400, 460, 80, 460);
     CHECK(owner->page_motion.active && owner->model.view.page == 5);
     pointer_callback(&fake_ui, 56, 419, true, pointer_context);
@@ -411,7 +409,7 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
     tap(35, 12);
     tap(64, 458);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
-    tap(440, 90); /* The embedded panel has no close-to-HOME button. */
+    tap(440, 20); /* The embedded panel has no close-to-HOME button. */
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
     drag(250, 380, 250, 270);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS && !owner->settings.open);
@@ -429,6 +427,11 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
     tap(128, 334); /* PLAYBACK. */
     advance(f, 250);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY && owner->model.view.page == 2);
+    const uint32_t before_shell_taps = owner->model.edit_revision;
+    tap(185, 58);
+    tap(414, 58);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY && owner->model.view.page == 2);
+    CHECK(owner->model.edit_revision == before_shell_taps);
     tracker_engine_play(f->tracker);
     const uint8_t midi_note_on[4] = {0x09, 0x90, 60, 100};
     CHECK(app_note_router_midi_packet(f->router, midi_note_on));

@@ -40,6 +40,7 @@ class Session:
         self.logs = [(self.output / name).open("w", encoding="utf-8") for name in ("sim.log", "backend.log")]
         self.backend = None
         self.rpc = None
+        self.pointer_space = None
         ready = self.output / f"ready-{time.time_ns()}.json"
         flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
         self.sim = subprocess.Popen(
@@ -118,8 +119,18 @@ class Session:
         )
 
     def pointer(self, x, y, pressed, pause=0.06):
+        if pressed and self.pointer_space is None:
+            screen = self.read()["workspace"]
+            self.pointer_space = "physical" if y >= 440 or screen == HOME else "full" if screen in (LEGACY, SETTINGS) else "body"
+        if self.pointer_space == "full" and y < 432:
+            y = (y * 440 + 431) // 432
+        elif self.pointer_space == "body" and y < 432:
+            assert y >= 78, "Workspace shell coordinates are available on HOME only"
+            y = ((y - 78) * 440 + 353) // 354
         self.rpc.call("feed_pointer", {"x": x, "y": y, "pressed": pressed})
         time.sleep(pause)
+        if not pressed:
+            self.pointer_space = None
 
     def tap(self, x, y, settle=True):
         self.pointer(x, y, True)
@@ -159,6 +170,7 @@ class Session:
         return self.settled()
 
     def browser(self):
+        self.home()
         self.tap(185, 58)
         return self.settled(PROJECTS)
 
@@ -186,6 +198,7 @@ class Session:
         return self.read(lambda s: s["project_name"] == name and not s["project_busy"] and not s["project_dirty"])
 
     def save(self, name=None):
+        self.home()
         self.tap(414, 58)
         current = self.settled()
         if name is not None:
@@ -207,15 +220,11 @@ class Session:
             current = self.read(lambda s: s["workspace"] == LEGACY and s["page"] == expected and not s["page_motion"])
         raise AssertionError(f"Tracker swipe failed to reach page {page}: {current}")
 
-    @staticmethod
-    def legacy_y(y):
-        return 78 + (y - 40) * 354 // 392
-
     def legacy_tap(self, x, y):
-        self.tap(x, self.legacy_y(y))
+        self.tap(x, y)
 
     def legacy_drag(self, x1, y1, x2, y2):
-        self.drag(x1, self.legacy_y(y1), x2, self.legacy_y(y2))
+        self.drag(x1, y1, x2, y2)
 
     def other_project(self):
         # No catalog ordering assumption: opening the current ID returns HOME
@@ -305,7 +314,7 @@ def run(s: Session, args):
     s.tap(35, 12)
     s.tap(64, 458)
     assert s.settled()["workspace"] == SETTINGS, "Removed HOME buttons must be inert"
-    s.tap(440, 90)
+    s.tap(440, 20)
     s.drag(250, 380, 250, 270)
     assert s.settled()["workspace"] == SETTINGS, "Embedded settings dismissal must not return HOME"
     s.drag(240, 460, 240, 410)
