@@ -33,6 +33,7 @@ struct app_tracker {
     tracker_transition_t drawer_motion;
     int rendered_page;
     int page_direction;
+    bool page_vertical;
     bool rendered_menu;
     bool motion_gesture;
     bool navigation_pointer;
@@ -69,12 +70,11 @@ static void remember_error(app_tracker_t *state, esp_gsp_err_t result)
 static void render_navigation_hint(app_tracker_t *state, uint16_t *frame, uint64_t now)
 {
     const tracker_workspace_t *w = &state->workspace;
-    if (now >= state->navigation_hint_until ||
-            (w->screen != TRACKER_WORKSPACE_HOME && w->screen != TRACKER_WORKSPACE_LEGACY)) {
+    if (now >= state->navigation_hint_until || w->screen != TRACKER_WORKSPACE_HOME) {
         return;
     }
-    const int count = w->screen == TRACKER_WORKSPACE_HOME ? 3 : TRACKER_PAGE_COUNT;
-    const int selected = w->screen == TRACKER_WORKSPACE_HOME ? w->home_page : state->model.view.page;
+    const int count = 3;
+    const int selected = w->home_page;
     const int width = count * 16 + 20;
     const int left = (FRAME_WIDTH - width) / 2;
     tracker_graphics_t g;
@@ -101,6 +101,8 @@ static void render_frame(app_tracker_t *state)
         /* Retarget from the image actually displayed, including an interrupted
          * slide. This snapshot is reused; no render-time allocation is needed. */
         memcpy(state->motion_frame, state->frames[current], FRAME_BYTES);
+        state->page_vertical = state->workspace.screen == TRACKER_WORKSPACE_HOME &&
+                               state->rendered_page >= 10;
         state->page_direction = route > state->rendered_page ? 1 : -1;
         tracker_transition_begin(&state->page_motion, 0, TRACKER_TRANSITION_FULL,
                                  now, TRACKER_TRANSITION_PAGE_MS);
@@ -135,10 +137,16 @@ static void render_frame(app_tracker_t *state)
     tracker_workspace_render_header(frame, &state->workspace, m);
     const uint16_t page_progress = tracker_transition_sample(&state->page_motion, now);
     if (state->page_motion.active) {
-        (void)tracker_transition_slide_rgb565(frame, state->motion_frame, frame,
-                                              FRAME_WIDTH, FRAME_HEIGHT, TRACKER_WORKSPACE_CONTENT_HEIGHT,
-                                              page_progress, state->page_direction);
-        tracker_workspace_render_header(frame, &state->workspace, m);
+        if (state->page_vertical) {
+            (void)tracker_transition_slide_up_rgb565(frame, state->motion_frame, frame,
+                                                     FRAME_WIDTH, FRAME_HEIGHT, FRAME_HEIGHT,
+                                                     page_progress);
+        } else {
+            (void)tracker_transition_slide_rgb565(frame, state->motion_frame, frame,
+                                                  FRAME_WIDTH, FRAME_HEIGHT, TRACKER_WORKSPACE_CONTENT_HEIGHT,
+                                                  page_progress, state->page_direction);
+            tracker_workspace_render_header(frame, &state->workspace, m);
+        }
     }
     render_navigation_hint(state, frame, now);
     const uint16_t drawer_amount = tracker_transition_sample(&state->drawer_motion, now);
@@ -294,8 +302,6 @@ static bool navigation_pointer(app_tracker_t *state, int x, int y, bool pressed)
             const int before = tracker_workspace_route(w, m);
             if (w->screen == TRACKER_WORKSPACE_HOME) {
                 tracker_workspace_swipe_home(w, m, dx < 0 ? 1 : -1);
-            } else if (w->screen == TRACKER_WORKSPACE_LEGACY) {
-                tracker_model_set_page(m, m->view.page + (dx < 0 ? 1 : -1));
             }
             if (before != tracker_workspace_route(w, m)) {
                 state->navigation_hint_until = now_ms(state) + TRACKER_NAVIGATION_HINT_MS;
@@ -347,7 +353,6 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
         repaint(state);
         return;
     }
-    const int before_page = state->model.view.page;
     const int before_home = state->workspace.home_page;
     const tracker_workspace_screen_t before_screen = state->workspace.screen;
     const int content_y = tracker_workspace_content_y(&state->workspace, y);
@@ -380,9 +385,8 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
             finish_source_edit(state, before);
         }
     }
-    if (!pressed && before_screen == state->workspace.screen &&
-            ((before_screen == TRACKER_WORKSPACE_HOME && before_home != state->workspace.home_page) ||
-             (before_screen == TRACKER_WORKSPACE_LEGACY && before_page != state->model.view.page))) {
+    if (!pressed && before_screen == TRACKER_WORKSPACE_HOME && before_screen == state->workspace.screen &&
+            before_home != state->workspace.home_page) {
         state->navigation_hint_until = now_ms(state) + TRACKER_NAVIGATION_HINT_MS;
     } else if (before_screen != state->workspace.screen) {
         state->navigation_hint_until = 0;

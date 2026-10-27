@@ -49,6 +49,14 @@ bool tracker_transition_slide_rgb565(uint16_t *dest,
                                      int viewport_height, uint16_t progress,
                                      int direction);
 
+/* The current page moves up and the destination enters from below. Uses the
+ * same frame/alias contract as slide_rgb565; only the viewport rows move. */
+bool tracker_transition_slide_up_rgb565(uint16_t *dest,
+                                        const uint16_t *old_frame,
+                                        const uint16_t *new_frame,
+                                        int width, int frame_height,
+                                        int viewport_height, uint16_t progress);
+
 /* Slides the menu panel down from y=-panel_height to y=0. full_menu contains
  * the completely rendered panel in its top panel_height rows. base_frame is
  * the independent background snapshot. dest==full_menu is supported: the

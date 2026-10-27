@@ -9,7 +9,6 @@
 
 #define TAP_SLOP 12
 #define DRAG_SLOP 8
-#define PAGE_SWIPE_DISTANCE 64
 #define MIX_FADER_HIT_Y TRACKER_MIX_FADER_HIT_Y
 #define MIX_MAX_SCROLL ((TRACKER_MAX_CHANNELS - 4) * TRACKER_MIX_STRIP_H)
 
@@ -374,11 +373,8 @@ void tracker_model_pointer(tracker_model_t *m, int x, int y,
                                      ((m->view.mix_scroll + TRACKER_MIX_STRIP_H / 2) /
                                       TRACKER_MIX_STRIP_H) * TRACKER_MIX_STRIP_H, 0, MIX_MAX_SCROLL);
         }
-        if ((kind == TRACKER_INPUT_NAV || kind == TRACKER_INPUT_MIX_PENDING) &&
-                abs(dx) >= PAGE_SWIPE_DISTANCE && abs(dx) > abs(dy) * 2) {
-            tracker_model_set_page(m, m->view.page + (dx < 0 ? 1 : -1));
-        } else if (!m->moved && (kind == TRACKER_INPUT_NAV ||
-                                 kind == TRACKER_INPUT_MIX_PENDING)) {
+        if (!m->moved && (kind == TRACKER_INPUT_NAV ||
+                          kind == TRACKER_INPUT_MIX_PENDING)) {
             tap(m, x, y);
         }
     }

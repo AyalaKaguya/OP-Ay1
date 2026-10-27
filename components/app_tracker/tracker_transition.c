@@ -122,6 +122,26 @@ bool tracker_transition_slide_rgb565(uint16_t *dest,
     return true;
 }
 
+bool tracker_transition_slide_up_rgb565(uint16_t *dest,
+                                        const uint16_t *old_frame,
+                                        const uint16_t *new_frame,
+                                        int width, int frame_height,
+                                        int viewport_height, uint16_t progress)
+{
+    if (dest == NULL || old_frame == NULL || new_frame == NULL ||
+            dest == old_frame || !valid_frame(width, frame_height, viewport_height)) {
+        return false;
+    }
+    const size_t rows = (size_t)tracker_transition_pixels(progress, viewport_height);
+    const size_t retained = (size_t)viewport_height - rows;
+    const size_t line = (size_t)width;
+    /* Copy the entering image before replacing any of its source pixels.
+     * memmove permits dest==new_frame without a third animation buffer. */
+    memmove(dest + retained * line, new_frame, rows * line * sizeof(*dest));
+    memcpy(dest, old_frame + rows * line, retained * line * sizeof(*dest));
+    return true;
+}
+
 static uint16_t dim_pixel(uint16_t pixel, unsigned keep)
 {
     /* Scale the three channels independently; multiplying packed RGB565 would

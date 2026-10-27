@@ -260,6 +260,48 @@ static void test_drawer(void)
     puts("ui transitions: vertical drawer translation, reversible reveal, dim RGB isolation PASS");
 }
 
+static void test_upward_home(void)
+{
+    images_t *images = images_create(31, 19);
+    static const uint16_t progress[] = {0, 1, 16384, 32768, 55000, TRACKER_TRANSITION_FULL};
+    for (unsigned viewport = 0; viewport <= 19; ++viewport) {
+        for (unsigned step = 0; step < sizeof(progress) / sizeof(progress[0]); ++step) {
+            for (unsigned alias = 0; alias < 2; ++alias) {
+                for (size_t i = 0; i < images->count; ++i) {
+                    images->next[i] = new_pixel(i);
+                    images->out[i] = GUARD_VALUE;
+                }
+                uint16_t *dest = alias ? images->next : images->out;
+                const int shift = tracker_transition_pixels(progress[step], (int)viewport);
+                CHECK(tracker_transition_slide_up_rgb565(dest, images->old, images->next,
+                                                         31, 19, (int)viewport, progress[step]));
+                for (int y = 0; y < 19; ++y) {
+                    for (int x = 0; x < 31; ++x) {
+                        const size_t i = (size_t)y * 31U + (unsigned)x;
+                        const uint16_t expected = y >= (int)viewport
+                                                  ? (alias ? new_pixel(i) : GUARD_VALUE)
+                                                  : y + shift < (int)viewport
+                                                  ? old_pixel((size_t)(y + shift) * 31U + (unsigned)x)
+                                                  : new_pixel((size_t)(y + shift - (int)viewport) * 31U + (unsigned)x);
+                        CHECK(dest[i] == expected);
+                        if (!alias) {
+                            CHECK(images->next[i] == new_pixel(i));
+                        }
+                    }
+                }
+                guards(images);
+            }
+        }
+    }
+    memcpy(images->snapshot, images->out, images->count * sizeof(uint16_t));
+    CHECK(!tracker_transition_slide_up_rgb565(images->out, images->old, images->next, 31, 19, 20, 100));
+    CHECK(!tracker_transition_slide_up_rgb565(images->out, images->old, images->next, 0, 19, 10, 100));
+    CHECK(!tracker_transition_slide_up_rgb565(images->old, images->old, images->next, 31, 19, 10, 100));
+    CHECK(memcmp(images->out, images->snapshot, images->count * sizeof(uint16_t)) == 0);
+    images_destroy(images);
+    puts("ui transitions: upward HOME motion, endpoints, aliasing, clipping and guards PASS");
+}
+
 static void test_retarget_capture_and_invalid(void)
 {
     images_t *images = images_create(480, 480);
@@ -290,6 +332,7 @@ int main(void)
     test_timing();
     test_slides();
     test_drawer();
+    test_upward_home();
     test_retarget_capture_and_invalid();
     puts("portable UI transitions: PASS");
     return 0;
