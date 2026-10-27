@@ -238,10 +238,6 @@ static void synth_tap(tracker_model_t *m, int x, int y)
 static void tap(tracker_model_t *m, int x, int y)
 {
     if (y >= 432) {
-        /* Each small navigation dot has a wider invisible touch region. */
-        if (x >= 184 && x < 296) {
-            tracker_model_set_page(m, clamp_int((x - 192) / 16, 0, 5));
-        }
         return;
     }
     if (m->view.page == TRACKER_PAGE_PLAYBACK) {

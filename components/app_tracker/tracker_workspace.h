@@ -10,6 +10,9 @@
 #define TRACKER_WORKSPACE_ROWS 4
 #define TRACKER_WORKSPACE_WAVE_SAMPLES 216
 #define TRACKER_WORKSPACE_TYPED_BYTES 25
+#define TRACKER_NAVIGATION_EDGE_Y 440
+#define TRACKER_NAVIGATION_TRAVEL 64
+#define TRACKER_NAVIGATION_HINT_MS 1200
 
 typedef enum {
     TRACKER_WORKSPACE_HOME = 0,
@@ -114,6 +117,9 @@ void tracker_workspace_init(tracker_workspace_t *workspace,
                             app_project_t *project, app_sampler_t *sampler);
 void tracker_workspace_poll(tracker_workspace_t *workspace, tracker_model_t *model);
 void tracker_workspace_cancel_input(tracker_workspace_t *workspace);
+void tracker_workspace_home(tracker_workspace_t *workspace, tracker_model_t *model);
+void tracker_workspace_swipe_home(tracker_workspace_t *workspace,
+                                  tracker_model_t *model, int direction);
 bool tracker_workspace_pointer(tracker_workspace_t *workspace, tracker_model_t *model,
                                tracker_settings_t *settings, int x, int y,
                                bool pressed);

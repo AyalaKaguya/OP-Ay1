@@ -35,6 +35,10 @@ struct app_tracker {
     int page_direction;
     bool rendered_menu;
     bool motion_gesture;
+    bool navigation_pointer;
+    int navigation_x;
+    int navigation_y;
+    uint64_t navigation_hint_until;
     bool visualize_display_power;
     atomic_uint frame_index;
     int16_t wave_scratch[TRACKER_WAVEFORM_SAMPLES];
@@ -59,6 +63,29 @@ static void remember_error(app_tracker_t *state, esp_gsp_err_t result)
 {
     if (result != ESP_GSP_OK) {
         state->last_error = result;
+    }
+}
+
+static void render_navigation_hint(app_tracker_t *state, uint16_t *frame, uint64_t now)
+{
+    const tracker_workspace_t *w = &state->workspace;
+    if (now >= state->navigation_hint_until ||
+            (w->screen != TRACKER_WORKSPACE_HOME && w->screen != TRACKER_WORKSPACE_LEGACY)) {
+        return;
+    }
+    const int count = w->screen == TRACKER_WORKSPACE_HOME ? 3 : TRACKER_PAGE_COUNT;
+    const int selected = w->screen == TRACKER_WORKSPACE_HOME ? w->home_page : state->model.view.page;
+    const int width = count * 16 + 20;
+    const int left = (FRAME_WIDTH - width) / 2;
+    tracker_graphics_t g;
+    tracker_gfx_init(&g, frame);
+    tracker_gfx_clip(&g, 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+    /* A transient overlay belongs to the displayed frame, never a hit target
+     * or a panel that slides with either the source or destination page. */
+    tracker_gfx_rect(&g, left, 441, width, 27, C_PANEL);
+    for (int i = 0; i < count; ++i) {
+        tracker_gfx_rect(&g, left + 14 + i * 16, 451, 7, 7,
+                         i == selected ? C_TEXT : C_DISABLED);
     }
 }
 
@@ -120,6 +147,7 @@ static void render_frame(app_tracker_t *state)
                                               page_progress, state->page_direction);
         tracker_workspace_render_header(frame, &state->workspace, m);
     }
+    render_navigation_hint(state, frame, now);
     const uint16_t drawer_amount = tracker_transition_sample(&state->drawer_motion, now);
     if (drawer_amount || state->drawer_motion.active) {
         memcpy(state->motion_frame, frame, FRAME_BYTES);
@@ -174,6 +202,7 @@ static void update_settings(app_tracker_t *state)
                                       state->model.pointer_down || state->workspace.pointer_down ||
                                       state->workspace.sampler_pointer || tracker_workspace_busy(&state->workspace) ||
                                       s->pointer_down || state->motion_gesture ||
+                                      state->navigation_pointer ||
                                       state->wake_gesture || state->model.synth_view.note >= 0 ||
                                       state->page_motion.active || state->drawer_motion.active);
     }
@@ -247,6 +276,42 @@ static void tick_sources(app_tracker_t *state)
     finish_source_edit(state, before);
 }
 
+static bool navigation_pointer(app_tracker_t *state, int x, int y, bool pressed)
+{
+    tracker_workspace_t *w = &state->workspace;
+    tracker_model_t *m = &state->model;
+    if (!state->navigation_pointer) {
+        if (!pressed || y < TRACKER_NAVIGATION_EDGE_Y || state->settings.open ||
+                state->settings.pointer_down || state->settings.page_pointer_down ||
+                m->pointer_down || w->pointer_down || w->sampler_pointer) {
+            return false;
+        }
+        state->navigation_pointer = true;
+        state->navigation_x = x;
+        state->navigation_y = y;
+    } else if (!pressed) {
+        const int dx = x - state->navigation_x;
+        const int dy = y - state->navigation_y;
+        state->navigation_pointer = false;
+        if (dy <= -TRACKER_NAVIGATION_TRAVEL && -dy > abs(dx) * 2) {
+            tracker_workspace_cancel_input(w);
+            tracker_workspace_home(w, m);
+            state->navigation_hint_until = 0;
+        } else if (abs(dx) >= TRACKER_NAVIGATION_TRAVEL && abs(dx) > abs(dy) * 2) {
+            const int before = tracker_workspace_route(w, m);
+            if (w->screen == TRACKER_WORKSPACE_HOME) {
+                tracker_workspace_swipe_home(w, m, dx < 0 ? 1 : -1);
+            } else if (w->screen == TRACKER_WORKSPACE_LEGACY) {
+                tracker_model_set_page(m, m->view.page + (dx < 0 ? 1 : -1));
+            }
+            if (before != tracker_workspace_route(w, m)) {
+                state->navigation_hint_until = now_ms(state) + TRACKER_NAVIGATION_HINT_MS;
+            }
+        }
+    }
+    return true;
+}
+
 static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
                     bool pressed, void *context)
 {
@@ -263,6 +328,7 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
         state->settings.page_pointer_down = false;
         state->settings.top_candidate = false;
         state->settings.brightness_drag = false;
+        state->navigation_pointer = false;
     }
     if (state->wake_gesture) {
         if (!pressed) {
@@ -273,6 +339,7 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
     }
     const bool drawing_motion = state->page_motion.active || state->drawer_motion.active;
     if (state->motion_gesture || (pressed && drawing_motion &&
+                                  !state->navigation_pointer &&
                                   !state->model.pointer_down && !state->workspace.pointer_down &&
                                   !state->workspace.sampler_pointer && !state->settings.pointer_down && !state->settings.page_pointer_down &&
                                   (state->drawer_motion.active || y < 432))) {
@@ -281,6 +348,15 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
         return;
     }
     tracker_workspace_poll(&state->workspace, &state->model);
+    if (navigation_pointer(state, x, y, pressed)) {
+        update_settings(state);
+        tick_sources(state);
+        repaint(state);
+        return;
+    }
+    const int before_page = state->model.view.page;
+    const int before_home = state->workspace.home_page;
+    const tracker_workspace_screen_t before_screen = state->workspace.screen;
     bool opened = false;
     const bool settings_page = !state->settings.open &&
                                state->workspace.screen == TRACKER_WORKSPACE_SETTINGS &&
@@ -310,6 +386,13 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
             finish_source_edit(state, before);
         }
     }
+    if (!pressed && before_screen == state->workspace.screen &&
+            ((before_screen == TRACKER_WORKSPACE_HOME && before_home != state->workspace.home_page) ||
+             (before_screen == TRACKER_WORKSPACE_LEGACY && before_page != state->model.view.page))) {
+        state->navigation_hint_until = now_ms(state) + TRACKER_NAVIGATION_HINT_MS;
+    } else if (before_screen != state->workspace.screen) {
+        state->navigation_hint_until = 0;
+    }
     update_settings(state);
     tick_sources(state);
     if (state->model.dirty || state->workspace.dirty) {
@@ -335,6 +418,7 @@ void app_tracker_cancel_pointer(app_tracker_t *state)
         state->settings.top_candidate = false;
         state->wake_gesture = false;
         state->motion_gesture = false;
+        state->navigation_pointer = false;
         if (state->hooks.interaction_busy) {
             state->hooks.interaction_busy(state->hooks.context, false);
         }

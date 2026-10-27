@@ -179,7 +179,7 @@ static void submit_request(tracker_workspace_t *w)
     w->job_waiting = true;
     w->job_observed_busy = false;
     w->dirty = true;
-    tracker_workspace_message(w, "WORKING IN BACKGROUND...");
+    tracker_workspace_message(w, "");
 }
 
 void tracker_workspace_request(tracker_workspace_t *w, app_project_action_t action)
@@ -190,12 +190,12 @@ void tracker_workspace_request(tracker_workspace_t *w, app_project_action_t acti
                           strcmp(w->request.id, w->project_view.id) == 0;
         if (same) {
             remember_recent(w);
-            tracker_workspace_message(w, "CURRENT PROJECT ALREADY OPEN - SESSION RETAINED");
+            tracker_workspace_message(w, "");
             show(w, TRACKER_WORKSPACE_HOME);
             return;
         }
         if (recording_pending(w)) {
-            tracker_workspace_message(w, "STOP AND KEEP / DISCARD THE RECORDING FIRST");
+            tracker_workspace_message(w, "TAKE PENDING");
             w->sampler_tab = TRACKER_SAMPLE_RECORD;
             show(w, TRACKER_WORKSPACE_SAMPLER);
             return;
@@ -223,7 +223,7 @@ void tracker_workspace_init(tracker_workspace_t *w,
     w->session_generation = UINT64_MAX;
     w->sampler_error = APP_SAMPLER_OK;
     w->dirty = true;
-    tracker_workspace_message(w, project ? "OPEN PROJECT OR CREATE A NEW SESSION" :
+    tracker_workspace_message(w, project ? "" :
                               "PROJECT SERVICE UNAVAILABLE");
 }
 
@@ -237,8 +237,7 @@ static void completed_job(tracker_workspace_t *w)
         show(w, TRACKER_WORKSPACE_ERROR);
         return;
     }
-    tracker_workspace_message(w, w->project_view.message[0] ?
-                              w->project_view.message : "PROJECT JOB COMPLETED");
+    tracker_workspace_message(w, "");
     w->sampler_error = APP_SAMPLER_OK;
     if (replaces_session(w->retry.action) || w->retry.action == APP_PROJECT_SAVE_AS) {
         remember_recent(w);
@@ -353,12 +352,12 @@ static void start_save(tracker_workspace_t *w, bool copy)
         return;
     }
     if (!w->project_view.opened) {
-        tracker_workspace_message(w, "OPEN OR CREATE A PROJECT BEFORE SAVING");
+        tracker_workspace_message(w, "NO PROJECT");
         show(w, TRACKER_WORKSPACE_PROJECTS);
         return;
     }
     if (recording_pending(w)) {
-        tracker_workspace_message(w, "KEEP OR DISCARD THE TAKE BEFORE SAVING");
+        tracker_workspace_message(w, "TAKE PENDING");
         w->sampler_tab = TRACKER_SAMPLE_RECORD;
         show(w, TRACKER_WORKSPACE_SAMPLER);
         return;
@@ -376,7 +375,7 @@ static void start_save(tracker_workspace_t *w, bool copy)
     } else if (w->project_view.dirty) {
         show(w, TRACKER_WORKSPACE_SAVE);
     } else {
-        tracker_workspace_message(w, "PROJECT ALREADY SAVED");
+        tracker_workspace_message(w, "");
     }
 }
 
@@ -389,6 +388,20 @@ static void page_home(tracker_workspace_t *w, tracker_model_t *model, int page)
     w->auditioning = false;
     w->home_page = (page + 3) % 3;
     show(w, TRACKER_WORKSPACE_HOME);
+}
+
+void tracker_workspace_home(tracker_workspace_t *w, tracker_model_t *model)
+{
+    page_home(w, model, w->home_page);
+    /* An admitted save still completes, without pulling the user back into
+     * the screen they just left when its asynchronous completion arrives. */
+    w->return_screen = TRACKER_WORKSPACE_HOME;
+}
+
+void tracker_workspace_swipe_home(tracker_workspace_t *w, tracker_model_t *model,
+                                  int direction)
+{
+    page_home(w, model, w->home_page + (direction < 0 ? 2 : 1));
 }
 
 static void home_open(tracker_workspace_t *w, tracker_model_t *model, int index)
@@ -406,7 +419,7 @@ static void home_open(tracker_workspace_t *w, tracker_model_t *model, int index)
     } else if (destination == -2) {
         show(w, TRACKER_WORKSPACE_SETTINGS);
     } else if (!w->project_view.opened && w->project) {
-        tracker_workspace_message(w, "CREATE OR OPEN A PROJECT FIRST");
+        tracker_workspace_message(w, "NO PROJECT");
         show(w, TRACKER_WORKSPACE_PROJECTS);
     } else if (destination == -3) {
         show(w, TRACKER_WORKSPACE_SAMPLER);
@@ -459,17 +472,10 @@ static void tap(tracker_workspace_t *w, tracker_model_t *model,
                 tracker_settings_t *settings, int x, int y)
 {
     if (w->screen == TRACKER_WORKSPACE_HOME && y >= 432) {
-        if (x < 120) {
-            page_home(w, model, w->home_page + 2);
-        } else if (x >= 360) {
-            page_home(w, model, w->home_page + 1);
-        } else if (x >= 200 && x < 280) {
-            page_home(w, model, (x - 200) / 27);
-        }
         return;
     }
-    if (inside(x, y, 0, 0, 78, 40) || inside(x, y, 0, 432, 125, 48)) {
-        page_home(w, model, w->home_page);
+    if (w->screen == TRACKER_WORKSPACE_SETTINGS && inside(x, y, 336, 0, 144, 40)) {
+        show(w, TRACKER_WORKSPACE_STORAGE);
         return;
     }
     if (inside(x, y, 420, 0, 60, 40)) {
@@ -527,7 +533,7 @@ static void tap(tracker_workspace_t *w, tracker_model_t *model,
             if (entry) {
                 request_replace(w, APP_PROJECT_OPEN, entry->name, entry->id, NULL);
             } else {
-                tracker_workspace_message(w, "PROJECT UNAVAILABLE / REFRESH THE LIBRARY");
+                tracker_workspace_message(w, "UNAVAILABLE");
             }
         } else if (inside(x, y, 248, 378, 208, 44)) {
             start_save(w, true);
@@ -565,7 +571,7 @@ static void tap(tracker_workspace_t *w, tracker_model_t *model,
                 request_replace(w, w->import_wav ? APP_PROJECT_IMPORT_SAMPLE : APP_PROJECT_IMPORT_MODULE,
                                 entry->filename, NULL, entry->filename);
             } else {
-                tracker_workspace_message(w, "UPLOAD FILES TO THE PROJECT INBOX, THEN REFRESH");
+                tracker_workspace_message(w, "NO FILES");
             }
         }
     } else if (w->screen == TRACKER_WORKSPACE_NAME) {
@@ -622,8 +628,6 @@ static void tap(tracker_workspace_t *w, tracker_model_t *model,
         }
     } else if (w->screen == TRACKER_WORKSPACE_STORAGE && inside(x, y, 24, 374, 432, 44)) {
         show(w, TRACKER_WORKSPACE_SETTINGS);
-    } else if (w->screen == TRACKER_WORKSPACE_SETTINGS && inside(x, y, 320, 432, 160, 48)) {
-        show(w, TRACKER_WORKSPACE_STORAGE);
     }
     (void)settings;
 }
@@ -646,7 +650,7 @@ bool tracker_workspace_pointer(tracker_workspace_t *w, tracker_model_t *model,
         return true;
     }
     if (w->screen == TRACKER_WORKSPACE_LEGACY && !w->pointer_down && y >= 78 &&
-            !(y >= 432 && x < 125) && !tracker_workspace_busy(w)) {
+            !tracker_workspace_busy(w)) {
         return false;
     }
     if (w->screen == TRACKER_WORKSPACE_SETTINGS && !w->pointer_down &&
