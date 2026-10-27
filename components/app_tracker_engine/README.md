@@ -8,7 +8,7 @@ used by `app_tracker` and `app_audio`.
 
 ## Architecture
 
-- `tracker_module.c` validates and decodes the caller-owned S3M blob into an
+- `tracker_module.c` validates and decodes the owned S3M blob into an
   immutable song model. It owns format bounds checks, pattern expansion, sample
   metadata, and channel mapping. Pattern cells are decoded into slot order
   (0..channel_count-1); the S3M source channel is mapped at decode time, so the
@@ -33,7 +33,7 @@ device transport.
 
 `tracker_engine_render` is the real-time audio entry point. The engine state is
 guarded by one lock: a priority-inheriting FreeRTOS mutex on the device and a
-single-threaded atomic flag on the host. The mutex matters because the audio
+C11 acquire/release atomic flag on every host (including MSVC). The mutex matters because the audio
 task (priority 7) and the GSP UI task share a core and the UI reads engine state
 while rendering the pattern view; a spin lock let the audio task preempt the
 holder and spin forever in priority inversion. The audio task renders 512-frame
@@ -42,8 +42,8 @@ partial transport or mixer state to be observed.
 
 Status publication and reads use the same source lock for a coherent short
 copy; a plain-struct seqlock would still have a C data race. `playing` remains
-an atomic fast-path flag on the device. The
-source S3M blob and decoded pattern cells remain immutable after creation;
+a C11 atomic fast-path flag on every platform. The
+owned source S3M blob and decoded pattern cells remain immutable after creation;
 order-list entries are the only mutable song data and are accessed under the
 same lock.
 
@@ -58,3 +58,33 @@ point per block from the single audio owner; calling both advances time twice.
 Monitoring remains source-local in both paths. Final mixed output meters and
 scope belong to `app_audio_bus`. Either output path zero-fills a stopped or
 invalid-tick tail instead of exposing uninitialized samples.
+
+## Project and sample transactions
+
+`tracker_engine_prepare` allocates an independent source blob and decoded song
+outside the render lock. `tracker_engine_prepared_replace_sample` stages owned
+signed PCM16 replacements. `tracker_engine_commit` swaps a heap-owned module
+under the existing source lock without replacing the engine handle, then frees
+the old module after releasing the lock. It resets transport, pad queues, voices,
+meters and per-channel mixer controls. The existing mixer waveform allocation
+is reused. Project code stages every fallible step before committing, and uses
+the audio bus edit gate to group tracker, sampler and synth state changes.
+
+All public song metadata/cell reads now take the source lock so a project swap
+cannot free a module still being read. The source blob belongs to the module
+until swap/destroy; callers may release their input immediately after create or
+prepare. `copy_blob` returns a caller-owned source copy with the current order
+list overlay. It does not quantize PCM16 replacements back into S3M: those live
+in the sampler project's separate bank and are restored before project commit.
+
+`replace_sample` deep-copies canonical signed PCM16 into an existing 1-based
+instrument slot, leaves every pattern cell/effect intact and resets voice
+references before releasing old PCM. The mixer reads original PCM8 and signed
+PCM16 in the same normalized scale. Replacement gain is separate from event
+volume so S3M volume commands keep working. `assign_sample` can also restore a
+previous assigned slot to the immutable source sample in the same lock, allowing
+one bank sample's explicit assignment to move without leaving stale engine
+state. Large owned module/PCM buffers use PSRAM on the device.
+
+These source changes were not built, tested or exercised on hardware in this
+implementation turn, following the user's instruction.

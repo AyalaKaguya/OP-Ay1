@@ -6,6 +6,7 @@
 
 #include "app_synth.h"
 #include "tracker_engine.h"
+#include "app_sampler.h"
 
 #define APP_AUDIO_SAMPLE_RATE 48000
 #define APP_AUDIO_BLOCK_FRAMES 512
@@ -16,6 +17,7 @@ typedef struct app_audio_bus app_audio_bus_t;
 typedef enum {
     APP_AUDIO_SOURCE_TRACKER,
     APP_AUDIO_SOURCE_SYNTH,
+    APP_AUDIO_SOURCE_SAMPLER,
     APP_AUDIO_SOURCE_COUNT
 } app_audio_source_t;
 
@@ -30,6 +32,13 @@ typedef struct {
  * allocation/lock failure. The sources remain owned by the caller. */
 app_audio_bus_t *app_audio_bus_create(tracker_engine_t *tracker,
                                       app_synth_t *synth);
+/* Startup only, before the first render; borrows sampler until destroy. */
+bool app_audio_bus_set_sampler(app_audio_bus_t *bus, app_sampler_t *sampler);
+/* Worker transaction gate. A renderer encountering the held gate outputs
+ * silence without advancing any source. The worker must end every successful
+ * begin. ESP waits at most timeout_ms; the native host uses a bounded try-lock. */
+bool app_audio_bus_begin_edit(app_audio_bus_t *bus, uint32_t timeout_ms);
+void app_audio_bus_end_edit(app_audio_bus_t *bus);
 /* All render/control users must have stopped before destroy(). */
 void app_audio_bus_destroy(app_audio_bus_t *bus);
 

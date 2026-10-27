@@ -8,27 +8,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(_MSC_VER)
 static void engine_set_playing(tracker_engine_t *engine, bool playing)
 {
-    engine->playing = playing;
+    atomic_store_explicit(&engine->playing, playing, memory_order_release);
 }
 static bool engine_get_playing(tracker_engine_t *engine)
 {
-    return engine->playing;
+    return atomic_load_explicit(&engine->playing, memory_order_acquire);
 }
-#else
-static void engine_set_playing(tracker_engine_t *engine, bool playing)
-{
-    __atomic_store_n(&engine->playing, playing, __ATOMIC_RELEASE);
-}
-static bool engine_get_playing(tracker_engine_t *engine)
-{
-    return __atomic_load_n(&engine->playing, __ATOMIC_ACQUIRE);
-}
-#endif
 
 #if defined(ESP_PLATFORM)
+#include "esp_heap_caps.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
@@ -66,36 +56,22 @@ static void engine_unlock(tracker_engine_t *engine)
 
 static bool engine_lock_create(tracker_engine_t *engine)
 {
-    (void)engine;
+    atomic_flag_clear(&engine->state_lock);
     return true;
 }
-
 static void engine_lock_destroy(tracker_engine_t *engine)
 {
-    engine->state_lock = 0;
+    atomic_flag_clear(&engine->state_lock);
 }
-
-/* Host builds have no scheduler: tests are single threaded, so a plain flag or
- * an atomic exchange is enough. */
+/* Native project I/O owns a worker thread, so MSVC and other hosts use the
+ * same acquire/release flag. No host-specific plain-int lock is safe here. */
 static void engine_lock(tracker_engine_t *engine)
 {
-#if defined(_MSC_VER)
-    while (engine->state_lock) {
-    }
-    engine->state_lock = 1;
-#else
-    while (__atomic_exchange_n(&engine->state_lock, 1, __ATOMIC_ACQUIRE) != 0) {
-    }
-#endif
+    while (atomic_flag_test_and_set_explicit(&engine->state_lock, memory_order_acquire)) { }
 }
-
 static void engine_unlock(tracker_engine_t *engine)
 {
-#if defined(_MSC_VER)
-    engine->state_lock = 0;
-#else
-    __atomic_store_n(&engine->state_lock, 0, __ATOMIC_RELEASE);
-#endif
+    atomic_flag_clear_explicit(&engine->state_lock, memory_order_release);
 }
 #endif
 
@@ -106,17 +82,17 @@ static void publish_status(tracker_engine_t *engine)
     snapshot.order_index = engine->order_index;
     snapshot.pattern = engine->launch_pattern >= 0
                        ? engine->launch_pattern
-                       : engine->module.orders[engine->order_index];
+                       : engine->module->orders[engine->order_index];
     snapshot.row = engine->row;
     snapshot.row_count = TRACKER_PATTERN_ROWS;
-    snapshot.patterns = engine->module.pattern_count;
-    snapshot.orders = engine->module.order_count;
+    snapshot.patterns = engine->module->pattern_count;
+    snapshot.orders = engine->module->order_count;
     snapshot.speed = engine->speed;
     snapshot.tempo = engine->tempo;
-    snapshot.channels = engine->module.channel_count;
+    snapshot.channels = engine->module->channel_count;
     snapshot.playing = engine->playing;
     snapshot.frames = engine->frames;
-    memcpy(snapshot.title, engine->module.title, sizeof(snapshot.title));
+    memcpy(snapshot.title, engine->module->title, sizeof(snapshot.title));
 
     engine->snapshot = snapshot;
 }
@@ -138,10 +114,10 @@ static void update_step(tracker_voice_t *voice)
 
 static int first_playable_order(const tracker_engine_t *engine)
 {
-    for (int index = 0; index < engine->module.order_count; ++index) {
-        const uint8_t pattern = engine->module.orders[index];
+    for (int index = 0; index < engine->module->order_count; ++index) {
+        const uint8_t pattern = engine->module->orders[index];
         if (pattern != 0xFE && pattern != 0xFF &&
-                pattern < engine->module.pattern_count) {
+                pattern < engine->module->pattern_count) {
             return index;
         }
     }
@@ -152,7 +128,7 @@ static void advance_order_locked(tracker_engine_t *engine)
 {
     for (int guard = 0; guard < TRACKER_MAX_ORDERS; ++guard) {
         ++engine->order_index;
-        if (engine->order_index >= engine->module.order_count) {
+        if (engine->order_index >= engine->module->order_count) {
             if (!engine->loop) {
                 engine->order_index = first_playable_order(engine);
                 engine->row = 0;
@@ -162,9 +138,9 @@ static void advance_order_locked(tracker_engine_t *engine)
             engine->order_index = 0;
         }
 
-        const uint8_t pattern = engine->module.orders[engine->order_index];
+        const uint8_t pattern = engine->module->orders[engine->order_index];
         if (pattern != 0xFE && pattern != 0xFF &&
-                pattern < engine->module.pattern_count) {
+                pattern < engine->module->pattern_count) {
             return;
         }
     }
@@ -225,9 +201,9 @@ static void apply_event(tracker_engine_t *engine, tracker_voice_t *voice,
 
     const tracker_sample_t *selected = voice->instrument;
     if (cell->instrument != TRACKER_EMPTY && cell->instrument > 0 &&
-            cell->instrument <= engine->module.sample_count) {
-        selected = &engine->module.samples[cell->instrument - 1];
-        if (selected->data == NULL) {
+            cell->instrument <= engine->module->sample_count) {
+        selected = &engine->module->samples[cell->instrument - 1];
+        if (selected->data == NULL && selected->pcm16 == NULL) {
             selected = NULL;
         }
         voice->instrument = selected;
@@ -292,7 +268,7 @@ static void apply_event(tracker_engine_t *engine, tracker_voice_t *voice,
 
 static void advance_effects(tracker_engine_t *engine)
 {
-    for (int channel = 0; channel < engine->module.channel_count; ++channel) {
+    for (int channel = 0; channel < engine->module->channel_count; ++channel) {
         tracker_voice_t *voice = &engine->mixer.voices[channel];
         voice->volume =
             fminf(1.0f, fmaxf(0.0f, voice->volume + voice->volume_slide));
@@ -318,7 +294,7 @@ static void start_tick_locked(tracker_engine_t *engine)
     int new_speed = 0;
     int new_tempo = 0;
     if (engine->tick == 0) {
-        for (int channel = 0; channel < engine->module.channel_count;
+        for (int channel = 0; channel < engine->module->channel_count;
                 ++channel) {
             tracker_voice_t *voice = &engine->mixer.voices[channel];
             voice->volume_slide = 0.0f;
@@ -329,11 +305,11 @@ static void start_tick_locked(tracker_engine_t *engine)
         const uint8_t pattern =
             engine->launch_pattern >= 0
             ? (uint8_t)engine->launch_pattern
-            : engine->module.orders[engine->order_index];
-        for (int channel = 0; channel < engine->module.channel_count;
+            : engine->module->orders[engine->order_index];
+        for (int channel = 0; channel < engine->module->channel_count;
                 ++channel) {
             const tracker_cell_data_t *cell =
-                engine->module.cells +
+                engine->module->cells +
                 ((size_t)pattern * TRACKER_PATTERN_ROWS +
                  (size_t)engine->row) *
                 TRACKER_MAX_CHANNELS +
@@ -386,41 +362,253 @@ static int peak_level(float peak)
     return level > 255 ? 255 : level;
 }
 
-tracker_engine_t *tracker_engine_create(const uint8_t *s3m, size_t size)
+static void *engine_module_alloc(size_t size)
 {
-    tracker_engine_t *engine = calloc(1, sizeof(*engine));
-    if (engine == NULL) {
-        return NULL;
-    }
-    if (!tracker_module_parse(&engine->module, s3m, size) ||
-            !tracker_mixer_init(&engine->mixer, &engine->module) ||
-            !engine_lock_create(engine)) {
-        tracker_mixer_destroy(&engine->mixer);
-        tracker_module_destroy(&engine->module);
-        free(engine);
-        return NULL;
-    }
+#if defined(ESP_PLATFORM)
+    return heap_caps_malloc(size, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+#else
+    return malloc(size);
+#endif
+}
 
-    engine->speed = engine->module.initial_speed;
-    engine->tempo = engine->module.initial_tempo;
+tracker_engine_prepared_t *tracker_engine_prepare(const uint8_t *s3m, size_t size)
+{
+    if (!s3m || size == 0 || size > 32U * 1024U * 1024U) {
+        return NULL;
+    }
+    tracker_engine_prepared_t *prepared = calloc(1, sizeof(*prepared));
+    tracker_module_t *module = engine_module_alloc(sizeof(*module));
+    uint8_t *blob = engine_module_alloc(size);
+    if (!prepared || !module || !blob) {
+        free(prepared); free(module); free(blob);
+        return NULL;
+    }
+    memset(module, 0, sizeof(*module));
+    memcpy(blob, s3m, size);
+    if (!tracker_module_parse(module, blob, size)) {
+        tracker_module_destroy(module);
+        free(module); free(blob); free(prepared);
+        return NULL;
+    }
+    module->owned_blob = blob;
+    prepared->module = module;
+    return prepared;
+}
+
+void tracker_engine_prepared_destroy(tracker_engine_prepared_t *prepared)
+{
+    if (prepared) {
+        tracker_module_destroy(prepared->module);
+        free(prepared->module);
+        free(prepared);
+    }
+}
+
+static bool valid_pcm_sample(const tracker_pcm_sample_t *sample)
+{
+    return sample && sample->pcm && sample->frames > 0 &&
+           sample->frames <= 48000U * 60U && sample->c2_speed > 0 &&
+           sample->c2_speed <= 384000U && isfinite(sample->volume) &&
+           sample->volume >= 0.0f && sample->volume <= 1.0f &&
+           isfinite(sample->gain) && sample->gain >= 0.0f && sample->gain <= 2.0f &&
+           (!sample->loop_enabled ||
+            (sample->loop_start < sample->loop_end && sample->loop_end <= sample->frames));
+}
+
+static int16_t *copy_pcm(const tracker_pcm_sample_t *sample)
+{
+    if (!valid_pcm_sample(sample)) {
+        return NULL;
+    }
+    const size_t bytes = (size_t)sample->frames * sizeof(int16_t);
+#if defined(ESP_PLATFORM)
+    int16_t *pcm = heap_caps_malloc(bytes, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+#else
+    int16_t *pcm = malloc(bytes);
+#endif
+    if (pcm) {
+        memcpy(pcm, sample->pcm, bytes);
+    }
+    return pcm;
+}
+
+static void replace_sample_locked(tracker_module_t *module, unsigned slot,
+                                  const tracker_pcm_sample_t *source, int16_t *pcm)
+{
+    tracker_sample_t *sample = &module->samples[slot - 1];
+    sample->data = NULL;
+    sample->pcm16 = pcm;
+    sample->length = source->frames;
+    sample->c2_speed = source->c2_speed;
+    sample->volume = source->volume;
+    sample->gain = source->gain;
+    sample->loops = source->loop_enabled;
+    sample->loop_start = source->loop_enabled ? source->loop_start : 0;
+    sample->loop_end = source->loop_enabled ? source->loop_end : 0;
+}
+
+bool tracker_engine_prepared_replace_sample(tracker_engine_prepared_t *prepared,
+    unsigned slot, const tracker_pcm_sample_t *sample)
+{
+    if (!prepared || !prepared->module || slot == 0 ||
+        slot > (unsigned)prepared->module->sample_count) {
+        return false;
+    }
+    int16_t *pcm = copy_pcm(sample);
+    if (!pcm) {
+        return false;
+    }
+    free(prepared->module->samples[slot - 1].pcm16);
+    replace_sample_locked(prepared->module, slot, sample, pcm);
+    return true;
+}
+
+static void reset_song_locked(tracker_engine_t *engine)
+{
+    engine_set_playing(engine, false);
+    engine->speed = engine->module->initial_speed;
+    engine->tempo = engine->module->initial_tempo;
     engine->speed_multiplier = 1.0f;
-    engine->loop = true;
+    engine->loop = false;
     engine->launch_pattern = -1;
     engine->pending_pattern = -1;
     engine->stop_pending = false;
     engine->order_index = first_playable_order(engine);
+    engine->row = 0;
+    engine->tick = 0;
+    engine->tick_frames_left = 0;
+    engine->frames = 0;
+    engine->mixer.solo_count = 0;
+    for (int i = 0; i < TRACKER_MAX_CHANNELS; ++i) {
+        engine->mixer.channel_gain[i] = 1.0f;
+        engine->mixer.channel_mute[i] = false;
+        engine->mixer.channel_solo[i] = false;
+    }
+    tracker_mixer_reset(&engine->mixer, engine->module);
     publish_status(engine);
+}
+
+void tracker_engine_commit(tracker_engine_t *engine, tracker_engine_prepared_t *prepared)
+{
+    if (!engine || !prepared || !prepared->module) {
+        return;
+    }
+    engine_lock(engine);
+    tracker_module_t *previous = engine->module;
+    engine->module = prepared->module;
+    prepared->module = previous;
+    reset_song_locked(engine);
+    engine_unlock(engine);
+    tracker_engine_prepared_destroy(prepared);
+}
+
+bool tracker_engine_reload(tracker_engine_t *engine, const uint8_t *s3m, size_t size)
+{
+    if (!engine) {
+        return false;
+    }
+    tracker_engine_prepared_t *prepared = tracker_engine_prepare(s3m, size);
+    if (!prepared) {
+        return false;
+    }
+    tracker_engine_commit(engine, prepared);
+    return true;
+}
+
+bool tracker_engine_copy_blob(tracker_engine_t *engine, uint8_t **bytes, size_t *size)
+{
+    if (!engine || !bytes || !size) {
+        return false;
+    }
+    engine_lock(engine);
+    const size_t count = engine->module->blob_size;
+    uint8_t *copy = engine_module_alloc(count);
+    if (copy) {
+        memcpy(copy, engine->module->blob, count);
+        memcpy(copy + 0x60, engine->module->orders,
+               (size_t)engine->module->order_count);
+    }
+    engine_unlock(engine);
+    if (!copy) {
+        return false;
+    }
+    *bytes = copy; *size = count;
+    return true;
+}
+
+bool tracker_engine_assign_sample(tracker_engine_t *engine, unsigned slot,
+    unsigned clear_slot, const tracker_pcm_sample_t *sample)
+{
+    if (!engine || slot == 0 || slot > TRACKER_MAX_INSTRUMENTS) {
+        return false;
+    }
+    int16_t *pcm = copy_pcm(sample);
+    if (!pcm) {
+        return false;
+    }
+    engine_lock(engine);
+    if (slot > (unsigned)engine->module->sample_count || clear_slot > (unsigned)engine->module->sample_count) {
+        engine_unlock(engine);
+        free(pcm);
+        return false;
+    }
+    int16_t *previous = engine->module->samples[slot - 1].pcm16;
+    int16_t *cleared = NULL;
+    /* Existing voices refer to the slot object: reset them before freeing its
+     * backing data; a fresh event starts the replacement at the correct pitch. */
+    for (int i = 0; i < TRACKER_MAX_CHANNELS; ++i) {
+        engine->mixer.voices[i].sample = NULL;
+        engine->mixer.voices[i].instrument = NULL;
+    }
+    replace_sample_locked(engine->module, slot, sample, pcm);
+    if (clear_slot && clear_slot != slot) {
+        cleared = engine->module->samples[clear_slot - 1].pcm16;
+        engine->module->samples[clear_slot - 1] = engine->module->original_samples[clear_slot - 1];
+    }
+    engine_unlock(engine);
+    free(previous);
+    free(cleared);
+    return true;
+}
+
+bool tracker_engine_replace_sample(tracker_engine_t *engine, unsigned slot,
+                                   const tracker_pcm_sample_t *sample)
+{
+    return tracker_engine_assign_sample(engine, slot, 0, sample);
+}
+
+tracker_engine_t *tracker_engine_create(const uint8_t *s3m, size_t size)
+{
+    tracker_engine_prepared_t *prepared = tracker_engine_prepare(s3m, size);
+    tracker_engine_t *engine = calloc(1, sizeof(*engine));
+    if (!prepared || !engine) {
+        tracker_engine_prepared_destroy(prepared); free(engine);
+        return NULL;
+    }
+    atomic_init(&engine->playing, false);
+    engine->module = prepared->module;
+    prepared->module = NULL;
+    free(prepared);
+    if (!tracker_mixer_init(&engine->mixer, engine->module) || !engine_lock_create(engine)) {
+        tracker_mixer_destroy(&engine->mixer);
+        tracker_module_destroy(engine->module);
+        free(engine->module); free(engine);
+        return NULL;
+    }
+    reset_song_locked(engine);
+    engine->loop = true;
     return engine;
 }
 
 void tracker_engine_destroy(tracker_engine_t *engine)
 {
-    if (engine == NULL) {
+    if (!engine) {
         return;
     }
     engine_lock_destroy(engine);
     tracker_mixer_destroy(&engine->mixer);
-    tracker_module_destroy(&engine->module);
+    tracker_module_destroy(engine->module);
+    free(engine->module);
     free(engine);
 }
 
@@ -462,18 +650,21 @@ void tracker_engine_restart(tracker_engine_t *engine)
     engine->tick = 0;
     engine->tick_frames_left = 0;
     engine->frames = 0;
-    tracker_mixer_reset(&engine->mixer, &engine->module);
+    tracker_mixer_reset(&engine->mixer, engine->module);
     publish_status(engine);
     engine_unlock(engine);
 }
 
 void tracker_engine_launch_pattern(tracker_engine_t *engine, int pattern)
 {
-    if (engine == NULL || pattern < 0 ||
-            pattern >= engine->module.pattern_count) {
+    if (engine == NULL || pattern < 0) {
         return;
     }
     engine_lock(engine);
+    if (pattern >= engine->module->pattern_count) {
+        engine_unlock(engine);
+        return;
+    }
     engine->stop_pending = false;
     if (engine->launch_pattern < 0) {
         /* The first pad takes over right away from the pattern's first row. */
@@ -643,10 +834,10 @@ static void render_into(tracker_engine_t *engine, void *stereo, int frames,
             chunk = engine->tick_frames_left;
         }
         if (floating) {
-            tracker_mixer_render_float(&engine->mixer, &engine->module,
+            tracker_mixer_render_float(&engine->mixer, engine->module,
                                        (float *)stereo + produced * 2, chunk);
         } else {
-            tracker_mixer_render(&engine->mixer, &engine->module,
+            tracker_mixer_render(&engine->mixer, engine->module,
                                  (int16_t *)stereo + produced * 2, chunk);
         }
         produced += chunk;
@@ -699,22 +890,33 @@ void tracker_engine_get_status(tracker_engine_t *engine, tracker_status_t *statu
 
 int tracker_engine_patterns(tracker_engine_t *engine)
 {
-    return engine != NULL ? engine->module.pattern_count : 0;
+    if (!engine) { return 0; }
+    engine_lock(engine);
+    const int count = engine->module->pattern_count;
+    engine_unlock(engine);
+    return count;
 }
 
 int tracker_engine_orders(tracker_engine_t *engine)
 {
-    return engine != NULL ? engine->module.order_count : 0;
+    if (!engine) { return 0; }
+    engine_lock(engine);
+    const int count = engine->module->order_count;
+    engine_unlock(engine);
+    return count;
 }
 
 int tracker_engine_pattern_at(tracker_engine_t *engine, int order_index)
 {
-    if (engine == NULL || order_index < 0 ||
-            order_index >= engine->module.order_count) {
+    if (engine == NULL || order_index < 0) {
         return 0;
     }
     engine_lock(engine);
-    const int pattern = engine->module.orders[order_index];
+    if (order_index >= engine->module->order_count) {
+        engine_unlock(engine);
+        return 0;
+    }
+    const int pattern = engine->module->orders[order_index];
     engine_unlock(engine);
     return pattern;
 }
@@ -722,23 +924,22 @@ int tracker_engine_pattern_at(tracker_engine_t *engine, int order_index)
 void tracker_engine_set_pattern_at(tracker_engine_t *engine, int order_index,
                                    int pattern)
 {
-    if (engine == NULL || engine->module.order_count == 0 ||
-            engine->module.pattern_count == 0) {
+    if (engine == NULL) {
         return;
     }
+    engine_lock(engine);
     if (order_index < 0) {
         order_index = 0;
-    } else if (order_index >= engine->module.order_count) {
-        order_index = engine->module.order_count - 1;
+    } else if (order_index >= engine->module->order_count) {
+        order_index = engine->module->order_count - 1;
     }
     if (pattern < 0) {
         pattern = 0;
-    } else if (pattern >= engine->module.pattern_count) {
-        pattern = engine->module.pattern_count - 1;
+    } else if (pattern >= engine->module->pattern_count) {
+        pattern = engine->module->pattern_count - 1;
     }
 
-    engine_lock(engine);
-    engine->module.orders[order_index] = (uint8_t)pattern;
+    engine->module->orders[order_index] = (uint8_t)pattern;
     publish_status(engine);
     engine_unlock(engine);
 }
@@ -754,8 +955,8 @@ int tracker_engine_song_rows(tracker_engine_t *engine)
         return TRACKER_PATTERN_ROWS;
     }
     int total = 0;
-    for (int index = 0; index < engine->module.order_count; ++index) {
-        if (engine->module.orders[index] < engine->module.pattern_count) {
+    for (int index = 0; index < engine->module->order_count; ++index) {
+        if (engine->module->orders[index] < engine->module->pattern_count) {
             total += TRACKER_PATTERN_ROWS;
         }
     }
@@ -776,7 +977,7 @@ int tracker_engine_current_song_row(tracker_engine_t *engine)
     }
     int base = 0;
     for (int index = 0; index < engine->order_index; ++index) {
-        if (engine->module.orders[index] < engine->module.pattern_count) {
+        if (engine->module->orders[index] < engine->module->pattern_count) {
             base += TRACKER_PATTERN_ROWS;
         }
     }
@@ -806,9 +1007,9 @@ bool tracker_engine_song_row_at(tracker_engine_t *engine, int song_row,
         return ok;
     }
     bool found = false;
-    for (int index = 0; index < engine->module.order_count; ++index) {
-        const uint8_t candidate = engine->module.orders[index];
-        if (candidate >= engine->module.pattern_count) {
+    for (int index = 0; index < engine->module->order_count; ++index) {
+        const uint8_t candidate = engine->module->orders[index];
+        if (candidate >= engine->module->pattern_count) {
             continue;
         }
         if (song_row < TRACKER_PATTERN_ROWS) {
@@ -838,16 +1039,18 @@ void tracker_engine_cell(tracker_engine_t *engine, int pattern, int row,
     cell->volume = -1;
     cell->effect = -1;
     cell->param = 0;
-    if (engine == NULL || pattern < 0 ||
-            pattern >= engine->module.pattern_count || row < 0 ||
+    if (engine == NULL || pattern < 0 || row < 0 ||
             row >= TRACKER_PATTERN_ROWS || channel < 0 ||
-            channel >= TRACKER_MAX_CHANNELS ||
-            channel >= engine->module.channel_count) {
+            channel >= TRACKER_MAX_CHANNELS) {
         return;
     }
-
+    engine_lock(engine);
+    if (pattern >= engine->module->pattern_count || channel >= engine->module->channel_count) {
+        engine_unlock(engine);
+        return;
+    }
     const tracker_cell_data_t *source =
-        engine->module.cells +
+        engine->module->cells +
         ((size_t)pattern * TRACKER_PATTERN_ROWS + (size_t)row) *
         TRACKER_MAX_CHANNELS +
         channel;
@@ -864,6 +1067,7 @@ void tracker_engine_cell(tracker_engine_t *engine, int pattern, int row,
         cell->effect = source->effect;
         cell->param = source->param;
     }
+    engine_unlock(engine);
 }
 
 int tracker_engine_waveform(tracker_engine_t *engine, int channel,
@@ -915,8 +1119,7 @@ float tracker_engine_channel_cycle_frames(tracker_engine_t *engine, int channel)
 void tracker_engine_set_channel_gain(tracker_engine_t *engine, int channel,
                                      float gain)
 {
-    if (engine == NULL || channel < 0 || channel >= TRACKER_MAX_CHANNELS ||
-            channel >= engine->module.channel_count) {
+    if (engine == NULL || channel < 0 || channel >= TRACKER_MAX_CHANNELS) {
         return;
     }
     if (gain < 0.0f) {
@@ -943,8 +1146,7 @@ float tracker_engine_channel_gain(tracker_engine_t *engine, int channel)
 void tracker_engine_set_channel_mute(tracker_engine_t *engine, int channel,
                                      bool muted)
 {
-    if (engine == NULL || channel < 0 || channel >= TRACKER_MAX_CHANNELS ||
-            channel >= engine->module.channel_count) {
+    if (engine == NULL || channel < 0 || channel >= TRACKER_MAX_CHANNELS) {
         return;
     }
     engine_lock(engine);
@@ -966,8 +1168,7 @@ bool tracker_engine_channel_mute(tracker_engine_t *engine, int channel)
 void tracker_engine_set_channel_solo(tracker_engine_t *engine, int channel,
                                      bool solo)
 {
-    if (engine == NULL || channel < 0 || channel >= TRACKER_MAX_CHANNELS ||
-            channel >= engine->module.channel_count) {
+    if (engine == NULL || channel < 0 || channel >= TRACKER_MAX_CHANNELS) {
         return;
     }
     engine_lock(engine);

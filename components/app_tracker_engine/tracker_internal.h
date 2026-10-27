@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdatomic.h>
 
 #define TRACKER_MAX_ORDERS 256
 #define TRACKER_MAX_PATTERNS 256
@@ -21,11 +22,14 @@
 
 typedef struct {
     const uint8_t *data;
+    int16_t *pcm16; /* Optional owned canonical sample replacement. */
     uint32_t length;
     uint32_t loop_start;
     uint32_t loop_end;
     float volume;
+    float gain;
     uint32_t c2_speed;
+    uint8_t raw_bits, raw_channels;
     bool loops;
 } tracker_sample_t;
 
@@ -39,8 +43,9 @@ typedef struct {
 
 typedef struct {
     /* Immutable after creation except order entries, which are edited through
-     * the engine order lock. The source blob remains owned by the caller. */
+     * the engine order lock. owned_blob owns the source for this module. */
     const uint8_t *blob;
+    uint8_t *owned_blob;
     size_t blob_size;
     bool unsigned_samples;
     uint8_t orders[TRACKER_MAX_ORDERS];
@@ -48,6 +53,7 @@ typedef struct {
     tracker_cell_data_t *cells;
     int pattern_count;
     tracker_sample_t samples[TRACKER_MAX_INSTRUMENTS];
+    tracker_sample_t original_samples[TRACKER_MAX_INSTRUMENTS];
     int sample_count;
     int channel_count;
     /* Slot -> S3M source channel, and the inverse map used while decoding so
@@ -91,7 +97,7 @@ typedef struct {
 } tracker_mixer_t;
 
 struct tracker_engine {
-    tracker_module_t module;
+    tracker_module_t *module;
     tracker_mixer_t mixer;
 
     int speed;
@@ -106,7 +112,7 @@ struct tracker_engine {
     int row;
     int tick;
     int tick_frames_left;
-    bool playing;
+    atomic_bool playing;
     bool loop;
     uint64_t frames;
 
@@ -115,7 +121,11 @@ struct tracker_engine {
      * uses a priority-inheriting FreeRTOS mutex (state_mutex); host builds use
      * the atomic spin flag. */
     void *state_mutex;
-    int state_lock;
+    atomic_flag state_lock;
+};
+
+struct tracker_engine_prepared {
+    tracker_module_t *module;
 };
 
 /* tracker_module.c */

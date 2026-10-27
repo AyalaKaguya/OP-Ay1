@@ -17,16 +17,21 @@
 struct app_audio_bus {
     tracker_engine_t *tracker;
     app_synth_t *synth;
+    app_sampler_t *sampler;
+    atomic_bool render_started;
     atomic_uint gain[APP_AUDIO_SOURCE_COUNT];
     float tracker_samples[APP_AUDIO_BLOCK_FRAMES * 2];
     float synth_samples[BUS_RENDER_FRAMES * 2];
+    float sampler_samples[BUS_RENDER_FRAMES * 2];
     int16_t scope[APP_AUDIO_SCOPE_SAMPLES];
     unsigned scope_head;
     app_audio_bus_status_t status;
 #if defined(ESP_PLATFORM)
     SemaphoreHandle_t monitor_lock;
+    SemaphoreHandle_t render_lock;
 #else
     atomic_bool monitor_lock;
+    atomic_bool render_lock;
 #endif
 };
 
@@ -73,19 +78,53 @@ app_audio_bus_t *app_audio_bus_create(tracker_engine_t *tracker,
     }
     bus->tracker = tracker;
     bus->synth = synth;
+    atomic_init(&bus->render_started, false);
     for (int source = 0; source < APP_AUDIO_SOURCE_COUNT; ++source) {
         atomic_init(&bus->gain[source], BUS_GAIN_SCALE);
     }
 #if defined(ESP_PLATFORM)
     bus->monitor_lock = xSemaphoreCreateMutex();
-    if (bus->monitor_lock == NULL) {
+    bus->render_lock = xSemaphoreCreateMutex();
+    if (bus->monitor_lock == NULL || bus->render_lock == NULL) {
+        if (bus->monitor_lock) { vSemaphoreDelete(bus->monitor_lock); }
+        if (bus->render_lock) { vSemaphoreDelete(bus->render_lock); }
         free(bus);
         return NULL;
     }
 #else
     atomic_init(&bus->monitor_lock, false);
+    atomic_init(&bus->render_lock, false);
 #endif
     return bus;
+}
+
+bool app_audio_bus_begin_edit(app_audio_bus_t *bus, uint32_t timeout_ms)
+{
+    if (!bus) { return false; }
+#if defined(ESP_PLATFORM)
+    return xSemaphoreTake(bus->render_lock, pdMS_TO_TICKS(timeout_ms)) == pdTRUE;
+#else
+    (void)timeout_ms;
+    bool expected = false;
+    return atomic_compare_exchange_strong_explicit(&bus->render_lock, &expected, true,
+        memory_order_acquire, memory_order_relaxed);
+#endif
+}
+void app_audio_bus_end_edit(app_audio_bus_t *bus)
+{
+    if (!bus) { return; }
+#if defined(ESP_PLATFORM)
+    (void)xSemaphoreGive(bus->render_lock);
+#else
+    atomic_store_explicit(&bus->render_lock, false, memory_order_release);
+#endif
+}
+bool app_audio_bus_set_sampler(app_audio_bus_t *bus, app_sampler_t *sampler)
+{
+    if (!bus || !app_audio_bus_begin_edit(bus, 0)) { return false; }
+    const bool allowed = !atomic_load_explicit(&bus->render_started, memory_order_relaxed);
+    if (allowed) { bus->sampler = sampler; }
+    app_audio_bus_end_edit(bus); return allowed;
 }
 
 void app_audio_bus_destroy(app_audio_bus_t *bus)
@@ -95,6 +134,7 @@ void app_audio_bus_destroy(app_audio_bus_t *bus)
     }
 #if defined(ESP_PLATFORM)
     vSemaphoreDelete(bus->monitor_lock);
+    vSemaphoreDelete(bus->render_lock);
 #endif
     free(bus);
 }
@@ -104,13 +144,15 @@ void app_audio_bus_render(app_audio_bus_t *bus, int16_t *stereo, int frames)
     if (stereo == NULL || frames <= 0) {
         return;
     }
-    if (bus == NULL) {
+    if (bus == NULL || !app_audio_bus_begin_edit(bus, 0)) {
         memset(stereo, 0, (size_t)frames * 2 * sizeof(*stereo));
         return;
     }
+    atomic_store_explicit(&bus->render_started, true, memory_order_relaxed);
     const float tracker_gain = app_audio_bus_source_gain(bus,
                                                          APP_AUDIO_SOURCE_TRACKER);
     const float synth_gain = app_audio_bus_source_gain(bus, APP_AUDIO_SOURCE_SYNTH);
+    const float sampler_gain = app_audio_bus_source_gain(bus, APP_AUDIO_SOURCE_SAMPLER);
     float peak = 0.0f;
     bool clipped = false;
     for (int offset = 0; offset < frames;) {
@@ -129,6 +171,7 @@ void app_audio_bus_render(app_audio_bus_t *bus, int16_t *stereo, int frames)
             if (bus->synth != NULL) {
                 app_synth_render(bus->synth, bus->synth_samples, count);
             }
+            app_sampler_render(bus->sampler, bus->sampler_samples, (unsigned)count);
             /* Only this short output/history copy shares a lock with the UI;
              * source renderers never run under the monitoring lock. */
             monitor_lock(bus);
@@ -136,9 +179,11 @@ void app_audio_bus_render(app_audio_bus_t *bus, int16_t *stereo, int frames)
                 const int sample = frame * 2;
                 const int tracker_sample = (position + frame) * 2;
                 float left = bus->tracker_samples[tracker_sample] * tracker_gain +
-                             bus->synth_samples[sample] * synth_gain;
+                             bus->synth_samples[sample] * synth_gain +
+                             bus->sampler_samples[sample] * sampler_gain;
                 float right = bus->tracker_samples[tracker_sample + 1] * tracker_gain +
-                              bus->synth_samples[sample + 1] * synth_gain;
+                              bus->synth_samples[sample + 1] * synth_gain +
+                              bus->sampler_samples[sample + 1] * sampler_gain;
                 if (!isfinite(left) || !isfinite(right)) {
                     left = 0.0f;
                     right = 0.0f;
@@ -172,6 +217,7 @@ void app_audio_bus_render(app_audio_bus_t *bus, int16_t *stereo, int frames)
     bus->status.clipped = bus->status.clipped || clipped;
     bus->status.frames += (uint64_t)frames;
     monitor_unlock(bus);
+    app_audio_bus_end_edit(bus);
 }
 
 bool app_audio_bus_set_source_gain(app_audio_bus_t *bus,

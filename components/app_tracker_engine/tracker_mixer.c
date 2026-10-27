@@ -28,8 +28,25 @@ static int sample_value(const tracker_module_t *module,
     if (index >= sample->length) {
         return 0;
     }
-    const uint8_t raw = sample->data[index];
-    return module->unsigned_samples ? (int)raw - 128 : (int)(int8_t)raw;
+    if (sample->pcm16) {
+        return sample->pcm16[index];
+    }
+    if (!sample->data) {
+        return 0;
+    }
+    const unsigned channels = sample->raw_channels == 2U ? 2U : 1U;
+    const unsigned width = sample->raw_bits == 16U ? 2U : 1U;
+    int32_t mono = 0;
+    for (unsigned channel = 0; channel < channels; ++channel) {
+        const uint8_t *raw = sample->data + ((size_t)channel * sample->length + index) * width;
+        if (width == 2U) {
+            const uint16_t value = (uint16_t)(raw[0] | (uint16_t)raw[1] << 8);
+            mono += module->unsigned_samples ? (int32_t)value - 32768 : (int16_t)value;
+        } else {
+            mono += (module->unsigned_samples ? (int)*raw - 128 : (int)(int8_t)*raw) * 256;
+        }
+    }
+    return mono / (int32_t)channels;
 }
 
 static void write_wave(tracker_mixer_t *mixer, int channel, float value)
@@ -88,10 +105,10 @@ static void mix_frame(tracker_mixer_t *mixer, const tracker_module_t *module,
                 next = sample_value(module, sample, index + 1);
             }
             value = ((float)current +
-                     ((float)next - (float)current) * fraction) / 128.0f;
+                     ((float)next - (float)current) * fraction) / 32768.0f;
         }
 
-        value *= voice->volume * mixer->channel_gain[channel];
+        value *= voice->volume * sample->gain * mixer->channel_gain[channel];
         /* Channel meters must show the channel's contribution to the bus, so
          * they use the same headroom and global volume as the final mix. */
         const float metered =

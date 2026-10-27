@@ -30,7 +30,7 @@ static bool range_contains(size_t size, size_t offset, size_t bytes)
     return offset <= size && bytes <= size - offset;
 }
 
-static void decode_pattern(const tracker_module_t *module, int pattern,
+static bool decode_pattern(const tracker_module_t *module, int pattern,
                            const uint8_t *data, size_t size, size_t offset)
 {
     tracker_cell_data_t *rows =
@@ -39,13 +39,18 @@ static void decode_pattern(const tracker_module_t *module, int pattern,
     memset(rows, TRACKER_EMPTY,
            (size_t)TRACKER_PATTERN_ROWS * TRACKER_MAX_CHANNELS *
            sizeof(*rows));
+    if (offset == 0) { return true; } /* A null paragraph denotes an empty pattern. */
     if (!range_contains(size, offset, S3M_PATTERN_DATA_MIN)) {
-        return;
+        return false;
     }
-
+    const size_t packed_size = tracker_read_u16(data, offset);
+    if (packed_size < S3M_PATTERN_DATA_MIN || !range_contains(size, offset, packed_size)) {
+        return false;
+    }
+    const size_t end = offset + packed_size;
     size_t cursor = offset + S3M_PATTERN_DATA_MIN;
     int row_index = 0;
-    while (row_index < TRACKER_PATTERN_ROWS && cursor < size) {
+    while (row_index < TRACKER_PATTERN_ROWS && cursor < end) {
         const uint8_t packed = data[cursor++];
         if (packed == 0) {
             ++row_index;
@@ -60,22 +65,22 @@ static void decode_pattern(const tracker_module_t *module, int pattern,
         uint8_t param = 0;
 
         if ((packed & 0x20) != 0) {
-            if (!range_contains(size, cursor, 2)) {
-                return;
+            if (!range_contains(end, cursor, 2)) {
+                return false;
             }
             note = data[cursor];
             instrument = data[cursor + 1];
             cursor += 2;
         }
         if ((packed & 0x40) != 0) {
-            if (!range_contains(size, cursor, 1)) {
-                return;
+            if (!range_contains(end, cursor, 1)) {
+                return false;
             }
             volume = data[cursor++];
         }
         if ((packed & 0x80) != 0) {
-            if (!range_contains(size, cursor, 2)) {
-                return;
+            if (!range_contains(end, cursor, 2)) {
+                return false;
             }
             effect = data[cursor];
             param = data[cursor + 1];
@@ -94,6 +99,7 @@ static void decode_pattern(const tracker_module_t *module, int pattern,
         cell->effect = effect;
         cell->param = param;
     }
+    return row_index == TRACKER_PATTERN_ROWS;
 }
 
 static void decode_samples(tracker_module_t *module, size_t pointer_offset)
@@ -110,7 +116,7 @@ static void decode_samples(tracker_module_t *module, size_t pointer_offset)
         }
 
         const uint8_t flags = data[header_offset + 31];
-        if (data[header_offset + 30] != 0 || (flags & 0x06) != 0) {
+        if (data[header_offset + 30] != 0 || (flags & ~0x07U) != 0) {
             continue;
         }
 
@@ -119,7 +125,10 @@ static void decode_samples(tracker_module_t *module, size_t pointer_offset)
             tracker_read_u16(data, header_offset + 14);
         const uint64_t sample_offset = (uint64_t)paragraph * 16U;
         const uint32_t length = tracker_read_u32(data, header_offset + 16);
-        if (sample_offset + length > size || length == 0) {
+        const uint8_t width = (flags & 4U) ? 2U : 1U;
+        const uint8_t channels = (flags & 2U) ? 2U : 1U;
+        const uint64_t sample_bytes = (uint64_t)length * width * channels;
+        if (sample_offset + sample_bytes > size || length == 0) {
             continue;
         }
 
@@ -141,7 +150,10 @@ static void decode_samples(tracker_module_t *module, size_t pointer_offset)
         sample->loop_end = loop_end;
         sample->loops = loop_end > loop_start;
         sample->volume = (float)data[header_offset + 28] / 64.0f;
+        sample->gain = 1.0f;
         sample->c2_speed = c2_speed;
+        sample->raw_bits = width * 8U;
+        sample->raw_channels = channels;
     }
 }
 
@@ -182,6 +194,12 @@ static void decode_channels(tracker_module_t *module, size_t pattern_end)
 void tracker_module_destroy(tracker_module_t *module)
 {
     if (module != NULL) {
+        for (int i = 0; i < TRACKER_MAX_INSTRUMENTS; ++i) {
+            free(module->samples[i].pcm16);
+            module->samples[i].pcm16 = NULL;
+        }
+        free(module->owned_blob);
+        module->owned_blob = NULL;
         free(module->cells);
         module->cells = NULL;
     }
@@ -233,6 +251,7 @@ bool tracker_module_parse(tracker_module_t *module, const uint8_t *s3m,
 
     const size_t pattern_offset = pointer_offset + instrument_bytes;
     decode_samples(module, pointer_offset);
+    memcpy(module->original_samples, module->samples, sizeof(module->samples));
     decode_channels(module, pattern_offset + pattern_bytes);
 
     const size_t cell_count = (size_t)pattern_count * TRACKER_PATTERN_ROWS *
@@ -244,7 +263,7 @@ bool tracker_module_parse(tracker_module_t *module, const uint8_t *s3m,
     for (int pattern = 0; pattern < pattern_count; ++pattern) {
         const size_t offset =
             (size_t)tracker_read_u16(s3m, pattern_offset + pattern * 2) * 16;
-        decode_pattern(module, pattern, s3m, size, offset);
+        if (!decode_pattern(module, pattern, s3m, size, offset)) { return false; }
     }
     return true;
 }
