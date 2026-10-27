@@ -58,7 +58,7 @@ static app_sampler_result_t import_wav(app_sampler_t *sampler, wav_reader_t *rea
         }
         cursor = (size_t)next;
     }
-    if (!have_format || !have_data || (channels != 1U && channels != 2U) ||
+    if (cursor != riff_end || !have_format || !have_data || (channels != 1U && channels != 2U) ||
         (bits != 8U && bits != 16U) || rate < 8000U || rate > 192000U ||
         align != channels * (bits / 8U) || bytes_per_second != rate * align ||
         !data_bytes || data_bytes % align) { return APP_SAMPLER_FORMAT; }

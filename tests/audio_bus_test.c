@@ -53,6 +53,9 @@ static void make_fixture(int channels)
         fixture[cursor++] = 0x40; /* C4. */
         fixture[cursor++] = 1;
     }
+    const unsigned packed_bytes = (unsigned)(cursor - 0x180U) + 64U;
+    fixture[0x180] = (unsigned char)packed_bytes;
+    fixture[0x181] = (unsigned char)(packed_bytes >> 8);
 }
 
 static void float_and_saturation(void)

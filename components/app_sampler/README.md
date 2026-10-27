@@ -104,6 +104,19 @@ retains the entire instance for a later retry. Audio/UI callers must already be
 stopped before shutdown. `destroy` is a convenience for that stopped-lifetime
 case; callers needing a completion result should use `shutdown`.
 
-No build, test, simulator or device validation was run for this implementation,
-as requested. Runtime audio quality, capture wiring, shared-clock behavior,
-PSRAM headroom and device performance remain unverified.
+## Native checks
+
+Run `python tools/test_sampler.py`. It compiles production sampler, tracker,
+synth and bus sources with strict warnings, then verifies independently specified
+ARYX slot metadata and all 5,131 PCM frames; WAV 8/16-bit mono/stereo conversion;
+streamed file import; incomplete RIFF chunks; 64-entry, frame and duration caps;
+draft audition, Cancel/Apply/Undo; separate instrument volume and gain; explicit
+slot moves; source/effect preservation; serialized-bank bounds and snapshot
+lifetime; stable engine commit/rollback; bus gain/edit gating; and truthful host
+recording rejection. A reader and renderer run concurrently through 100 staged
+project swaps. The script writes only ignored `.codex-runs/sampler` outputs.
+
+The first authorized native run passed 6,645 assertions plus the concurrent
+checks with MSVC C11 `/W4 /WX`. Existing audio bus/init, synth, MIDI and pointer
+interaction regressions also passed. These checks do not establish microphone
+wiring, codec/shared-clock behavior, PSRAM headroom, device timing or acceptance.
