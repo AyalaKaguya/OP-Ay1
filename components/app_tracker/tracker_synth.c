@@ -151,8 +151,6 @@ static void oscillator(tracker_graphics_t *g, const app_synth_patch_t *p)
     const int wave = p->waveform >= 0 && p->waveform <= APP_SYNTH_WAVE_WAVETABLE ? p->waveform : 0;
     tracker_gfx_text(g, 44, 168, 2, C_TEXT, names[wave]);
     tracker_gfx_text(g, 194, 171, 1, C_MUTED, ">");
-    tracker_gfx_text(g, 44, 190, 1, C_MUTED,
-                     wave == APP_SYNTH_WAVE_WAVETABLE ? "WAVETABLE" : "ANALOG");
     tracker_gfx_rect(g, 44, 232, 152, 1, C_LINE);
     int previous = 231;
     for (int px = 0; px < 152; ++px) {
@@ -183,7 +181,6 @@ static void filter(tracker_graphics_t *g, const app_synth_patch_t *p)
 {
     char value[24];
     tracker_gfx_text(g, 44, 168, 2, C_TEXT, "LPF");
-    tracker_gfx_text(g, 44, 193, 1, C_MUTED, "LOWPASS");
     snprintf(value, sizeof(value), "%.0f HZ", (double)p->filter_cutoff_hz);
     parameter(g, "CUTOFF", value, 167,
               logf(p->filter_cutoff_hz / 20.0f) / logf(1000.0f), 130, 300);

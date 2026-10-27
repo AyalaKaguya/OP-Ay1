@@ -229,7 +229,6 @@ static void pads(tracker_graphics_t *gfx, const tracker_controls_view_t *view)
     for (int index = 0; index < 16; ++index) {
         pad(gfx, view, index);
     }
-    tracker_gfx_text(gfx, 16, 423, 1, C_MUTED, "TAP PLAYING PAD: QUEUE / CANCEL STOP");
 }
 
 void tracker_render_controls(uint16_t *frame, const tracker_controls_view_t *view)

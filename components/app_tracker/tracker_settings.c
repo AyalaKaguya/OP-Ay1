@@ -213,8 +213,6 @@ static void render_timeouts(tracker_graphics_t *g, const tracker_settings_t *s)
 {
     tracker_gfx_text(g, 30, 14, 1, C_CYAN, "< BACK");
     tracker_gfx_text(g, 132, 14, 2, C_TEXT, "DISPLAY TIMERS");
-    tracker_gfx_text(g, 30, 64, 1, C_MUTED, "IDLE DISPLAY / AUDIO KEEPS PLAYING");
-    tracker_gfx_text(g, 30, 85, 1, C_MUTED, "OFF DISABLES EACH TIMER");
     tracker_gfx_text(g, 30, 116, 1, C_TEXT, "DIM AFTER");
     tracker_gfx_text(g, 30, 250, 1, C_TEXT, "SCREEN OFF AFTER");
     for (unsigned i = 0; i < 6; ++i) {
@@ -225,8 +223,6 @@ static void render_timeouts(tracker_graphics_t *g, const tracker_settings_t *s)
         button(g, left, 270 + row, 134, 40, off_labels[i],
                s->requested_off_s == off_seconds[i], C_CYAN);
     }
-    tracker_gfx_text(g, 30, 382, 1, C_MUTED, "DIM TO 10% / TOUCH TO RESTORE");
-    tracker_gfx_text(g, 30, 403, 1, C_MUTED, "FIRST TOUCH WAKES WITHOUT PLAYING");
 }
 
 void tracker_settings_render(uint16_t *frame, const tracker_settings_t *s)
@@ -302,32 +298,34 @@ void tracker_settings_render_panel(uint16_t *frame, const tracker_settings_t *s)
     for (int i = 0; i < 4; ++i) {
         button(&g, 30 + 107 * i, 243, 99, 44, angles[i], s->display.rotation == i * 90, C_CYAN);
     }
-    tracker_gfx_text(&g, 30, 299, 1, C_MUTED, s->display.last_error ? "DISPLAY / SENSOR ERROR" :
-                     s->display.busy || s->awaiting_display || s->display_request ? "APPLYING..." : "TAP ANGLE TO LOCK / AUTO TO FOLLOW");
+    if (s->display.last_error || s->display.busy || s->awaiting_display || s->display_request) {
+        tracker_gfx_text(&g, 30, 299, 1, s->display.last_error ? C_ACCENT : C_MUTED,
+                         s->display.last_error ? "DISPLAY / SENSOR ERROR" : "APPLYING...");
+    }
     tracker_gfx_rect(&g, 16, 317, 448, 1, C_BORDER);
     tracker_gfx_text(&g, 30, 333, 1, C_MUTED, "USB MODE");
     button(&g, 30, 351, 206, 44, "MIDI IO", s->usb.actual_mode == APP_USB_MODE_MIDI_HOST, C_CYAN);
     button(&g, 244, 351, 206, 44, "VENDOR", s->usb.actual_mode == APP_USB_MODE_VENDOR, C_CYAN);
-    const char *usb_text = "DEVICE / ESP-IRIS MANAGEMENT";
+    const char *usb_text = NULL;
     if (s->usb.state == APP_USB_STATE_SWITCHING) {
-        usb_text = "SWITCHING USB...";
+        usb_text = "SWITCHING...";
     } else if (s->usb.state == APP_USB_STATE_HOST_WAITING) {
-        usb_text = "HOST / WAITING FOR KEYBOARD";
+        usb_text = "WAITING FOR KEYBOARD";
     } else if (s->usb.state == APP_USB_STATE_HOST_CONNECTED) {
-        usb_text = "HOST / MIDI KEYBOARD CONNECTED";
+        usb_text = "CONNECTED";
     } else if (s->usb.state == APP_USB_STATE_ERROR) {
-        usb_text = "USB ERROR / TRY VENDOR";
+        usb_text = "USB ERROR";
     }
-    tracker_gfx_text(&g, 30, 408, 1, s->usb.state == APP_USB_STATE_ERROR ? C_ACCENT : C_MUTED, usb_text);
+    if (usb_text) {
+        tracker_gfx_text(&g, 30, 408, 1, s->usb.state == APP_USB_STATE_ERROR ? C_ACCENT : C_MUTED, usb_text);
+    }
     tracker_gfx_rect(&g, 16, 427, 448, 1, C_BORDER);
     tracker_gfx_rect(&g, 202, 436, 76, 3, C_MUTED);
     if (s->usb_confirm) {
         tracker_gfx_rect(&g, 16, 130, 448, 180, C_PANEL);
         tracker_gfx_outline(&g, 16, 130, 448, 180, C_CYAN);
-        tracker_gfx_text(&g, 30, 149, 2, C_TEXT, "USE USB MIDI HOST?");
-        tracker_gfx_text(&g, 30, 182, 1, C_MUTED, "PC USB MANAGEMENT WILL DISCONNECT.");
-        tracker_gfx_text(&g, 30, 204, 1, C_MUTED, "CONNECT A USB MIDI KEYBOARD.");
-        tracker_gfx_text(&g, 30, 222, 1, C_MUTED, "CHOOSE VENDOR HERE TO RECONNECT.");
+        tracker_gfx_text(&g, 30, 149, 2, C_TEXT, "USB MIDI HOST?");
+        tracker_gfx_text(&g, 30, 182, 1, C_MUTED, "USB WILL DISCONNECT");
         button(&g, 30, 246, 206, 48, "CANCEL", false, C_TEXT);
         button(&g, 244, 246, 206, 48, "MIDI HOST", true, C_CYAN);
     }

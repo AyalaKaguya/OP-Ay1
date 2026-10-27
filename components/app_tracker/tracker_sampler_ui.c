@@ -106,7 +106,7 @@ static void audition(tracker_workspace_t *w)
         result(w, value);
         w->auditioning = value == APP_SAMPLER_OK;
     } else {
-        tracker_workspace_message(w, "EMPTY SAMPLE SLOT / NOTHING TO AUDITION");
+        tracker_workspace_message(w, "EMPTY SAMPLE");
     }
     w->dirty = true;
 }
@@ -114,7 +114,7 @@ static void audition(tracker_workspace_t *w)
 static void begin_edit(tracker_workspace_t *w)
 {
     if (!w->sample_valid || !w->sample_info.frames) {
-        tracker_workspace_message(w, "SELECT A NONEMPTY SAMPLE FIRST");
+        tracker_workspace_message(w, "EMPTY SAMPLE");
         return;
     }
     stop_audition(w);
@@ -292,13 +292,13 @@ static void tap_record(tracker_workspace_t *w, int x, int y)
         if (inside(x, y, 24, 382, 432, 40)) {
             stop_audition(w);
             app_sampler_record_discard(w->sampler);
-            tracker_workspace_message(w, "FAILED TAKE DISCARDED / PROJECT UNCHANGED");
+            tracker_workspace_message(w, "TAKE DISCARDED");
         }
     } else if (state == APP_SAMPLER_RECORD_READY) {
         if (inside(x, y, 24, 382, 136, 40)) {
             stop_audition(w);
             app_sampler_record_discard(w->sampler);
-            tracker_workspace_message(w, "TAKE DISCARDED / PROJECT UNCHANGED");
+            tracker_workspace_message(w, "TAKE DISCARDED");
         } else if (inside(x, y, 172, 382, 136, 40)) {
             if (w->auditioning) {
                 stop_audition(w);
@@ -464,7 +464,7 @@ static void library(tracker_graphics_t *g, const tracker_workspace_t *w)
         label(g, 36, y + 25, text, C_MUTED);
     }
     if (!w->sample_count) {
-        label(g, 24, 220, "NO SAMPLES / IMPORT WAV OR RECORD A TAKE", C_MUTED);
+        label(g, 24, 220, "NO SAMPLES", C_MUTED);
     }
     button(g, 24, 324, 62, 25, "<", false);
     button(g, 394, 324, 62, 25, ">", false);
@@ -486,8 +486,7 @@ static void edit(tracker_graphics_t *g, const tracker_workspace_t *w)
     tracker_gfx_text(g, 24, 145, 2, C_TEXT, name);
     button(g, 350, 136, 106, 26, "UNDO", false);
     if (!w->sample_edit_active) {
-        label(g, 24, 194, "APPLY COMPLETE / ORIGINAL RESOURCE RETAINED", C_MUTED);
-        label(g, 24, 220, "UNDO RESTORES THE PREVIOUS APPLIED EDIT", C_MUTED);
+        label(g, 24, 194, "APPLIED", C_MUTED);
         button(g, 24, 382, 432, 40, "EDIT AGAIN", true);
         return;
     }
@@ -499,7 +498,7 @@ static void edit(tracker_graphics_t *g, const tracker_workspace_t *w)
     const int right = SAMPLE_WAVE_LEFT + (int)((uint64_t)b * (SAMPLE_WAVE_WIDTH - 1) / frames);
     tracker_gfx_line(g, left, 180, left, 281, C_CYAN);
     tracker_gfx_line(g, right, 180, right, 281, C_ACCENT);
-    label(g, 24, 170, w->loop_handles ? "DRAG NEAREST LOOP HANDLE" : "DRAG NEAREST TRIM HANDLE", C_CYAN);
+    label(g, 24, 170, w->loop_handles ? "LOOP" : "TRIM", C_CYAN);
     snprintf(text, sizeof(text), "TRIM %u - %u FR", (unsigned)w->edit.trim_start, (unsigned)w->edit.trim_end);
     label(g, 24, 294, text, w->loop_handles ? C_MUTED : C_CYAN);
     snprintf(text, sizeof(text), "LOOP %u - %u", (unsigned)w->edit.loop_start, (unsigned)w->edit.loop_end);
@@ -530,19 +529,19 @@ static void record(tracker_graphics_t *g, const tracker_workspace_t *w)
                             r->state == APP_SAMPLER_RECORD_RECORDING ? C_ACCENT : C_TEXT, text);
     const int level = (int)(r->peak * 255.0f);
     tracker_gfx_meter(g, 24, 298, 432, 35, level < 0 ? 0 : level > 255 ? 255 : level);
-    const char *state = r->state == APP_SAMPLER_RECORD_RECORDING ? "RECORDING / REAL MICROPHONE PCM" :
-                        r->state == APP_SAMPLER_RECORD_STOPPING ? "STOPPING CAPTURE / PLEASE WAIT" :
-                        r->state == APP_SAMPLER_RECORD_READY ? "TAKE READY / PREVIEW BEFORE KEEPING" :
-                        r->state == APP_SAMPLER_RECORD_UNSUPPORTED ? "CAPTURE UNAVAILABLE ON THIS HOST" :
+    const char *state = r->state == APP_SAMPLER_RECORD_RECORDING ? "RECORDING" :
+                        r->state == APP_SAMPLER_RECORD_STOPPING ? "STOPPING..." :
+                        r->state == APP_SAMPLER_RECORD_READY ? "TAKE READY" :
+                        r->state == APP_SAMPLER_RECORD_UNSUPPORTED ? "MIC UNAVAILABLE" :
                         r->state == APP_SAMPLER_RECORD_ERROR ? app_sampler_result_name(r->result) :
-                        "READY / NEW TAKE IN CURRENT PROJECT";
+                        "READY";
     label(g, 24, 350, state, r->state == APP_SAMPLER_RECORD_ERROR ? C_ACCENT : C_MUTED);
     if (r->state == APP_SAMPLER_RECORD_READY) {
         button(g, 24, 382, 136, 40, "DISCARD", false);
         button(g, 172, 382, 136, 40, w->auditioning ? "STOP" : "PREVIEW", w->auditioning);
         button(g, 320, 382, 136, 40, "KEEP TAKE", true);
     } else if (r->state == APP_SAMPLER_RECORD_ERROR) {
-        button(g, 24, 382, 432, 40, "DISCARD FAILED TAKE", false);
+        button(g, 24, 382, 432, 40, "DISCARD", false);
     } else {
         const char *caption = r->state == APP_SAMPLER_RECORD_RECORDING ? "STOP" :
                               r->state == APP_SAMPLER_RECORD_STOPPING ? "STOPPING..." : "REC";
@@ -552,16 +551,13 @@ static void record(tracker_graphics_t *g, const tracker_workspace_t *w)
 
 static void assign(tracker_graphics_t *g, const tracker_workspace_t *w)
 {
-    tracker_gfx_text(g, 24, 146, 2, C_TEXT, "ASSIGN TO TRACKER SLOT");
-    label(g, 24, 178, "EXPLICIT REPLACEMENT / PATTERN CELLS RETAINED", C_MUTED);
+    tracker_gfx_text(g, 24, 146, 2, C_TEXT, "TRACKER SLOT");
     for (unsigned slot = 1; slot <= 16U; ++slot) {
         char text[5];
         snprintf(text, sizeof(text), "%02u", slot);
         button(g, 24 + (int)(slot - 1U) % 8 * 54, 208 + (int)(slot - 1U) / 8 * 54,
                48, 46, text, slot == w->assign_slot);
     }
-    label(g, 24, 334, "SECTION PADS STILL LAUNCH PATTERNS", C_MUTED);
-    label(g, 24, 353, "SAMPLE ASSIGNMENT NEVER CHANGES PAD MAPPINGS", C_MUTED);
     button(g, 24, 382, 208, 40, "CANCEL", false);
     button(g, 248, 382, 208, 40, "ASSIGN", true);
 }
@@ -575,7 +571,7 @@ void tracker_sampler_ui_render(uint16_t *frame, const tracker_workspace_t *w)
         button(&g, 24 + tab * 148, 92, 136, 36, tabs[tab], (int)w->sampler_tab == tab);
     }
     if (!w->sampler) {
-        label(&g, 24, 190, "SAMPLER SERVICE UNAVAILABLE", C_ACCENT);
+        label(&g, 24, 190, "SAMPLER UNAVAILABLE", C_ACCENT);
         return;
     }
     if (w->sampler_tab == TRACKER_SAMPLE_LIBRARY) {
