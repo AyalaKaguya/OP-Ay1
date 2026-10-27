@@ -468,10 +468,8 @@ static void library(tracker_graphics_t *g, const tracker_workspace_t *w)
     }
     button(g, 24, 324, 62, 25, "<", false);
     button(g, 394, 324, 62, 25, ">", false);
-    if (w->message[0]) {
-        char text_name[49];
-        tracker_workspace_pixel_name(text_name, sizeof(text_name), w->message, 47);
-        label(g, 92, 334, text_name, w->sampler_error ? C_ACCENT : C_MUTED);
+    if (w->sampler_error != APP_SAMPLER_OK) {
+        label(g, 92, 334, app_sampler_result_name(w->sampler_error), C_ACCENT);
     }
     waveform(g, w, 353, 23);
     button(g, 24, 382, 136, 40, w->auditioning ? "STOP" : "AUDITION", w->auditioning);
