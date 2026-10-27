@@ -36,7 +36,8 @@ app_audio_bus_t *app_audio_bus_create(tracker_engine_t *tracker,
 bool app_audio_bus_set_sampler(app_audio_bus_t *bus, app_sampler_t *sampler);
 /* Worker transaction gate. A renderer encountering the held gate outputs
  * silence without advancing any source. The worker must end every successful
- * begin. ESP waits at most timeout_ms; the native host uses a bounded try-lock. */
+ * begin. Nonzero timeout_ms waits within that budget; zero tries once without
+ * blocking. Native waits yield the CPU between attempts. */
 bool app_audio_bus_begin_edit(app_audio_bus_t *bus, uint32_t timeout_ms);
 void app_audio_bus_end_edit(app_audio_bus_t *bus);
 /* All render/control users must have stopped before destroy(). */

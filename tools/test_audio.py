@@ -34,10 +34,11 @@ def main() -> int:
             for name in ("app_sampler.c", "sampler_bank.c", "sampler_formats.c", "sampler_record.c")
         ],
     ]
+    gate_sources = [root / "tests/audio_edit_gate_test.c", *bus_sources[1:]]
     init_sources = [root / "tests/audio_init_test.c", root / "components/app_audio/app_audio.c"]
-    for name, sources in [("bus", bus_sources), ("init", init_sources)]:
+    for name, sources in [("bus", bus_sources), ("init", init_sources), ("edit_gate", gate_sources)]:
         exe = output / (name + (".exe" if os.name == "nt" else ""))
-        test_includes = includes if name == "bus" else [root / "components/app_audio/tests/host_stubs", *includes]
+        test_includes = [root / "components/app_audio/tests/host_stubs", *includes] if name == "init" else includes
         if compiler.name.lower() in ("cl", "cl.exe", "clang-cl", "clang-cl.exe"):
             command = [
                 str(compiler),
@@ -63,6 +64,7 @@ def main() -> int:
                 *["-I" + str(p) for p in test_includes],
                 *map(str, sources),
                 "-lm",
+                "-pthread",
                 "-o",
                 str(exe),
             ]

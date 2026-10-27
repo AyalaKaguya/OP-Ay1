@@ -77,7 +77,7 @@ measurements. A ready wait is also not direct observation of a DMA underrun.
 
 ## Host verification
 
-Run `python tools/test_audio.py` for both native test executables below.
+Run `python tools/test_audio.py` for the three native test executables below.
 
 Build `tests/audio_bus_test.c`, `app_audio_bus.c`, the three `tracker_engine`
 implementation files and the `app_synth` implementation files with their public
@@ -97,6 +97,12 @@ resource exists. Compile these as separate test executables; the init test's fak
 source bus is intentionally not linked with `app_audio_bus.c` or real engines.
 MSVC builds use `/std:c11 /experimental:c11atomics`.
 
+`tests/audio_edit_gate_test.c` uses real host threads and the production bus to
+verify a worker waits for a holder to release before its deadline, returns within
+its timeout when the gate stays held, and preserves nonblocking zero-timeout and
+silent-render behavior. The test synchronizes thread admission explicitly rather
+than relying on incidental audio/render overlap.
+
 The ESP-IDF adapter is validated separately by the pinned firmware build. The
 host shims cover resource ownership and call order, not driver/DMA behavior.
 
@@ -110,8 +116,11 @@ It handles audition and explicitly enabled input monitoring; the bus never owns
 microphone I/O. Source gains retain their 0..2 range and project persistence must
 include all three sources.
 
-The bus owns a render transaction mutex (C11 atomic try-lock on native hosts).
+The bus owns a render transaction mutex (C11 atomic gate on native hosts).
 `app_audio_bus_begin_edit(bus, timeout_ms)` is a worker-side bounded gate;
+nonzero timeouts wait within their budget, while zero makes one nonblocking
+attempt. Native waiting uses a monotonic clock and sleeps between attempts so a
+render holder can finish. The ESP FreeRTOS mutex path is unchanged.
 `end_edit` releases it. An audio block encountering a held gate produces silence
 without advancing any source. A project worker stages allocations first, then
 holds this gate only while committing prepared tracker/bank state and coherent
@@ -120,5 +129,5 @@ source or UI call should recursively acquire it. Startup binding also takes the
 gate and rejects changes after rendering starts. Destroy requires all render
 and project callers to have stopped.
 
-No tests, build, simulator or device validation were run for these additions,
-as requested by the user.
+Host audio-bus, initialization rollback and edit-gate concurrency checks pass.
+These checks do not establish device DMA timing or hardware audio acceptance.

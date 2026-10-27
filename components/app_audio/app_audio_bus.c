@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
+#if !defined(ESP_PLATFORM) && !defined(_WIN32)
+#define _POSIX_C_SOURCE 200809L
+#endif
 #include "app_audio_bus.h"
 
 #include <math.h>
@@ -9,10 +12,15 @@
 #if defined(ESP_PLATFORM)
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
+#elif defined(_WIN32)
+#include <windows.h>
+#else
+#include <time.h>
 #endif
 
 #define BUS_RENDER_FRAMES 128
 #define BUS_GAIN_SCALE 65536u
+#define BUS_EDIT_RETRY_MS 1U
 
 struct app_audio_bus {
     tracker_engine_t *tracker;
@@ -102,6 +110,34 @@ app_audio_bus_t *app_audio_bus_create(tracker_engine_t *tracker,
     return bus;
 }
 
+#if !defined(ESP_PLATFORM)
+static bool edit_time_ms(uint64_t *milliseconds)
+{
+#if defined(_WIN32)
+    *milliseconds = GetTickCount64();
+#else
+    struct timespec now;
+    if (clock_gettime(CLOCK_MONOTONIC, &now) != 0) {
+        return false;
+    }
+    *milliseconds = (uint64_t)now.tv_sec * 1000U + (uint64_t)now.tv_nsec / 1000000U;
+#endif
+    return true;
+}
+
+static void edit_wait(void)
+{
+#if defined(_WIN32)
+    Sleep(BUS_EDIT_RETRY_MS);
+#else
+    const struct timespec delay = {0, (long)BUS_EDIT_RETRY_MS * 1000000L};
+    /* An interrupted sleep can retry sooner; the monotonic deadline still
+     * bounds all attempts and does not depend on a completed sleep. */
+    (void)nanosleep(&delay, NULL);
+#endif
+}
+#endif
+
 bool app_audio_bus_begin_edit(app_audio_bus_t *bus, uint32_t timeout_ms)
 {
     if (!bus) {
@@ -110,10 +146,32 @@ bool app_audio_bus_begin_edit(app_audio_bus_t *bus, uint32_t timeout_ms)
 #if defined(ESP_PLATFORM)
     return xSemaphoreTake(bus->render_lock, pdMS_TO_TICKS(timeout_ms)) == pdTRUE;
 #else
-    (void)timeout_ms;
     bool expected = false;
-    return atomic_compare_exchange_strong_explicit(&bus->render_lock, &expected, true,
-                                                   memory_order_acquire, memory_order_relaxed);
+    if (atomic_compare_exchange_strong_explicit(&bus->render_lock, &expected, true,
+                                                memory_order_acquire, memory_order_relaxed)) {
+        return true;
+    }
+    if (!timeout_ms) {
+        return false;
+    }
+    uint64_t started;
+    if (!edit_time_ms(&started)) {
+        return false;
+    }
+    do {
+        /* Only worker transactions wait. Render/startup callers pass zero and
+         * stay nonblocking; sleep rather than spinning over their audio turn. */
+        edit_wait();
+        uint64_t now;
+        if (!edit_time_ms(&now) || now - started >= timeout_ms) {
+            return false;
+        }
+        expected = false;
+        if (atomic_compare_exchange_strong_explicit(&bus->render_lock, &expected, true,
+                                                    memory_order_acquire, memory_order_relaxed)) {
+            return true;
+        }
+    } while (true);
 #endif
 }
 void app_audio_bus_end_edit(app_audio_bus_t *bus)
