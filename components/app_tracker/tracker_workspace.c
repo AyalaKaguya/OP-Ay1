@@ -263,7 +263,7 @@ static void completed_job(tracker_workspace_t *w)
         w->sampler_tab = TRACKER_SAMPLE_LIBRARY;
         const unsigned count = w->sampler ? app_sampler_count(w->sampler) : 0;
         w->sample = count ? count - 1U : 0U;
-        w->sample_first = (w->sample / TRACKER_WORKSPACE_ROWS) * TRACKER_WORKSPACE_ROWS;
+        tracker_sampler_ui_reveal_sample(w);
         show(w, TRACKER_WORKSPACE_SAMPLER);
     } else if (w->retry.action == APP_PROJECT_ASSIGN_SAMPLE) {
         w->sampler_tab = TRACKER_SAMPLE_LIBRARY;
@@ -275,7 +275,7 @@ static void completed_job(tracker_workspace_t *w)
         w->sampler_tab = TRACKER_SAMPLE_LIBRARY;
         const unsigned count = w->sampler ? app_sampler_count(w->sampler) : 0;
         w->sample = count ? count - 1U : 0U;
-        w->sample_first = w->sample / TRACKER_WORKSPACE_ROWS * TRACKER_WORKSPACE_ROWS;
+        tracker_sampler_ui_reveal_sample(w);
         w->auditioning = false;
         show(w, TRACKER_WORKSPACE_SAMPLER);
     } else if (w->retry.action == APP_PROJECT_APPLY_SAMPLE ||
@@ -312,6 +312,7 @@ void tracker_workspace_poll(tracker_workspace_t *w, tracker_model_t *model)
                 w->musical_revision = model->edit_revision;
                 w->session_generation = w->project_view.session_generation;
                 w->sample = w->sample_first = 0;
+                tracker_sampler_ui_reveal_sample(w);
                 w->sample_edit_active = w->sample_edit_dirty = false;
                 w->auditioning = false;
                 tracker_workspace_end_source_edit(w, false);
@@ -341,6 +342,8 @@ void tracker_workspace_cancel_input(tracker_workspace_t *w)
     w->moved = false;
     w->sample_drag = TRACKER_SAMPLE_DRAG_NONE;
     w->sampler_pointer = false;
+    w->library_list_pointer = false;
+    w->library_scrolling = false;
     w->dirty = true;
 }
 

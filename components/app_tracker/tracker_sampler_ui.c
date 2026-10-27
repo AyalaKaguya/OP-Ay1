@@ -10,6 +10,44 @@
 #define SAMPLE_WAVE_WIDTH 430
 #define SAMPLE_WAVE_TOP 182
 #define SAMPLE_WAVE_HEIGHT 100
+#define SAMPLE_LIST_LEFT 24
+#define SAMPLE_LIST_WIDTH 440
+#define SAMPLE_LIST_CARD_WIDTH 432
+#define SAMPLE_LIST_DRAG_SLOP 8
+#define SAMPLE_LIST_WAVE_X 300
+#define SAMPLE_LIST_WAVE_WIDTH 144
+#define SAMPLE_LIST_WAVE_HEIGHT 48
+
+static int library_max_scroll(const tracker_workspace_t *w)
+{
+    const int extent = (int)w->sample_count * TRACKER_SAMPLE_LIBRARY_ROW_HEIGHT -
+                       TRACKER_SAMPLE_LIBRARY_HEIGHT;
+    return extent > 0 ? extent : 0;
+}
+
+static int library_clamp_scroll(const tracker_workspace_t *w, int scroll)
+{
+    const int maximum = library_max_scroll(w);
+    return scroll < 0 ? 0 : scroll > maximum ? maximum : scroll;
+}
+
+static void library_set_scroll(tracker_workspace_t *w, int scroll)
+{
+    scroll = library_clamp_scroll(w, scroll);
+    if (scroll != w->library_scroll) {
+        w->library_scroll = scroll;
+        w->dirty = true;
+    }
+    w->sample_first = (unsigned)(scroll / TRACKER_SAMPLE_LIBRARY_ROW_HEIGHT);
+}
+
+void tracker_sampler_ui_reveal_sample(tracker_workspace_t *w)
+{
+    w->sample_count = w->sampler ? app_sampler_count(w->sampler) : 0;
+    library_set_scroll(w, (int)w->sample * TRACKER_SAMPLE_LIBRARY_ROW_HEIGHT);
+    w->library_cache_valid = false;
+    w->waveform_valid = false;
+}
 
 static bool inside(int x, int y, int left, int top, int width, int height)
 {
@@ -41,6 +79,8 @@ void tracker_sampler_ui_cancel(tracker_workspace_t *w)
     }
     w->sample_edit_active = w->sample_edit_dirty = false;
     w->sampler_pointer = false;
+    w->library_list_pointer = false;
+    w->library_scrolling = false;
     w->sample_drag = TRACKER_SAMPLE_DRAG_NONE;
     w->dirty = true;
 }
@@ -60,9 +100,7 @@ void tracker_sampler_ui_poll(tracker_workspace_t *w)
     if (w->sample >= count) {
         w->sample = count ? count - 1U : 0U;
     }
-    if (w->sample_first > w->sample) {
-        w->sample_first = w->sample / 4U * 4U;
-    }
+    library_set_scroll(w, w->library_scroll);
     app_sampler_sample_info_t next = {0};
     const bool valid = count && app_sampler_get_info(w->sampler, w->sample, &next);
     if (valid != w->sample_valid || (valid && memcmp(&next, &w->sample_info, sizeof(next)))) {
@@ -72,14 +110,35 @@ void tracker_sampler_ui_poll(tracker_workspace_t *w)
         w->dirty = true;
     }
     w->sample_valid = valid;
-    for (unsigned row = 0; row < TRACKER_WORKSPACE_ROWS; ++row)
-        w->library_valid[row] = app_sampler_get_info(w->sampler, w->sample_first + row,
-                                                     &w->library_rows[row]);
-    if (valid && w->dirty)
+    if (!w->library_cache_valid || w->library_cache_first != w->sample_first ||
+            w->library_cache_revision != revision) {
+        for (unsigned row = 0; row < TRACKER_SAMPLE_LIBRARY_ROWS; ++row) {
+            memset(&w->library_rows[row], 0, sizeof(w->library_rows[row]));
+            memset(w->library_waveforms[row], 0, sizeof(w->library_waveforms[row]));
+            w->library_waveform_counts[row] = 0;
+            const unsigned index = w->sample_first + row;
+            w->library_valid[row] = app_sampler_get_info(w->sampler, index,
+                                                         &w->library_rows[row]);
+            if (w->library_valid[row] && w->library_rows[row].frames) {
+                w->library_waveform_counts[row] = app_sampler_waveform(w->sampler, index,
+                                                                       w->library_waveforms[row], TRACKER_SAMPLE_LIBRARY_WAVE_SAMPLES);
+            }
+        }
+        w->library_cache_first = w->sample_first;
+        w->library_cache_revision = revision;
+        w->library_cache_valid = true;
+        w->dirty = true;
+    }
+    if (valid && (!w->waveform_valid || w->waveform_sample != w->sample ||
+                  w->waveform_revision != revision)) {
         w->waveform_count = app_sampler_waveform(w->sampler, w->sample, w->waveform,
                                                  TRACKER_WORKSPACE_WAVE_SAMPLES);
-    else if (!valid) {
+        w->waveform_sample = w->sample;
+        w->waveform_revision = revision;
+        w->waveform_valid = true;
+    } else if (!valid) {
         w->waveform_count = 0;
+        w->waveform_valid = false;
     }
     app_sampler_record_status_t record;
     app_sampler_record_get_status(w->sampler, &record);
@@ -199,23 +258,18 @@ static void worker(tracker_workspace_t *w, app_project_action_t action)
 
 static void tap_library(tracker_workspace_t *w, int x, int y)
 {
-    if (inside(x, y, 24, 140, 432, 180)) {
-        const unsigned index = w->sample_first + (unsigned)(y - 140) / 45U;
-        if (index < w->sample_count) {
+    if (inside(x, y, SAMPLE_LIST_LEFT, TRACKER_SAMPLE_LIBRARY_TOP,
+               SAMPLE_LIST_CARD_WIDTH, TRACKER_SAMPLE_LIBRARY_HEIGHT)) {
+        const unsigned offset = (unsigned)(w->library_scroll + y - TRACKER_SAMPLE_LIBRARY_TOP);
+        const unsigned index = offset / TRACKER_SAMPLE_LIBRARY_ROW_HEIGHT;
+        if (index < w->sample_count &&
+                offset % TRACKER_SAMPLE_LIBRARY_ROW_HEIGHT < TRACKER_SAMPLE_LIBRARY_CARD_HEIGHT) {
             stop_audition(w);
             w->sample = index;
         }
     } else if (inside(x, y, 345, 125, 111, 15)) {
         w->import_wav = true;
         w->screen = TRACKER_WORKSPACE_IMPORT;
-    } else if (inside(x, y, 24, 324, 62, 25)) {
-        w->sample_first = w->sample_first >= 4U ? w->sample_first - 4U : 0;
-        w->sample = w->sample_first;
-    } else if (inside(x, y, 394, 324, 62, 25)) {
-        if (w->sample_first + 4U < w->sample_count) {
-            w->sample_first += 4U;
-        }
-        w->sample = w->sample_first;
     } else if (inside(x, y, 24, 382, 136, 40)) {
         audition(w);
     } else if (inside(x, y, 172, 382, 136, 40)) {
@@ -376,6 +430,11 @@ void tracker_sampler_ui_pointer(tracker_workspace_t *w, tracker_model_t *model,
         w->start_x = x;
         w->start_y = y;
         w->moved = false;
+        w->library_list_pointer = w->sampler_tab == TRACKER_SAMPLE_LIBRARY &&
+                                  inside(x, y, SAMPLE_LIST_LEFT, TRACKER_SAMPLE_LIBRARY_TOP,
+                                         SAMPLE_LIST_WIDTH, TRACKER_SAMPLE_LIBRARY_HEIGHT);
+        w->library_scrolling = false;
+        w->library_scroll_start = w->library_scroll;
         if (w->sampler_tab == TRACKER_SAMPLE_EDIT && w->sample_edit_active &&
                 inside(x, y, SAMPLE_WAVE_LEFT, SAMPLE_WAVE_TOP, SAMPLE_WAVE_WIDTH, SAMPLE_WAVE_HEIGHT)) {
             const uint32_t frame = (uint32_t)((uint64_t)(x - SAMPLE_WAVE_LEFT) *
@@ -393,12 +452,30 @@ void tracker_sampler_ui_pointer(tracker_workspace_t *w, tracker_model_t *model,
         if (abs(x - w->start_x) > 12 || abs(y - w->start_y) > 12) {
             w->moved = true;
         }
-        if (w->sample_drag != TRACKER_SAMPLE_DRAG_NONE) {
+        const int dy = y - w->start_y;
+        if (w->library_list_pointer && !w->library_scrolling &&
+                abs(dy) > SAMPLE_LIST_DRAG_SLOP && abs(dy) > abs(x - w->start_x)) {
+            w->library_scrolling = true;
+            w->moved = true;
+        }
+        if (w->library_scrolling) {
+            library_set_scroll(w, w->library_scroll_start - dy);
+        } else if (w->sample_drag != TRACKER_SAMPLE_DRAG_NONE) {
             drag_edit(w, x);
         }
         if (!pressed) {
             const bool tapped = !w->moved && w->sample_drag == TRACKER_SAMPLE_DRAG_NONE;
+            if (w->library_scrolling) {
+                const int pitch = TRACKER_SAMPLE_LIBRARY_ROW_HEIGHT;
+                const int maximum = library_max_scroll(w);
+                /* Preserve an exact end stop; otherwise settle to a row so
+                 * a released list does not leave its first label clipped. */
+                library_set_scroll(w, w->library_scroll == maximum ? maximum :
+                                   (w->library_scroll + pitch / 2) / pitch * pitch);
+            }
             w->sampler_pointer = false;
+            w->library_list_pointer = false;
+            w->library_scrolling = false;
             w->sample_drag = TRACKER_SAMPLE_DRAG_NONE;
             /* worker() releases this guard before submitting asynchronous work.
              * Bounded preview/record controls keep it through their mutation. */
@@ -406,10 +483,14 @@ void tracker_sampler_ui_pointer(tracker_workspace_t *w, tracker_model_t *model,
                 tap(w, x, y);
             }
             tracker_workspace_end_source_edit(w, false);
+            tracker_sampler_ui_poll(w);
             return;
         }
     }
     tracker_workspace_end_source_edit(w, false);
+    if (w->library_list_pointer) {
+        tracker_sampler_ui_poll(w);
+    }
 }
 
 static void label(tracker_graphics_t *g, int x, int y, const char *text, uint16_t color)
@@ -438,40 +519,69 @@ static void waveform(tracker_graphics_t *g, const tracker_workspace_t *w, int to
 static void library(tracker_graphics_t *g, const tracker_workspace_t *w)
 {
     char text[80];
-    snprintf(text, sizeof(text), "%u SLOTS / %u-%u", w->sample_count,
-             w->sample_count ? w->sample_first + 1U : 0U,
-             w->sample_first + 4U < w->sample_count ? w->sample_first + 4U : w->sample_count);
+    snprintf(text, sizeof(text), "%u SLOTS", w->sample_count);
     label(g, 24, 130, text, C_MUTED);
     label(g, 398, 130, "+ IMPORT", C_CYAN);
-    for (unsigned row = 0; row < TRACKER_WORKSPACE_ROWS; ++row) {
+    tracker_gfx_clip(g, SAMPLE_LIST_LEFT, TRACKER_SAMPLE_LIBRARY_TOP,
+                     SAMPLE_LIST_WIDTH, TRACKER_SAMPLE_LIBRARY_HEIGHT);
+    for (unsigned row = 0; row < TRACKER_SAMPLE_LIBRARY_ROWS; ++row) {
         if (!w->library_valid[row]) {
             break;
         }
         const app_sampler_sample_info_t *info = &w->library_rows[row];
         const unsigned index = w->sample_first + row;
-        const int y = 140 + (int)row * 45;
-        char name[27];
-        tracker_workspace_pixel_name(name, sizeof(name), info->name, 24);
-        tracker_gfx_rect(g, 24, y, 432, 40, C_PANEL);
-        tracker_gfx_outline(g, 24, y, 432, 40, index == w->sample ? C_CYAN : C_BORDER);
+        const int y = TRACKER_SAMPLE_LIBRARY_TOP + (int)index * TRACKER_SAMPLE_LIBRARY_ROW_HEIGHT -
+                      w->library_scroll;
+        char name[20];
+        tracker_workspace_pixel_name(name, sizeof(name), info->name, 16);
+        tracker_gfx_rect(g, SAMPLE_LIST_LEFT, y, SAMPLE_LIST_CARD_WIDTH,
+                         TRACKER_SAMPLE_LIBRARY_CARD_HEIGHT, C_PANEL);
+        tracker_gfx_outline(g, SAMPLE_LIST_LEFT, y, SAMPLE_LIST_CARD_WIDTH,
+                            TRACKER_SAMPLE_LIBRARY_CARD_HEIGHT, index == w->sample ? C_CYAN : C_BORDER);
         snprintf(text, sizeof(text), "%02u %s", index + 1U, name);
-        label(g, 36, y + 9, text, index == w->sample ? C_CYAN : C_TEXT);
+        tracker_gfx_text(g, 36, y + 7, 2, index == w->sample ? C_CYAN : C_TEXT, text);
         const char *source = info->source == APP_SAMPLER_SOURCE_S3M ? "S3M" :
                              info->source == APP_SAMPLER_SOURCE_WAV ? "WAV" : "MIC";
-        snprintf(text, sizeof(text), "%s / SLOT %02u / %u FR%s", source,
-                 info->original_slot, (unsigned)info->frames,
-                 !info->frames ? " / EMPTY" : info->loop_enabled ? " / LOOP" : "");
-        label(g, 36, y + 25, text, C_MUTED);
+        const unsigned slot = info->assigned_slot ? info->assigned_slot : info->original_slot;
+        snprintf(text, sizeof(text), "%s  SLOT %02u", source, slot);
+        tracker_gfx_text(g, 36, y + 29, 2, C_MUTED, text);
+        snprintf(text, sizeof(text), "%u FR%s", (unsigned)info->frames,
+                 !info->frames ? "" : info->loop_enabled ? " LOOP" : "");
+        tracker_gfx_text(g, 36, y + 49, 2, C_MUTED, text);
+        const int center = y + 10 + SAMPLE_LIST_WAVE_HEIGHT / 2;
+        tracker_gfx_rect(g, SAMPLE_LIST_WAVE_X, y + 10, SAMPLE_LIST_WAVE_WIDTH,
+                         SAMPLE_LIST_WAVE_HEIGHT, C_BG);
+        tracker_gfx_outline(g, SAMPLE_LIST_WAVE_X, y + 10, SAMPLE_LIST_WAVE_WIDTH,
+                            SAMPLE_LIST_WAVE_HEIGHT, C_BORDER);
+        if (!info->frames) {
+            tracker_gfx_text_center(g, SAMPLE_LIST_WAVE_X + SAMPLE_LIST_WAVE_WIDTH / 2,
+                                    y + 27, 2, C_DISABLED, "EMPTY");
+        } else {
+            tracker_gfx_line(g, SAMPLE_LIST_WAVE_X + 1, center,
+                             SAMPLE_LIST_WAVE_X + SAMPLE_LIST_WAVE_WIDTH - 2, center, C_BORDER);
+            for (unsigned point = 0; point < w->library_waveform_counts[row]; ++point) {
+                const int amplitude = (int)w->library_waveforms[row][point] *
+                                      (SAMPLE_LIST_WAVE_HEIGHT / 2 - 4) / 32768;
+                const int x = SAMPLE_LIST_WAVE_X + 3 + (int)point *
+                              (SAMPLE_LIST_WAVE_WIDTH - 6) / TRACKER_SAMPLE_LIBRARY_WAVE_SAMPLES;
+                tracker_gfx_line(g, x, center, x, center - amplitude,
+                                 index == w->sample ? C_CYAN : C_MUTED);
+            }
+        }
     }
+    const int maximum = library_max_scroll(w);
+    if (maximum) {
+        const int viewport = TRACKER_SAMPLE_LIBRARY_HEIGHT;
+        const int total = maximum + viewport;
+        const int thumb = viewport * viewport / total < 18 ? 18 : viewport * viewport / total;
+        const int top = TRACKER_SAMPLE_LIBRARY_TOP + w->library_scroll * (viewport - thumb) / maximum;
+        tracker_gfx_rect(g, 460, TRACKER_SAMPLE_LIBRARY_TOP, 3, viewport, C_LINE);
+        tracker_gfx_rect(g, 460, top, 3, thumb, C_MUTED);
+    }
+    tracker_gfx_clip(g, 0, 0, 480, 432);
     if (!w->sample_count) {
         label(g, 24, 220, "NO SAMPLES", C_MUTED);
     }
-    button(g, 24, 324, 62, 25, "<", false);
-    button(g, 394, 324, 62, 25, ">", false);
-    if (w->sampler_error != APP_SAMPLER_OK) {
-        label(g, 92, 334, app_sampler_result_name(w->sampler_error), C_ACCENT);
-    }
-    waveform(g, w, 353, 23);
     button(g, 24, 382, 136, 40, w->auditioning ? "STOP" : "AUDITION", w->auditioning);
     button(g, 172, 382, 136, 40, "EDIT", false);
     button(g, 320, 382, 136, 40, "ASSIGN", false);

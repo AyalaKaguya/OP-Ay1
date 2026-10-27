@@ -14,6 +14,12 @@
 #define TRACKER_NAVIGATION_EDGE_Y 440
 #define TRACKER_NAVIGATION_TRAVEL 64
 #define TRACKER_NAVIGATION_HINT_MS 1200
+#define TRACKER_SAMPLE_LIBRARY_TOP 140
+#define TRACKER_SAMPLE_LIBRARY_HEIGHT 234
+#define TRACKER_SAMPLE_LIBRARY_ROW_HEIGHT 72
+#define TRACKER_SAMPLE_LIBRARY_CARD_HEIGHT 68
+#define TRACKER_SAMPLE_LIBRARY_ROWS 5
+#define TRACKER_SAMPLE_LIBRARY_WAVE_SAMPLES 72
 
 typedef enum {
     TRACKER_WORKSPACE_HOME = 0,
@@ -93,6 +99,13 @@ typedef struct {
     unsigned sample;
     unsigned sample_first;
     unsigned sample_count;
+    int library_scroll;
+    int library_scroll_start;
+    bool library_list_pointer;
+    bool library_scrolling;
+    bool library_cache_valid;
+    unsigned library_cache_first;
+    uint64_t library_cache_revision;
     unsigned assign_slot;
     bool sample_valid;
     bool sample_edit_active;
@@ -104,8 +117,10 @@ typedef struct {
     float mic_gain;
     tracker_sampler_drag_t sample_drag;
     app_sampler_sample_info_t sample_info;
-    app_sampler_sample_info_t library_rows[TRACKER_WORKSPACE_ROWS];
-    bool library_valid[TRACKER_WORKSPACE_ROWS];
+    app_sampler_sample_info_t library_rows[TRACKER_SAMPLE_LIBRARY_ROWS];
+    bool library_valid[TRACKER_SAMPLE_LIBRARY_ROWS];
+    int16_t library_waveforms[TRACKER_SAMPLE_LIBRARY_ROWS][TRACKER_SAMPLE_LIBRARY_WAVE_SAMPLES];
+    unsigned library_waveform_counts[TRACKER_SAMPLE_LIBRARY_ROWS];
     app_sampler_edit_t edit;
     app_sampler_edit_t original_edit;
     app_sampler_record_status_t record;
@@ -113,6 +128,9 @@ typedef struct {
     uint64_t sampler_revision;
     int16_t waveform[TRACKER_WORKSPACE_WAVE_SAMPLES];
     unsigned waveform_count;
+    bool waveform_valid;
+    unsigned waveform_sample;
+    uint64_t waveform_revision;
 } tracker_workspace_t;
 
 void tracker_workspace_init(tracker_workspace_t *workspace,
@@ -146,6 +164,8 @@ bool tracker_workspace_begin_source_edit(tracker_workspace_t *workspace);
 void tracker_workspace_end_source_edit(tracker_workspace_t *workspace, bool changed);
 
 void tracker_sampler_ui_poll(tracker_workspace_t *workspace);
+/* Place the current sample in view after importing or replacing its bank. */
+void tracker_sampler_ui_reveal_sample(tracker_workspace_t *workspace);
 void tracker_sampler_ui_cancel(tracker_workspace_t *workspace);
 void tracker_sampler_ui_pointer(tracker_workspace_t *workspace, tracker_model_t *model,
                                 int x, int y, bool pressed);
