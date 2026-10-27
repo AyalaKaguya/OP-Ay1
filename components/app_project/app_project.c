@@ -40,7 +40,8 @@ static app_project_error_t check_capture_idle(app_project_t *p)
     memset(&status, 0, sizeof(status));
     app_sampler_record_get_status(p->config.sampler, &status);
     return status.state == APP_SAMPLER_RECORD_RECORDING || status.state == APP_SAMPLER_RECORD_STOPPING ||
-           status.state == APP_SAMPLER_RECORD_READY ? APP_PROJECT_BUSY : APP_PROJECT_OK;
+           status.state == APP_SAMPLER_RECORD_READY || status.state == APP_SAMPLER_RECORD_ERROR
+           ? APP_PROJECT_BUSY : APP_PROJECT_OK;
 }
 
 static app_project_error_t ensure_storage(app_project_t *p)

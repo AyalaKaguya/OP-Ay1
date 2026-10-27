@@ -220,7 +220,7 @@ app_project_error_t project_blank_payload(project_payload_t *payload)
         memcpy(b + offset + 76, "SCRS", 4);
     }
     b[129] = 89; b[130] = 0; /* Pattern at aligned offset 1424. */
-    b[1424] = 64; /* 64 zero row terminators follow the packed length. */
+    b[1424] = 66; /* Packed size includes this 2-byte header and 64 terminators. */
     project_state_defaults(&payload->state);
     strcpy(payload->name, "Untitled");
     payload->revision = 1;

@@ -412,7 +412,11 @@ void tracker_model_init(tracker_model_t *m, tracker_engine_t *engine,
 
 void tracker_model_sync_sources(tracker_model_t *m)
 {
-    tracker_model_cancel_input(m);
+    /* A fresh UI has no pointer ownership to release. In particular do not
+     * send a global synth all-off before create() attaches its note router. */
+    if (m->pointer_down || m->synth_view.note >= 0 || m->router) {
+        tracker_model_cancel_input(m);
+    }
     m->patch_pending = false;
     m->pending_preset = -1;
     m->synth_view.command_failed = false;

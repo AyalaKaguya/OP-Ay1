@@ -104,7 +104,8 @@ static bool recording_pending(const tracker_workspace_t *w)
 {
     return w->record.state == APP_SAMPLER_RECORD_RECORDING ||
            w->record.state == APP_SAMPLER_RECORD_STOPPING ||
-           w->record.state == APP_SAMPLER_RECORD_READY;
+           w->record.state == APP_SAMPLER_RECORD_READY ||
+           w->record.state == APP_SAMPLER_RECORD_ERROR;
 }
 
 static void show(tracker_workspace_t *w, tracker_workspace_screen_t screen)

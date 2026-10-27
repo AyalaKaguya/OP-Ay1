@@ -231,6 +231,12 @@ static void tap_record(tracker_workspace_t *w, int x, int y)
         result(w, app_sampler_record_set_gain(w->sampler, gain));
     } else if (inside(x, y, 248, 182, 208, 32)) {
         app_sampler_record_set_monitor(w->sampler, !w->mic_monitor);
+    } else if (state == APP_SAMPLER_RECORD_ERROR) {
+        if (inside(x, y, 24, 382, 432, 40)) {
+            stop_audition(w);
+            app_sampler_record_discard(w->sampler);
+            tracker_workspace_message(w, "FAILED TAKE DISCARDED / PROJECT UNCHANGED");
+        }
     } else if (state == APP_SAMPLER_RECORD_READY) {
         if (inside(x, y, 24, 382, 136, 40)) {
             stop_audition(w);
@@ -445,6 +451,8 @@ static void record(tracker_graphics_t *g, const tracker_workspace_t *w)
         button(g, 24, 382, 136, 40, "DISCARD", false);
         button(g, 172, 382, 136, 40, w->auditioning ? "STOP" : "PREVIEW", w->auditioning);
         button(g, 320, 382, 136, 40, "KEEP TAKE", true);
+    } else if (r->state == APP_SAMPLER_RECORD_ERROR) {
+        button(g, 24, 382, 432, 40, "DISCARD FAILED TAKE", false);
     } else {
         const char *caption = r->state == APP_SAMPLER_RECORD_RECORDING ? "STOP" :
                               r->state == APP_SAMPLER_RECORD_STOPPING ? "STOPPING..." : "REC";
