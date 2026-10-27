@@ -182,7 +182,10 @@ class Session:
         self.tap(80, 110)
         self.settled(NEW)
         self.tap(240, 296 if aryx else 180)
-        if self.settled()["workspace"] == SWITCH:
+        selected = self.read(
+            lambda v: v["workspace"] in (HOME, SWITCH, ERROR) and not v["project_busy"] and not v["page_motion"]
+        )
+        if selected["workspace"] == SWITCH:
             self.tap(240, 334)
         if self.settled()["workspace"] == ERROR:
             self.screenshot("new-project-error")
