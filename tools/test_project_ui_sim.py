@@ -121,7 +121,9 @@ class Session:
     def pointer(self, x, y, pressed, pause=0.06):
         if pressed and self.pointer_space is None:
             screen = self.read()["workspace"]
-            self.pointer_space = "physical" if y >= 440 or screen == HOME else "full" if screen in (LEGACY, SETTINGS) else "body"
+            self.pointer_space = (
+                "physical" if y >= 440 or screen == HOME else "full" if screen in (LEGACY, SETTINGS) else "body"
+            )
         if self.pointer_space == "full" and y < 432:
             y = (y * 440 + 431) // 432
         elif self.pointer_space == "body" and y < 432:
@@ -167,7 +169,8 @@ class Session:
     def module(self, index):
         self.home(index // 4)
         self.tap(352 if index % 2 else 128, 334 if index % 4 >= 2 else 176)
-        return self.settled()
+        expected = PROJECTS if index == 0 else SETTINGS if index == 1 else SAMPLER if index == 6 else LEGACY
+        return self.settled(expected)
 
     def browser(self):
         self.home()
@@ -181,6 +184,8 @@ class Session:
         self.tap(240, 296 if aryx else 180)
         if self.settled()["workspace"] == SWITCH:
             self.tap(240, 334)
+        if self.settled()["workspace"] == ERROR:
+            self.screenshot("new-project-error")
         return self.settled(HOME)
 
     def keyboard(self, name):
@@ -314,7 +319,7 @@ def run(s: Session, args):
     s.tap(35, 12)
     s.tap(64, 458)
     assert s.settled()["workspace"] == SETTINGS, "Removed HOME buttons must be inert"
-    s.tap(440, 20)
+    s.tap(300, 20)
     s.drag(250, 380, 250, 270)
     assert s.settled()["workspace"] == SETTINGS, "Embedded settings dismissal must not return HOME"
     s.drag(240, 460, 240, 410)
@@ -548,6 +553,12 @@ def main():
         (session.output / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
         print("Native project UI: " + "; ".join(session.checks) + " PASS")
         print(f"Evidence: {session.output}")
+    except Exception:
+        try:
+            session.rpc.call("screenshot", {"path": str(session.output / "failure.png"), "format": "png"})
+        except (OSError, RuntimeError):
+            pass
+        raise
     finally:
         session.close()
     return 0

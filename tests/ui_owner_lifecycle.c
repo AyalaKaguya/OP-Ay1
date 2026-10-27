@@ -252,6 +252,9 @@ static void expected_controls(fixture_t *f, app_tracker_t *owner)
 {
     tracker_render_controls(f->expected, &owner->model.view);
     tracker_workspace_fit_legacy(f->expected);
+    memcpy(f->capture, f->expected, FRAME_BYTES);
+    tracker_workspace_render_header(f->expected, &owner->workspace, &owner->model);
+    CHECK(memcmp(f->capture, f->expected, FRAME_BYTES) == 0);
 }
 
 static void test_allocations(const uint8_t *module, size_t size)
@@ -406,10 +409,17 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
     tap(352, 176); /* SETTINGS opens through the ordinary HOME tile. */
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS && owner->navigation_hint_until == 0);
     advance(f, 250);
+    memset(f->expected, 0, FRAME_BYTES);
+    tracker_settings_render_page(f->expected, &owner->settings);
+    tracker_workspace_fit_content(f->expected, &owner->workspace);
+    CHECK(memcmp(published(owner), f->expected, FRAME_BYTES) == 0);
+    memcpy(f->capture, f->expected, FRAME_BYTES);
+    tracker_workspace_render_header(f->expected, &owner->workspace, &owner->model);
+    CHECK(memcmp(f->capture, f->expected, FRAME_BYTES) == 0);
     tap(35, 12);
     tap(64, 458);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
-    tap(440, 20); /* The embedded panel has no close-to-HOME button. */
+    tap(300, 20); /* Header space outside the module's STORAGE action. */
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
     drag(250, 380, 250, 270);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS && !owner->settings.open);
