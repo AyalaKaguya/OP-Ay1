@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "tracker_graphics.h"
 
 #define WORKSPACE_TAP_SLOP 12
 #define WORKSPACE_SWIPE_DISTANCE 64
@@ -486,15 +487,15 @@ static void tap(tracker_workspace_t *w, tracker_model_t *model,
         show(w, TRACKER_WORKSPACE_STORAGE);
         return;
     }
-    if (inside(x, y, 420, 0, 60, 40)) {
+    if (w->screen == TRACKER_WORKSPACE_HOME && inside(x, y, 420, 0, 60, 40)) {
         show(w, TRACKER_WORKSPACE_PROJECTS);
         return;
     }
-    if (inside(x, y, 16, 40, 328, 38)) {
+    if (w->screen == TRACKER_WORKSPACE_HOME && inside(x, y, 16, 40, 328, 38)) {
         show(w, TRACKER_WORKSPACE_PROJECTS);
         return;
     }
-    if (inside(x, y, 348, 40, 132, 38)) {
+    if (w->screen == TRACKER_WORKSPACE_HOME && inside(x, y, 348, 40, 132, 38)) {
         start_save(w, false);
         return;
     }
@@ -657,16 +658,16 @@ bool tracker_workspace_pointer(tracker_workspace_t *w, tracker_model_t *model,
         tracker_sampler_ui_pointer(w, model, x, y, pressed);
         return true;
     }
-    if (w->screen == TRACKER_WORKSPACE_LEGACY && !w->pointer_down && y >= 78 &&
+    if (w->screen == TRACKER_WORKSPACE_LEGACY && !w->pointer_down &&
             !tracker_workspace_busy(w)) {
         return false;
     }
+    const bool settings_storage = inside(x, y, 336, 0, 144, 40);
     if (w->screen == TRACKER_WORKSPACE_SETTINGS && !w->pointer_down &&
-            (settings->pointer_down || (y >= 78 && y < 432))) {
-        const int local_y = (y - 78) * 432 / (432 - 78);
+            (settings->pointer_down || (!settings_storage && y >= 0 && y < 432))) {
         settings->open = true;
         settings->page_pointer_down = false;
-        (void)tracker_settings_page_pointer(settings, x, local_y, pressed);
+        (void)tracker_settings_page_pointer(settings, x, y, pressed);
         settings->open = false;
         w->dirty = true;
         return true;
@@ -699,22 +700,56 @@ bool tracker_workspace_pointer(tracker_workspace_t *w, tracker_model_t *model,
 
 int tracker_workspace_legacy_y(int y)
 {
-    if (y < 78) {
-        return 39;
-    }
-    if (y >= 432) {
+    if (y < 0 || y >= TRACKER_WORKSPACE_CONTENT_HEIGHT) {
         return y;
     }
-    return 40 + (y - 78) * (432 - 40) / (432 - 78);
+    return y * 432 / TRACKER_WORKSPACE_CONTENT_HEIGHT;
+}
+
+int tracker_workspace_content_y(const tracker_workspace_t *w, int y)
+{
+    if (w->screen == TRACKER_WORKSPACE_HOME || y < 0 ||
+            y >= TRACKER_WORKSPACE_CONTENT_HEIGHT) {
+        return y;
+    }
+    if (w->screen == TRACKER_WORKSPACE_SETTINGS || w->screen == TRACKER_WORKSPACE_LEGACY) {
+        return tracker_workspace_legacy_y(y);
+    }
+    return TRACKER_WORKSPACE_HEADER + y * (432 - TRACKER_WORKSPACE_HEADER) /
+           TRACKER_WORKSPACE_CONTENT_HEIGHT;
+}
+
+static void fit_band(uint16_t *frame, int first_row)
+{
+    const int rows = 432 - first_row;
+    if (first_row) {
+        memmove(frame, frame + (size_t)first_row * 480U,
+                (size_t)rows * 480U * sizeof(*frame));
+    }
+    /* Expand bottom-up only after removing the old shared-header band. This
+     * keeps all unread source rows intact with no temporary frame allocation. */
+    for (int y = TRACKER_WORKSPACE_CONTENT_HEIGHT - 1; y >= 0; --y) {
+        const int source = y * rows / TRACKER_WORKSPACE_CONTENT_HEIGHT;
+        memmove(frame + (size_t)y * 480U, frame + (size_t)source * 480U,
+                480U * sizeof(*frame));
+    }
+    tracker_graphics_t g;
+    tracker_gfx_init(&g, frame);
+    tracker_gfx_clip(&g, 0, 0, 480, 480);
+    tracker_gfx_rect(&g, 0, TRACKER_WORKSPACE_CONTENT_HEIGHT, 480,
+                     480 - TRACKER_WORKSPACE_CONTENT_HEIGHT, C_BG);
 }
 
 void tracker_workspace_fit_legacy(uint16_t *frame)
 {
-    /* Move bottom-up: every source row is at or above its destination. */
-    for (int y = 431; y >= 78; --y) {
-        const int source = tracker_workspace_legacy_y(y);
-        memmove(frame + (size_t)y * 480U, frame + (size_t)source * 480U,
-                480U * sizeof(*frame));
+    fit_band(frame, 0);
+}
+
+void tracker_workspace_fit_content(uint16_t *frame, const tracker_workspace_t *w)
+{
+    if (w->screen != TRACKER_WORKSPACE_HOME) {
+        fit_band(frame, w->screen == TRACKER_WORKSPACE_LEGACY ||
+                 w->screen == TRACKER_WORKSPACE_SETTINGS ? 0 : TRACKER_WORKSPACE_HEADER);
     }
 }
 

@@ -265,6 +265,8 @@ static void render_panel(uint16_t *frame, const tracker_settings_t *s, bool embe
     if (!embedded) {
         tracker_gfx_line(&g, 435, 14, 445, 24, C_MUTED);
         tracker_gfx_line(&g, 445, 14, 435, 24, C_MUTED);
+    } else {
+        tracker_gfx_text_right(&g, 450, 16, 1, C_CYAN, "STORAGE");
     }
     tracker_gfx_rect(&g, 16, 40, 448, 1, C_BORDER);
     if (s->timeouts_open) {

@@ -117,13 +117,6 @@ static void render_frame(app_tracker_t *state)
     if (state->workspace.screen == TRACKER_WORKSPACE_SETTINGS) {
         memset(frame, 0, FRAME_BYTES);
         tracker_settings_render_page(frame, &state->settings);
-        for (int y = 431; y >= TRACKER_WORKSPACE_HEADER; --y) {
-            const int source = (y - TRACKER_WORKSPACE_HEADER) * 432 /
-                               (432 - TRACKER_WORKSPACE_HEADER);
-            memmove(frame + (size_t)y * FRAME_WIDTH,
-                    frame + (size_t)source * FRAME_WIDTH,
-                    FRAME_WIDTH * sizeof(*frame));
-        }
     } else if (state->workspace.screen != TRACKER_WORKSPACE_LEGACY) {
         tracker_workspace_render(frame, &state->workspace, m);
     } else if (m->view.page == TRACKER_PAGE_PATTERN) {
@@ -136,14 +129,14 @@ static void render_frame(app_tracker_t *state)
     } else {
         tracker_render_controls(frame, &m->view);
     }
-    if (state->workspace.screen == TRACKER_WORKSPACE_LEGACY) {
-        tracker_workspace_fit_legacy(frame);
+    if (state->workspace.screen != TRACKER_WORKSPACE_HOME) {
+        tracker_workspace_fit_content(frame, &state->workspace);
     }
     tracker_workspace_render_header(frame, &state->workspace, m);
     const uint16_t page_progress = tracker_transition_sample(&state->page_motion, now);
     if (state->page_motion.active) {
         (void)tracker_transition_slide_rgb565(frame, state->motion_frame, frame,
-                                              FRAME_WIDTH, FRAME_HEIGHT, 432,
+                                              FRAME_WIDTH, FRAME_HEIGHT, TRACKER_WORKSPACE_CONTENT_HEIGHT,
                                               page_progress, state->page_direction);
         tracker_workspace_render_header(frame, &state->workspace, m);
     }
@@ -342,7 +335,7 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
                                   !state->navigation_pointer &&
                                   !state->model.pointer_down && !state->workspace.pointer_down &&
                                   !state->workspace.sampler_pointer && !state->settings.pointer_down && !state->settings.page_pointer_down &&
-                                  (state->drawer_motion.active || y < 432))) {
+                                  (state->drawer_motion.active || y < TRACKER_NAVIGATION_EDGE_Y))) {
         state->motion_gesture = pressed;
         update_settings(state);
         return;
@@ -357,11 +350,12 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
     const int before_page = state->model.view.page;
     const int before_home = state->workspace.home_page;
     const tracker_workspace_screen_t before_screen = state->workspace.screen;
+    const int content_y = tracker_workspace_content_y(&state->workspace, y);
     bool opened = false;
     const bool settings_page = !state->settings.open && !state->settings.top_candidate &&
                                state->workspace.screen == TRACKER_WORKSPACE_SETTINGS &&
                                (state->settings.pointer_down ||
-                                (!state->workspace.pointer_down && y >= 78 && y < 432));
+                                (!state->workspace.pointer_down && y >= 32 && y < TRACKER_WORKSPACE_CONTENT_HEIGHT));
     const bool top_tap = !pressed && state->settings.top_candidate && !state->settings.moved &&
                          abs(x - state->settings.start_x) <= 12 && abs(y - state->settings.start_y) <= 12;
     if (!settings_page && tracker_settings_pointer(&state->settings, x, y, pressed, &opened)) {
@@ -370,14 +364,14 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
             tracker_workspace_cancel_input(&state->workspace);
         } else if (top_tap && !state->settings.open) {
             (void)tracker_workspace_pointer(&state->workspace, &state->model,
-                                            &state->settings, x, y, true);
+                                            &state->settings, x, content_y, true);
             (void)tracker_workspace_pointer(&state->workspace, &state->model,
-                                            &state->settings, x, y, false);
+                                            &state->settings, x, content_y, false);
         }
         state->model.dirty = true;
     } else {
         const bool consumed = tracker_workspace_pointer(&state->workspace, &state->model,
-                                                        &state->settings, x, y, pressed);
+                                                        &state->settings, x, content_y, pressed);
         if (!consumed && tracker_workspace_begin_source_edit(&state->workspace)) {
             const uint32_t before = state->model.edit_revision;
             tracker_model_pointer(&state->model, x, tracker_workspace_legacy_y(y), pressed, now_ms(state));

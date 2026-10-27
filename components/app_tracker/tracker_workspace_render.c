@@ -5,28 +5,6 @@
 #include <string.h>
 #include "tracker_graphics.h"
 
-static const char *screen_name(const tracker_workspace_t *w, const tracker_model_t *m)
-{
-    static const char *const pages[] = {"WAVES", "PATTERN", "PLAYBACK", "MIXER", "SECTION PADS", "SYNTH"};
-    if (w->screen == TRACKER_WORKSPACE_LEGACY) {
-        return m->view.page >= 0 && m->view.page < 6 ? pages[m->view.page] : "WORKSTATION";
-    }
-    switch (w->screen) {
-    case TRACKER_WORKSPACE_HOME: return "OP-AY1";
-    case TRACKER_WORKSPACE_PROJECTS: return "OPEN PROJECT";
-    case TRACKER_WORKSPACE_NEW: return "NEW PROJECT";
-    case TRACKER_WORKSPACE_IMPORT: return "IMPORT";
-    case TRACKER_WORKSPACE_NAME: return "SAVE AS";
-    case TRACKER_WORKSPACE_SAVE: return "SAVE PROJECT";
-    case TRACKER_WORKSPACE_SWITCH: return "UNSAVED CHANGES";
-    case TRACKER_WORKSPACE_ERROR: return "PROJECT ERROR";
-    case TRACKER_WORKSPACE_STORAGE: return "STORAGE";
-    case TRACKER_WORKSPACE_SETTINGS: return "SETTINGS";
-    case TRACKER_WORKSPACE_SAMPLER: return "SAMPLER";
-    default: return "OP-AY1";
-    }
-}
-
 static void label(tracker_graphics_t *g, int x, int y, const char *text)
 {
     char line[68];
@@ -43,16 +21,16 @@ static void button(tracker_graphics_t *g, int x, int y, int width, int height,
 void tracker_workspace_render_header(uint16_t *frame, const tracker_workspace_t *w,
                                      const tracker_model_t *model)
 {
+    (void)model;
+    if (w->screen != TRACKER_WORKSPACE_HOME) {
+        return;
+    }
     tracker_graphics_t g;
     tracker_gfx_init(&g, frame);
     tracker_gfx_clip(&g, 0, 0, 480, 480);
     tracker_gfx_rect(&g, 0, 0, 480, 40, C_PANEL);
-    tracker_gfx_text_center(&g, 240, 14, 2, C_TEXT, screen_name(w, model));
-    if (w->screen == TRACKER_WORKSPACE_SETTINGS) {
-        tracker_gfx_text_right(&g, 456, 16, 1, C_CYAN, "STORAGE");
-    } else {
-        tracker_gfx_text(&g, 444, 16, 1, C_MUTED, "...");
-    }
+    tracker_gfx_text_center(&g, 240, 14, 2, C_TEXT, "OP-AY1");
+    tracker_gfx_text(&g, 444, 16, 1, C_MUTED, "...");
     tracker_gfx_rect(&g, 16, 39, 448, 1, C_BORDER);
     tracker_gfx_rect(&g, 0, 40, 480, 38, C_BG);
     tracker_gfx_outline(&g, 24, 51, 18, 12, C_MUTED);

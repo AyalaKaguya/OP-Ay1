@@ -10,6 +10,7 @@
 #define TRACKER_WORKSPACE_ROWS 4
 #define TRACKER_WORKSPACE_WAVE_SAMPLES 216
 #define TRACKER_WORKSPACE_TYPED_BYTES 25
+#define TRACKER_WORKSPACE_CONTENT_HEIGHT 440
 #define TRACKER_NAVIGATION_EDGE_Y 440
 #define TRACKER_NAVIGATION_TRAVEL 64
 #define TRACKER_NAVIGATION_HINT_MS 1200
@@ -129,7 +130,10 @@ void tracker_workspace_render(uint16_t *frame, const tracker_workspace_t *worksp
 void tracker_workspace_render_header(uint16_t *frame,
                                      const tracker_workspace_t *workspace,
                                      const tracker_model_t *model);
-/* Original tracker page band 40..431 is mapped below the project strip. */
+/* Non-HOME pages use the whole content area without workspace chrome. */
+void tracker_workspace_fit_content(uint16_t *frame,
+                                   const tracker_workspace_t *workspace);
+int tracker_workspace_content_y(const tracker_workspace_t *workspace, int y);
 void tracker_workspace_fit_legacy(uint16_t *frame);
 int tracker_workspace_legacy_y(int y);
 int tracker_workspace_route(const tracker_workspace_t *workspace,
