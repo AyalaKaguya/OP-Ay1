@@ -229,7 +229,6 @@ void tracker_gfx_header(tracker_graphics_t *gfx, const tracker_status_t *status,
 {
     char buffer[32];
     tracker_gfx_rect(gfx, 0, 0, FRAME_W, 32, C_PANEL);
-    tracker_gfx_text(gfx, 34, 10, 2, C_TEXT, "OP-Ay1");
     snprintf(buffer, sizeof(buffer), "PAT %02X/%02X", display_hex(status->pattern),
              display_hex(status->patterns));
     tracker_gfx_text(gfx, 130, 10, 1, C_MUTED, buffer);

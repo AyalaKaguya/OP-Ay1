@@ -24,8 +24,11 @@
 #define FNV_OFFSET UINT64_C(14695981039346656037)
 #define FNV_PRIME UINT64_C(1099511628211)
 #define EXPECTED_FIXTURE_HASH UINT64_C(0x0211d94f9f6c3f9a)
-#define EXPECTED_PATTERN_HASH UINT64_C(0xc4d6c605b39adba6)
-#define EXPECTED_WAVES_HASH UINT64_C(0xa524290e1931dbe4)
+/* Fixed header branding removed on 2026-10-27. Independent before/after frame
+ * comparison confirmed only 296 glyph pixels in x34..101/y10..23 changed to
+ * C_PANEL; every other pixel retained the previous approved rendering. */
+#define EXPECTED_PATTERN_HASH UINT64_C(0x89801a8810541d9e)
+#define EXPECTED_WAVES_HASH UINT64_C(0xe55d3e95b266e0ec)
 
 static void require(bool condition, const char *message)
 {
