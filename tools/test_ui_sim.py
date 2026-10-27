@@ -211,9 +211,12 @@ def main() -> int:
 
             state(lambda s: s["workspace"] == 0 and not s["project_busy"])
             tap(100, 176)  # HOME / OPEN PROJECT
+            state(lambda s: s["workspace"] == 1 and not s["page_motion"])
             tap(80, 110)  # NEW
+            state(lambda s: s["workspace"] == 2 and not s["page_motion"])
             tap(240, 296)  # built-in ARYX import
-            if state()["workspace"] == 6:
+            selected = state(lambda s: s["workspace"] in (0, 6) and not s["page_motion"])
+            if selected["workspace"] == 6:
                 tap(240, 334)  # discard the initial unsaved demo session
             state(
                 lambda s: s["workspace"] == 0 and s["project_opened"] and not s["project_busy"] and not s["page_motion"]

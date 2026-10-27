@@ -24,7 +24,7 @@ import zlib
 from test_ui_sim import Rpc
 
 HOME, PROJECTS, NEW, IMPORT, NAME, SAVE, SWITCH, ERROR = range(8)
-SETTINGS, SAMPLER, LEGACY = 9, 10, 11
+STORAGE, SETTINGS, SAMPLER, LEGACY = 8, 9, 10, 11
 
 
 class Session:
@@ -301,10 +301,16 @@ def run(s: Session, args):
     s.tap(35, 12)
     s.tap(64, 458)
     assert s.settled()["workspace"] == SETTINGS, "Removed HOME buttons must be inert"
+    s.tap(440, 90)
+    s.drag(250, 380, 250, 270)
+    assert s.settled()["workspace"] == SETTINGS, "Embedded settings dismissal must not return HOME"
     s.drag(240, 460, 240, 410)
     assert s.settled()["workspace"] == SETTINGS, "A short upward drag must not navigate"
     s.drag(240, 460, 300, 380)
     assert s.settled()["workspace"] == SETTINGS, "A diagonal drag must not navigate"
+    s.tap(400, 20)
+    s.settled(STORAGE)
+    s.screenshot("storage")
     s.home()
     for page in range(3):
         s.home(page)
@@ -316,7 +322,9 @@ def run(s: Session, args):
     s.drag(80, 460, 400, 460)
     assert s.settled()["home_page"] == 2, "HOME must wrap backward"
     s.checks.append("three ordered HOME pages, inert empty slots, real initial ARYX project and global settings access")
-    s.checks.append("bottom-edge up returns HOME; former HOME taps, short and diagonal drags are inert; HOME swipes wrap")
+    s.checks.append(
+        "bottom-edge up returns HOME; former HOME taps, short and diagonal drags are inert; HOME swipes wrap"
+    )
 
     blank = s.new()
     assert blank["project_name"] == "UNTITLED" and blank["project_dirty"] and blank["sample_trim_end"] == 0

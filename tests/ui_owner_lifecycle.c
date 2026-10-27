@@ -390,10 +390,14 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
     CHECK(owner->workspace.home_page == 2 && owner->navigation_hint_until == f->clock_ms + 1200);
     advance(f, 250);
     memcpy(f->capture, published(owner), FRAME_BYTES);
-    advance(f, 949);
+    tap(241, 455); /* The visible indicator is not an interactive page target. */
+    CHECK(owner->workspace.home_page == 2);
+    for (int tick = 0; tick < 18; ++tick) {
+        advance(f, 50);
+    }
     CHECK(memcmp(published(owner) + 440U * 480U, f->capture + 440U * 480U,
                  480U * 40U * sizeof(uint16_t)) == 0);
-    advance(f, 1);
+    advance(f, 50);
     CHECK(memcmp(published(owner) + 440U * 480U, f->capture + 440U * 480U,
                  480U * 40U * sizeof(uint16_t)) != 0);
     tap(225, 455);
@@ -407,9 +411,16 @@ static void test_edge_navigation(const uint8_t *module, size_t size)
     tap(35, 12);
     tap(64, 458);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
+    tap(440, 90); /* The embedded panel has no close-to-HOME button. */
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS);
+    drag(250, 380, 250, 270);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS && !owner->settings.open);
     drag(240, 460, 240, 410);
     drag(240, 460, 300, 380);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_SETTINGS && owner->navigation_hint_until == 0);
+    tap(400, 20);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_STORAGE);
+    advance(f, 250);
     drag(240, 460, 240, 350);
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME && owner->workspace.home_page == 0);
     CHECK(owner->navigation_hint_until == 0 && !owner->navigation_pointer && !f->busy);
