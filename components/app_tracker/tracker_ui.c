@@ -29,22 +29,30 @@ struct app_tracker {
     app_usb_midi_t *usb;
     uint16_t *frames[2];
     uint16_t *motion_frame;
+    uint16_t *open_frame;
     tracker_transition_t page_motion;
     tracker_transition_t drawer_motion;
     int rendered_page;
     int page_direction;
     bool page_vertical;
+    bool page_zoom;
+    bool back_motion;
     bool rendered_menu;
     bool motion_gesture;
     bool navigation_pointer;
     int navigation_x;
     int navigation_y;
+    bool back_pointer;
+    int back_x;
+    int back_y;
     uint64_t navigation_hint_until;
+    uint64_t home_hint_until;
     bool visualize_display_power;
     atomic_uint frame_index;
     int16_t wave_scratch[TRACKER_WAVEFORM_SAMPLES];
     void *timer;
     atomic_uint transport_requests;
+    atomic_bool back_requests;
     uint64_t transport_generation;
     atomic_bool ready;
     uint64_t elapsed_ms;
@@ -89,21 +97,63 @@ static void render_navigation_hint(app_tracker_t *state, uint16_t *frame, uint64
     }
 }
 
+static bool has_parent(const app_tracker_t *state)
+{
+    return (state->workspace.screen == TRACKER_WORKSPACE_SETTINGS &&
+            (state->settings.timeouts_open || state->settings.usb_confirm)) ||
+           tracker_workspace_has_parent(&state->workspace);
+}
+
+static int view_route(const app_tracker_t *state)
+{
+    int route = tracker_workspace_route(&state->workspace, &state->model);
+    if (state->workspace.screen == TRACKER_WORKSPACE_SETTINGS && state->settings.timeouts_open) {
+        route += 1000;
+    }
+    if (state->workspace.screen == TRACKER_WORKSPACE_SAMPLER &&
+            state->workspace.sampler_tab == TRACKER_SAMPLE_ASSIGN) {
+        route += 2000;
+    }
+    return route;
+}
+
+static void render_gesture_hints(app_tracker_t *state, uint16_t *frame, uint64_t now)
+{
+    if (state->workspace.screen == TRACKER_WORKSPACE_HOME || state->settings.open) {
+        return;
+    }
+    tracker_graphics_t g;
+    tracker_gfx_init(&g, frame);
+    tracker_gfx_clip(&g, 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+    if (now < state->home_hint_until) {
+        tracker_gfx_rect(&g, 214, 472, 52, 3, C_MUTED);
+    }
+    if (has_parent(state)) {
+        tracker_gfx_line(&g, 7, 230, 17, 240, C_CYAN);
+        tracker_gfx_line(&g, 17, 240, 7, 250, C_CYAN);
+    }
+}
+
 static void render_frame(app_tracker_t *state)
 {
     tracker_model_t *m = &state->model;
     const unsigned current = atomic_load_explicit(&state->frame_index,
                                                   memory_order_acquire) & 1U;
-    uint16_t *frame = state->frames[current ^ 1U];
+    uint16_t *output = state->frames[current ^ 1U];
+    uint16_t *frame = state->open_frame;
     const uint64_t now = now_ms(state);
-    const int route = tracker_workspace_route(&state->workspace, m);
+    const int route = view_route(state);
     if (state->rendered_page != route) {
         /* Retarget from the image actually displayed, including an interrupted
          * slide. This snapshot is reused; no render-time allocation is needed. */
         memcpy(state->motion_frame, state->frames[current], FRAME_BYTES);
         state->page_vertical = state->workspace.screen == TRACKER_WORKSPACE_HOME &&
                                state->rendered_page >= 10;
-        state->page_direction = route > state->rendered_page ? 1 : -1;
+        state->page_zoom = state->workspace.screen != TRACKER_WORKSPACE_HOME && !state->back_motion;
+        state->page_direction = state->back_motion ? -1 : route > state->rendered_page ? 1 : -1;
+        state->back_motion = false;
+        state->home_hint_until = state->workspace.screen != TRACKER_WORKSPACE_HOME
+                                 ? now + TRACKER_NAVIGATION_HINT_MS : 0;
         tracker_transition_begin(&state->page_motion, 0, TRACKER_TRANSITION_FULL,
                                  now, TRACKER_TRANSITION_PAGE_MS);
         state->rendered_page = route;
@@ -137,39 +187,48 @@ static void render_frame(app_tracker_t *state)
     tracker_workspace_render_header(frame, &state->workspace, m);
     const uint16_t page_progress = tracker_transition_sample(&state->page_motion, now);
     if (state->page_motion.active) {
-        if (state->page_vertical) {
-            (void)tracker_transition_slide_up_rgb565(frame, state->motion_frame, frame,
+        if (state->page_zoom) {
+            (void)tracker_transition_expand_center_rgb565(output, state->motion_frame, frame,
+                                                          FRAME_WIDTH, FRAME_HEIGHT, FRAME_HEIGHT,
+                                                          page_progress);
+        } else if (state->page_vertical) {
+            (void)tracker_transition_slide_up_rgb565(output, state->motion_frame, frame,
                                                      FRAME_WIDTH, FRAME_HEIGHT, FRAME_HEIGHT,
                                                      page_progress);
         } else {
-            (void)tracker_transition_slide_rgb565(frame, state->motion_frame, frame,
+            (void)tracker_transition_slide_rgb565(output, state->motion_frame, frame,
                                                   FRAME_WIDTH, FRAME_HEIGHT, TRACKER_WORKSPACE_CONTENT_HEIGHT,
                                                   page_progress, state->page_direction);
-            tracker_workspace_render_header(frame, &state->workspace, m);
+            if (state->workspace.screen == TRACKER_WORKSPACE_HOME) {
+                tracker_workspace_render_header(output, &state->workspace, m);
+            }
         }
+    } else {
+        memcpy(output, frame, FRAME_BYTES);
     }
-    render_navigation_hint(state, frame, now);
+    render_navigation_hint(state, output, now);
+    render_gesture_hints(state, output, now);
     const uint16_t drawer_amount = tracker_transition_sample(&state->drawer_motion, now);
     if (drawer_amount || state->drawer_motion.active) {
-        memcpy(state->motion_frame, frame, FRAME_BYTES);
-        tracker_settings_render_panel(frame, &state->settings);
-        (void)tracker_transition_reveal_top_rgb565(frame, state->motion_frame, frame,
+        memcpy(state->motion_frame, output, FRAME_BYTES);
+        tracker_settings_render_panel(output, &state->settings);
+        (void)tracker_transition_reveal_top_rgb565(output, state->motion_frame, output,
                                                    FRAME_WIDTH, FRAME_HEIGHT, FRAME_HEIGHT,
                                                    TRACKER_SETTINGS_PANEL_HEIGHT,
                                                    drawer_amount, 192);
     }
     if (state->settings.display.screen_off) {
-        memset(frame, 0, FRAME_BYTES);
+        memset(output, 0, FRAME_BYTES);
     } else if (state->visualize_display_power && state->settings.display.dimmed) {
         const unsigned preferred = (unsigned)state->settings.display.brightness;
         const unsigned effective = (unsigned)state->settings.display.effective_brightness;
         if (preferred) {
             for (unsigned i = 0; i < FRAME_WIDTH * FRAME_HEIGHT; ++i) {
-                const unsigned pixel = frame[i];
+                const unsigned pixel = output[i];
                 const unsigned r = ((pixel >> 11) & 31U) * effective / preferred;
                 const unsigned g = ((pixel >> 5) & 63U) * effective / preferred;
                 const unsigned b = (pixel & 31U) * effective / preferred;
-                frame[i] = (uint16_t)((r << 11) | (g << 5) | b);
+                output[i] = (uint16_t)((r << 11) | (g << 5) | b);
             }
         }
     }
@@ -204,6 +263,7 @@ static void update_settings(app_tracker_t *state)
                                       state->workspace.sampler_pointer || tracker_workspace_busy(&state->workspace) ||
                                       s->pointer_down || state->motion_gesture ||
                                       state->navigation_pointer ||
+                                      state->back_pointer ||
                                       state->wake_gesture || state->model.synth_view.note >= 0 ||
                                       state->page_motion.active || state->drawer_motion.active);
     }
@@ -277,6 +337,46 @@ static void tick_sources(app_tracker_t *state)
     finish_source_edit(state, before);
 }
 
+static bool go_back(app_tracker_t *state)
+{
+    const int before = view_route(state);
+    if (state->settings.usb_confirm) {
+        state->settings.usb_confirm = false;
+    } else if (state->settings.timeouts_open) {
+        state->settings.timeouts_open = false;
+    } else if (state->settings.open) {
+        state->settings.open = false;
+    } else {
+        (void)tracker_workspace_back(&state->workspace, &state->model);
+    }
+    state->back_motion = view_route(state) != before;
+    state->model.dirty = true;
+    return state->back_motion;
+}
+
+static bool back_pointer(app_tracker_t *state, int x, int y, bool pressed)
+{
+    if (!state->back_pointer) {
+        if (!pressed || x < 0 || x > 18 || y < 32 || y >= TRACKER_NAVIGATION_EDGE_Y ||
+                state->settings.open || !has_parent(state) ||
+                state->model.pointer_down || state->workspace.pointer_down || state->workspace.sampler_pointer ||
+                state->settings.pointer_down || state->settings.page_pointer_down) {
+            return false;
+        }
+        state->back_pointer = true;
+        state->back_x = x;
+        state->back_y = y;
+    } else if (!pressed) {
+        const int dx = x - state->back_x;
+        const int dy = y - state->back_y;
+        state->back_pointer = false;
+        if (dx >= TRACKER_NAVIGATION_TRAVEL && dx > abs(dy) * 2) {
+            (void)go_back(state);
+        }
+    }
+    return true;
+}
+
 static bool navigation_pointer(app_tracker_t *state, int x, int y, bool pressed)
 {
     tracker_workspace_t *w = &state->workspace;
@@ -294,6 +394,7 @@ static bool navigation_pointer(app_tracker_t *state, int x, int y, bool pressed)
         const int dx = x - state->navigation_x;
         const int dy = y - state->navigation_y;
         state->navigation_pointer = false;
+        state->back_pointer = false;
         if (dy <= -TRACKER_NAVIGATION_TRAVEL && -dy > abs(dx) * 2) {
             tracker_workspace_cancel_input(w);
             tracker_workspace_home(w, m);
@@ -328,6 +429,7 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
         state->settings.top_candidate = false;
         state->settings.brightness_drag = false;
         state->navigation_pointer = false;
+        state->back_pointer = false;
     }
     if (state->wake_gesture) {
         if (!pressed) {
@@ -339,6 +441,7 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
     const bool drawing_motion = state->page_motion.active || state->drawer_motion.active;
     if (state->motion_gesture || (pressed && drawing_motion &&
                                   !state->navigation_pointer &&
+                                  !state->back_pointer &&
                                   !state->model.pointer_down && !state->workspace.pointer_down &&
                                   !state->workspace.sampler_pointer && !state->settings.pointer_down && !state->settings.page_pointer_down &&
                                   (state->drawer_motion.active || y < TRACKER_NAVIGATION_EDGE_Y))) {
@@ -348,6 +451,12 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
     }
     tracker_workspace_poll(&state->workspace, &state->model);
     if (navigation_pointer(state, x, y, pressed)) {
+        update_settings(state);
+        tick_sources(state);
+        repaint(state);
+        return;
+    }
+    if (back_pointer(state, x, y, pressed)) {
         update_settings(state);
         tick_sources(state);
         repaint(state);
@@ -417,6 +526,7 @@ void app_tracker_cancel_pointer(app_tracker_t *state)
         state->wake_gesture = false;
         state->motion_gesture = false;
         state->navigation_pointer = false;
+        state->back_pointer = false;
         if (state->hooks.interaction_busy) {
             state->hooks.interaction_busy(state->hooks.context, false);
         }
@@ -437,6 +547,13 @@ static void tick(esp_gsp_handle_t ui, void *context)
         state->hooks.heartbeat(state->hooks.context);
     }
     tracker_workspace_poll(&state->workspace, &state->model);
+    if (atomic_exchange_explicit(&state->back_requests, false, memory_order_acquire)) {
+        const bool woke = state->hooks.record_activity && state->hooks.record_activity(state->hooks.context);
+        app_tracker_cancel_pointer(state);
+        if (!woke) {
+            (void)go_back(state);
+        }
+    }
     update_settings(state);
     tick_sources(state);
     /* Waveforms retain 20Hz; controls refresh at 10Hz and input is immediate. */
@@ -488,6 +605,7 @@ esp_gsp_err_t app_tracker_create(esp_gsp_handle_t ui,
     state->usb = config->usb_midi;
     tracker_settings_init(&state->settings);
     atomic_init(&state->transport_requests, 0);
+    atomic_init(&state->back_requests, false);
     atomic_init(&state->frame_index, 0);
     atomic_init(&state->ready, false);
     state->transport_generation = UINT64_MAX;
@@ -498,7 +616,9 @@ esp_gsp_err_t app_tracker_create(esp_gsp_handle_t ui,
     }
     state->motion_frame = state->hooks.allocate_frame ?
                           state->hooks.allocate_frame(state->hooks.context, FRAME_BYTES) : malloc(FRAME_BYTES);
-    if (!state->frames[0] || !state->frames[1] || !state->motion_frame) {
+    state->open_frame = state->hooks.allocate_frame ?
+                        state->hooks.allocate_frame(state->hooks.context, FRAME_BYTES) : malloc(FRAME_BYTES);
+    if (!state->frames[0] || !state->frames[1] || !state->motion_frame || !state->open_frame) {
         for (unsigned index = 0; index < 2; ++index) {
             if (state->frames[index]) {
                 if (state->hooks.free_frame) {
@@ -515,12 +635,19 @@ esp_gsp_err_t app_tracker_create(esp_gsp_handle_t ui,
                 free(state->motion_frame);
             }
         }
+        if (state->open_frame) {
+            if (state->hooks.free_frame) {
+                state->hooks.free_frame(state->hooks.context, state->open_frame);
+            } else {
+                free(state->open_frame);
+            }
+        }
         free(state);
         return ESP_GSP_ERR_NO_MEM;
     }
     tracker_model_init(&state->model, config->tracker, config->synth, config->audio_bus);
     tracker_workspace_init(&state->workspace, config->project, config->sampler);
-    state->rendered_page = tracker_workspace_route(&state->workspace, &state->model);
+    state->rendered_page = view_route(state);
     tracker_transition_init(&state->page_motion, TRACKER_TRANSITION_FULL);
     tracker_transition_init(&state->drawer_motion, 0);
     state->model.router = config->note_router;
@@ -638,6 +765,13 @@ void app_tracker_request_transport(app_tracker_t *state, bool restart)
     }
 }
 
+void app_tracker_request_back(app_tracker_t *state)
+{
+    if (state) {
+        atomic_store_explicit(&state->back_requests, true, memory_order_release);
+    }
+}
+
 void app_tracker_stop(app_tracker_t **handle)
 {
     if (!handle || !*handle) {
@@ -684,8 +818,10 @@ void app_tracker_stop(app_tracker_t **handle)
     }
     if (state->hooks.free_frame) {
         state->hooks.free_frame(state->hooks.context, state->motion_frame);
+        state->hooks.free_frame(state->hooks.context, state->open_frame);
     } else {
         free(state->motion_frame);
+        free(state->open_frame);
     }
     if (state->hooks.shutdown) {
         state->hooks.shutdown(state->hooks.context);
