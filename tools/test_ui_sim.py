@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import socket
 import subprocess
+import tempfile
 import time
 import wave
 
@@ -60,6 +61,7 @@ def main() -> int:
     parser.add_argument("--sim", type=Path, required=True)
     root = Path(__file__).resolve().parents[1]
     parser.add_argument("--build-dir", type=Path, default=root / "build-sim")
+    parser.add_argument("--project-dir", type=Path, default=root)
     parser.add_argument("--output", type=Path, default=root / ".codex-runs/ui-sim")
     args = parser.parse_args()
     output = args.output.resolve()
@@ -81,6 +83,9 @@ def main() -> int:
     env["OP_AY1_SIM_WAV"] = str(capture)
     env["OP_AY1_SIM_AUDIO"] = "0"
     env["OP_AY1_SIM_STOP_FILE"] = str(stop_file)
+    # Legacy module regressions now enter through the real HOME/project flow.
+    # A fresh owned root keeps this run independent of saved user projects.
+    env["OP_AY1_PROJECT_ROOT"] = tempfile.mkdtemp(prefix="project-data-", dir=output)
     results = []
     backend = None
     rpc = None
@@ -103,7 +108,7 @@ def main() -> int:
                 "--ready-file",
                 str(ready),
             ],
-            cwd=root,
+            cwd=args.project_dir.resolve(),
             stdout=sim_log,
             stderr=subprocess.STDOUT,
             creationflags=flags,
@@ -121,7 +126,7 @@ def main() -> int:
                     "--endpoint",
                     info["backend"],
                 ],
-                cwd=root,
+                cwd=args.project_dir.resolve(),
                 env=env,
                 stdout=backend_log,
                 stderr=subprocess.STDOUT,
@@ -149,6 +154,7 @@ def main() -> int:
                 raise AssertionError(f"Expected UI state not reached; last={last}")
 
             def tap(x, y):
+                y = legacy_y(y)
                 rpc.call("feed_pointer", {"x": x, "y": y, "pressed": True})
                 time.sleep(0.06)
                 rpc.call("feed_pointer", {"x": x, "y": y, "pressed": False})
@@ -171,6 +177,7 @@ def main() -> int:
                 raise AssertionError(f"Expected settings state not reached; last={last}")
 
             def pointer(x, y, pressed):
+                y = legacy_y(y)
                 rpc.call("feed_pointer", {"x": x, "y": y, "pressed": pressed})
                 time.sleep(0.12)
 
@@ -188,7 +195,23 @@ def main() -> int:
                 time.sleep(0.2)
                 rpc.call("screenshot", {"path": str(output / (name + ".png")), "format": "png"})
 
-            state(lambda s: s["page"] == 1)
+            def legacy_y(y):
+                # Existing regression coordinates describe the original page
+                # band. The product now fits it below the global project strip.
+                current = state()
+                opened = settings()["open"]
+                return 78 + (y - 40) * 354 // 392 if current["workspace"] == 11 and not opened and 40 <= y < 432 else y
+
+            state(lambda s: s["workspace"] == 0 and not s["project_busy"])
+            tap(100, 176)  # HOME / OPEN PROJECT
+            tap(80, 110)   # NEW
+            tap(240, 296)  # built-in ARYX import
+            if state()["workspace"] == 6:
+                tap(240, 334)  # discard the initial unsaved demo session
+            state(lambda s: s["workspace"] == 0 and s["project_opened"] and not s["project_busy"] and not s["page_motion"])
+            tap(120, 330)  # HOME / PLAYBACK
+            state(lambda s: s["workspace"] == 11 and not s["page_motion"])
+            page(1)
             for i in range(6):
                 page(i)
                 screenshot(f"page-{i}")

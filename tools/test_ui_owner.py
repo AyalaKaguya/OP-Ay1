@@ -30,6 +30,9 @@ def main() -> int:
         "components/app_tracker/tracker_pages.c",
         "components/app_tracker/tracker_render.c",
         "components/app_tracker/tracker_font.c",
+        "components/app_tracker/tracker_workspace.c",
+        "components/app_tracker/tracker_workspace_render.c",
+        "components/app_tracker/tracker_sampler_ui.c",
         "components/app_tracker_engine/tracker_engine.c",
         "components/app_tracker_engine/tracker_module.c",
         "components/app_tracker_engine/tracker_mixer.c",
@@ -38,6 +41,14 @@ def main() -> int:
         "components/app_note_router/app_note_router.c",
         "components/app_usb_midi/usb_midi_native.c",
         "components/app_settings/app_settings.c",
+        "components/app_sampler/app_sampler.c",
+        "components/app_sampler/sampler_bank.c",
+        "components/app_sampler/sampler_formats.c",
+        "components/app_sampler/sampler_record.c",
+        "components/app_project/app_project.c",
+        "components/app_project/project_platform.c",
+        "components/app_project/project_files.c",
+        "components/app_project/project_session.c",
     ]
     sources = [root / "tests/ui_owner_lifecycle.c", *[project / source for source in source_paths]]
     includes = [
@@ -54,6 +65,8 @@ def main() -> int:
                 "app_note_router",
                 "app_usb_midi",
                 "app_settings",
+                "app_sampler",
+                "app_project",
             )
         ],
     ]
@@ -85,6 +98,7 @@ def main() -> int:
             *["-I" + str(path) for path in includes],
             *map(str, sources),
             "-lm",
+            "-pthread",
             "-o",
             str(executable),
         ]

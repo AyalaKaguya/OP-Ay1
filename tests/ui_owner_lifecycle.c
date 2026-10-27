@@ -227,6 +227,23 @@ static void advance(fixture_t *f, unsigned milliseconds)
     timer_callback(&fake_ui, timer_context);
 }
 
+static void open_synth_from_home(fixture_t *f, app_tracker_t *owner)
+{
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_HOME);
+    tap(436, 460);
+    advance(f, 250);
+    CHECK(owner->workspace.home_page == 1);
+    tap(352, 176);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_LEGACY && owner->model.view.page == 5);
+}
+
+static void expected_controls(fixture_t *f, app_tracker_t *owner)
+{
+    tracker_render_controls(f->expected, &owner->model.view);
+    tracker_workspace_fit_legacy(f->expected);
+    tracker_workspace_render_header(f->expected, &owner->workspace, &owner->model);
+}
+
 static void test_allocations(const uint8_t *module, size_t size)
 {
     for (unsigned failure = 1; failure <= 3; ++failure) {
@@ -263,19 +280,18 @@ static void test_motion(const uint8_t *module, size_t size)
     fixture_t *f = fixture_create(module, size);
     app_tracker_t *owner = NULL;
     CHECK(app_tracker_create(&fake_ui, &f->config, &owner) == ESP_GSP_OK);
-    memcpy(f->capture, published(owner), FRAME_BYTES);
-    tap(280, 460);
+    open_synth_from_home(f, owner);
     CHECK(owner->model.view.page == 5 && owner->page_motion.active);
-    CHECK(memcmp(published(owner), f->capture, 480U * 432U * sizeof(uint16_t)) == 0);
     advance(f, 50);
     CHECK(owner->page_motion.active && owner->page_motion.current > 0);
     memcpy(f->capture, published(owner), FRAME_BYTES);
     tap(232, 460);
     CHECK(owner->model.view.page == 2 && owner->page_motion.active);
-    CHECK(memcmp(published(owner), f->capture, 480U * 432U * sizeof(uint16_t)) == 0);
+    CHECK(memcmp(published(owner) + 78U * 480U, f->capture + 78U * 480U,
+                 480U * (432U - 78U) * sizeof(uint16_t)) == 0);
     advance(f, 200);
     CHECK(!owner->page_motion.active);
-    tracker_render_controls(f->expected, &owner->model.view);
+    expected_controls(f, owner);
     CHECK(memcmp(published(owner), f->expected, 480U * 432U * sizeof(uint16_t)) == 0);
     pointer_callback(&fake_ui, 220, 12, true, pointer_context);
     pointer_callback(&fake_ui, 225, 90, true, pointer_context);
@@ -291,7 +307,7 @@ static void test_motion(const uint8_t *module, size_t size)
     CHECK(memcmp(published(owner), f->capture, FRAME_BYTES) == 0);
     advance(f, 180);
     CHECK(!owner->drawer_motion.active && owner->drawer_motion.current == 0);
-    tracker_render_controls(f->expected, &owner->model.view);
+    expected_controls(f, owner);
     CHECK(memcmp(published(owner), f->expected, 480U * 432U * sizeof(uint16_t)) == 0);
     tap(280, 460);
     CHECK(owner->page_motion.active && owner->model.view.page == 5);
@@ -317,7 +333,7 @@ static void test_wake_capture(const uint8_t *module, size_t size)
     fixture_t *f = fixture_create(module, size);
     app_tracker_t *owner = NULL;
     CHECK(app_tracker_create(&fake_ui, &f->config, &owner) == ESP_GSP_OK);
-    tap(280, 460);
+    open_synth_from_home(f, owner);
     advance(f, 250);
     CHECK(owner->model.view.page == 5);
     f->display.screen_off = true;
