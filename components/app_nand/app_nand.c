@@ -37,7 +37,7 @@ static int probe_read(const struct lfs_config *config, lfs_block_t block,
     const esp_blockdev_handle_t source = config->context;
     const uint64_t address = (uint64_t)block * config->block_size + offset;
     if (offset > config->block_size || size > config->block_size - offset ||
-        address > source->geometry.disk_size || size > source->geometry.disk_size - address) {
+            address > source->geometry.disk_size || size > source->geometry.disk_size - address) {
         return LFS_ERR_IO;
     }
     return source->ops->read(source, buffer, size, address, size) == ESP_OK ? 0 : LFS_ERR_IO;
@@ -66,9 +66,9 @@ static esp_err_t stored_geometry(esp_blockdev_handle_t source, uint64_t *out_byt
 {
     const size_t page = source->geometry.read_size;
     if (source->ops == NULL || source->ops->read == NULL || page < 128 ||
-        page > UINT32_MAX || (page & (page - 1U)) != 0 ||
-        source->geometry.write_size != page || source->geometry.erase_size != page ||
-        source->geometry.disk_size == 0 || source->geometry.disk_size % page != 0) {
+            page > UINT32_MAX || (page & (page - 1U)) != 0 ||
+            source->geometry.write_size != page || source->geometry.erase_size != page ||
+            source->geometry.disk_size == 0 || source->geometry.disk_size % page != 0) {
         return ESP_ERR_INVALID_SIZE;
     }
     /* Probe callbacks refuse write/erase. Unmount this raw read-only view
@@ -92,13 +92,15 @@ static esp_err_t stored_geometry(esp_blockdev_handle_t source, uint64_t *out_byt
     if (mounted == 0) {
         result = lfs_fs_stat(probe, info);
         const int unmounted = lfs_unmount(probe);
-        if (result == 0) result = unmounted;
+        if (result == 0) {
+            result = unmounted;
+        }
     }
     esp_err_t error = result == LFS_ERR_NOMEM ? ESP_ERR_NO_MEM : result ? ESP_FAIL : ESP_OK;
     if (error == ESP_OK) {
         const uint64_t stored = (uint64_t)info->block_count * info->block_size;
         if (info->block_count == 0 || info->block_size != page ||
-            stored > source->geometry.disk_size) {
+                stored > source->geometry.disk_size) {
             error = ESP_ERR_INVALID_SIZE;
         } else {
             *out_bytes = stored;
@@ -112,17 +114,23 @@ static esp_err_t release_resources(void)
 {
     if (nand.blockdev != NULL && !nand.mounted) {
         const esp_err_t result = nand.blockdev->ops->release(nand.blockdev);
-        if (result != ESP_OK) return result;
+        if (result != ESP_OK) {
+            return result;
+        }
         nand.blockdev = NULL;
     }
     if (nand.spi != NULL) {
         const esp_err_t result = spi_bus_remove_device(nand.spi);
-        if (result != ESP_OK) return result;
+        if (result != ESP_OK) {
+            return result;
+        }
         nand.spi = NULL;
     }
     if (nand.bus_owned) {
         const esp_err_t result = spi_bus_free(BSP_NAND_SPI_HOST);
-        if (result != ESP_OK) return result;
+        if (result != ESP_OK) {
+            return result;
+        }
         nand.bus_owned = false;
     }
     return ESP_OK;
@@ -132,11 +140,13 @@ static esp_err_t release_pin(gpio_num_t pin)
 {
     const gpio_config_t config = {
         .pin_bit_mask = UINT64_C(1) << pin, .mode = GPIO_MODE_OUTPUT,
-        .pull_up_en = GPIO_PULLUP_ENABLE, .pull_down_en = GPIO_PULLDOWN_DISABLE,
-        .intr_type = GPIO_INTR_DISABLE,
+                                    .pull_up_en = GPIO_PULLUP_ENABLE, .pull_down_en = GPIO_PULLDOWN_DISABLE,
+                                    .intr_type = GPIO_INTR_DISABLE,
     };
     esp_err_t result = gpio_set_level(pin, 1);
-    if (result == ESP_OK) result = gpio_config(&config);
+    if (result == ESP_OK) {
+        result = gpio_config(&config);
+    }
     return result;
 }
 
@@ -148,17 +158,25 @@ static esp_err_t mount_volume(void)
         return ESP_ERR_INVALID_STATE;
     }
     esp_err_t result = release_resources();
-    if (result != ESP_OK) return result;
+    if (result != ESP_OK) {
+        return result;
+    }
     result = release_pin(BSP_NAND_HOLD);
-    if (result == ESP_OK) result = release_pin(BSP_NAND_WP);
-    if (result != ESP_OK) return result;
+    if (result == ESP_OK) {
+        result = release_pin(BSP_NAND_WP);
+    }
+    if (result != ESP_OK) {
+        return result;
+    }
     const spi_bus_config_t bus = {
         .mosi_io_num = BSP_NAND_D, .miso_io_num = BSP_NAND_Q,
         .sclk_io_num = BSP_NAND_CLK, .quadhd_io_num = GPIO_NUM_NC,
         .quadwp_io_num = GPIO_NUM_NC, .max_transfer_sz = 4096,
     };
     result = spi_bus_initialize(BSP_NAND_SPI_HOST, &bus, SPI_DMA_CH_AUTO);
-    if (result != ESP_OK) return result;
+    if (result != ESP_OK) {
+        return result;
+    }
     nand.bus_owned = true;
     const spi_device_interface_config_t device = {
         .clock_speed_hz = BSP_NAND_FLASH_DEFAULT_CLOCK_HZ, .mode = 0,
@@ -174,7 +192,9 @@ static esp_err_t mount_volume(void)
         result = spi_nand_flash_init_with_layers(&config, &nand.blockdev);
     }
     uint64_t volume_bytes = 0;
-    if (result == ESP_OK) result = stored_geometry(nand.blockdev, &volume_bytes);
+    if (result == ESP_OK) {
+        result = stored_geometry(nand.blockdev, &volume_bytes);
+    }
     if (result == ESP_OK) {
         /* Dhara estimates may grow after bad-block map recovery. Preserve the
          * existing volume's persisted size, including a smaller older volume. */
@@ -185,11 +205,15 @@ static esp_err_t mount_volume(void)
             .dont_mount = false, .grow_on_mount = false,
         };
         result = esp_vfs_littlefs_register(&config);
-        if (result != ESP_OK) nand.blockdev = NULL; /* Register consumes failure. */
+        if (result != ESP_OK) {
+            nand.blockdev = NULL;    /* Register consumes failure. */
+        }
     }
     if (result != ESP_OK) {
         const esp_err_t cleanup = release_resources();
-        if (cleanup != ESP_OK) ESP_LOGE(TAG, "partial NAND cleanup retained: %s", esp_err_to_name(cleanup));
+        if (cleanup != ESP_OK) {
+            ESP_LOGE(TAG, "partial NAND cleanup retained: %s", esp_err_to_name(cleanup));
+        }
         return result;
     }
     nand.mounted = true;
@@ -200,14 +224,16 @@ static esp_err_t mount_volume(void)
 
 esp_err_t app_nand_mount(void)
 {
-    if (atomic_flag_test_and_set_explicit(&lifecycle, memory_order_acquire)) return ESP_ERR_INVALID_STATE;
+    if (atomic_flag_test_and_set_explicit(&lifecycle, memory_order_acquire)) {
+        return ESP_ERR_INVALID_STATE;
+    }
     esp_err_t result = ESP_OK;
     if (!nand.mounted) {
         atomic_store_explicit(&mount_status, ESP_ERR_INVALID_STATE, memory_order_release);
         result = mount_volume();
     }
     atomic_store_explicit(&mount_status, result == ESP_ERR_INVALID_STATE ? ESP_FAIL : result,
-                           memory_order_release);
+                          memory_order_release);
     atomic_flag_clear_explicit(&lifecycle, memory_order_release);
     return result;
 }
@@ -219,26 +245,40 @@ esp_err_t app_nand_status(void)
 
 esp_err_t app_nand_info(uint64_t *total_bytes, uint64_t *used_bytes)
 {
-    if (total_bytes == NULL || used_bytes == NULL) return ESP_ERR_INVALID_ARG;
-    if (app_nand_status() != ESP_OK || !nand.mounted) return ESP_ERR_INVALID_STATE;
+    if (total_bytes == NULL || used_bytes == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    if (app_nand_status() != ESP_OK || !nand.mounted) {
+        return ESP_ERR_INVALID_STATE;
+    }
     size_t total = 0, used = 0;
     const esp_err_t result = esp_littlefs_blockdev_info(nand.blockdev, &total, &used);
-    if (result == ESP_OK) { *total_bytes = total; *used_bytes = used; }
+    if (result == ESP_OK) {
+        *total_bytes = total;
+        *used_bytes = used;
+    }
     return result;
 }
 
 esp_err_t app_nand_unmount(void)
 {
-    if (atomic_flag_test_and_set_explicit(&lifecycle, memory_order_acquire)) return ESP_ERR_INVALID_STATE;
+    if (atomic_flag_test_and_set_explicit(&lifecycle, memory_order_acquire)) {
+        return ESP_ERR_INVALID_STATE;
+    }
     atomic_store_explicit(&mount_status, ESP_ERR_INVALID_STATE, memory_order_release);
     esp_err_t result = ESP_OK;
     if (nand.mounted) {
         result = esp_vfs_littlefs_unregister_blockdev(nand.blockdev);
-        if (result == ESP_OK) { nand.mounted = false; nand.blockdev = NULL; }
+        if (result == ESP_OK) {
+            nand.mounted = false;
+            nand.blockdev = NULL;
+        }
     }
-    if (result == ESP_OK) result = release_resources();
+    if (result == ESP_OK) {
+        result = release_resources();
+    }
     atomic_store_explicit(&mount_status, result == ESP_OK ? ESP_ERR_INVALID_STATE : result,
-                           memory_order_release);
+                          memory_order_release);
     atomic_flag_clear_explicit(&lifecycle, memory_order_release);
     return result;
 }

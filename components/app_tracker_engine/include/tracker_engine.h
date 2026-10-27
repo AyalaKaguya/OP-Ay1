@@ -27,7 +27,7 @@ typedef struct {
 tracker_engine_prepared_t *tracker_engine_prepare(const uint8_t *s3m, size_t size);
 void tracker_engine_prepared_destroy(tracker_engine_prepared_t *prepared);
 bool tracker_engine_prepared_replace_sample(tracker_engine_prepared_t *prepared,
-    unsigned slot, const tracker_pcm_sample_t *sample);
+                                            unsigned slot, const tracker_pcm_sample_t *sample);
 void tracker_engine_commit(tracker_engine_t *engine,
                            tracker_engine_prepared_t *prepared);
 bool tracker_engine_reload(tracker_engine_t *engine, const uint8_t *s3m, size_t size);
@@ -39,7 +39,7 @@ bool tracker_engine_replace_sample(tracker_engine_t *engine, unsigned slot,
 /* Atomic assignment move: clear_slot restores that slot's source S3M sample
  * while slot receives the owned replacement. zero clear_slot leaves others. */
 bool tracker_engine_assign_sample(tracker_engine_t *engine, unsigned slot,
-    unsigned clear_slot, const tracker_pcm_sample_t *sample);
+                                  unsigned clear_slot, const tracker_pcm_sample_t *sample);
 
 typedef struct {
     int16_t note;        /* S3M raw note byte (octave<<4 | semitone); -1 = empty */

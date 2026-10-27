@@ -148,7 +148,7 @@ void app_project_end_edit(app_project_t *project, bool changed);
 /* Small UI-owned session controls travel with a project, separately from
  * device preferences. Call only inside an admitted begin/end edit pair. */
 bool app_project_set_controls(app_project_t *project, int master_volume,
-                               const int pad_patterns[APP_PROJECT_PAD_COUNT]);
+                              const int pad_patterns[APP_PROJECT_PAD_COUNT]);
 /* Small nonblocking readiness query for the deferred Iris inbox volume. */
 bool app_project_inbox_ready(app_project_t *project);
 /* Zero-wait coherent read; BUSY leaves the previous caller snapshot unchanged. */

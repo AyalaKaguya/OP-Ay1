@@ -35,7 +35,9 @@ static void set_gain(tracker_model_t *m, int channel, int x)
     }
     const int step = clamp_int((x - TRACKER_MIX_FADER_X) * 120 /
                                (TRACKER_MIX_FADER_W - 1), 0, 120);
-    if (m->view.gain_steps[channel] != (uint8_t)step) ++m->edit_revision;
+    if (m->view.gain_steps[channel] != (uint8_t)step) {
+        ++m->edit_revision;
+    }
     m->view.gain_steps[channel] = (uint8_t)step;
     tracker_engine_set_channel_gain(m->engine, channel, gain_for_step(step));
     m->dirty = true;
@@ -46,7 +48,9 @@ static void set_master(tracker_model_t *m, int x)
     const int raw = clamp_int((x - TRACKER_MIX_MASTER_X) * 100 /
                               (TRACKER_MIX_MASTER_W - 1), 0, 100);
     const int volume = ((raw + 2) / 5) * 5;
-    if (m->view.volume != volume) ++m->edit_revision;
+    if (m->view.volume != volume) {
+        ++m->edit_revision;
+    }
     m->view.volume = volume;
     m->dirty = true;
 }
@@ -248,7 +252,9 @@ static void tap(tracker_model_t *m, int x, int y)
         } else if (in_rect(x, y, 16, 338, 448, 48)) {
             const int slot = clamp_int((x - 16) / 114, 0, 3);
             const float speed = (slot + 1) * 0.5f;
-            if (m->view.speed_multiplier != speed) ++m->edit_revision;
+            if (m->view.speed_multiplier != speed) {
+                ++m->edit_revision;
+            }
             tracker_engine_set_speed_multiplier(m->engine, speed);
             m->view.speed_multiplier = speed;
         }
@@ -442,7 +448,9 @@ void tracker_model_sync_sources(tracker_model_t *m)
     if (solo_count(m) > 0) {
         for (int ch = 0; ch < m->view.channel_count; ++ch) {
             m->auto_mute[ch] = !m->view.soloed[ch];
-            if (m->auto_mute[ch]) m->user_mute[ch] = false;
+            if (m->auto_mute[ch]) {
+                m->user_mute[ch] = false;
+            }
         }
     }
     m->dirty = true;

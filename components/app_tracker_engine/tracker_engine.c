@@ -448,10 +448,10 @@ static void replace_sample_locked(tracker_module_t *module, unsigned slot,
 }
 
 bool tracker_engine_prepared_replace_sample(tracker_engine_prepared_t *prepared,
-    unsigned slot, const tracker_pcm_sample_t *sample)
+                                            unsigned slot, const tracker_pcm_sample_t *sample)
 {
     if (!prepared || !prepared->module || slot == 0 ||
-        slot > (unsigned)prepared->module->sample_count) {
+            slot > (unsigned)prepared->module->sample_count) {
         return false;
     }
     int16_t *pcm = copy_pcm(sample);
@@ -537,7 +537,7 @@ bool tracker_engine_copy_blob(tracker_engine_t *engine, uint8_t **bytes, size_t 
 }
 
 bool tracker_engine_assign_sample(tracker_engine_t *engine, unsigned slot,
-    unsigned clear_slot, const tracker_pcm_sample_t *sample)
+                                  unsigned clear_slot, const tracker_pcm_sample_t *sample)
 {
     if (!engine || slot == 0 || slot > TRACKER_MAX_INSTRUMENTS) {
         return false;
@@ -890,7 +890,9 @@ void tracker_engine_get_status(tracker_engine_t *engine, tracker_status_t *statu
 
 int tracker_engine_patterns(tracker_engine_t *engine)
 {
-    if (!engine) { return 0; }
+    if (!engine) {
+        return 0;
+    }
     engine_lock(engine);
     const int count = engine->module->pattern_count;
     engine_unlock(engine);
@@ -899,7 +901,9 @@ int tracker_engine_patterns(tracker_engine_t *engine)
 
 int tracker_engine_orders(tracker_engine_t *engine)
 {
-    if (!engine) { return 0; }
+    if (!engine) {
+        return 0;
+    }
     engine_lock(engine);
     const int count = engine->module->order_count;
     engine_unlock(engine);

@@ -13,15 +13,25 @@
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-static void pause_ms(unsigned ms) { Sleep(ms); }
+static void pause_ms(unsigned ms)
+{
+    Sleep(ms);
+}
 #else
 #include <time.h>
-static void pause_ms(unsigned ms) { const struct timespec t = {ms / 1000U, (long)(ms % 1000U) * 1000000L}; nanosleep(&t, NULL); }
+static void pause_ms(unsigned ms)
+{
+    const struct timespec t = {ms / 1000U, (long)(ms % 1000U) * 1000000L};
+    nanosleep(&t, NULL);
+}
 #endif
 
 static void check(bool ok, const char *message)
 {
-    if (!ok) { fprintf(stderr, "project_persistence: FAIL: %s\n", message); exit(EXIT_FAILURE); }
+    if (!ok) {
+        fprintf(stderr, "project_persistence: FAIL: %s\n", message);
+        exit(EXIT_FAILURE);
+    }
 }
 static uint8_t *read_bytes(const char *path, size_t *size)
 {
@@ -35,7 +45,9 @@ static uint8_t *read_bytes(const char *path, size_t *size)
 static void idle(app_project_t *project, app_project_snapshot_t *snapshot)
 {
     for (unsigned attempt = 0; attempt < 2000; ++attempt) {
-        if (app_project_read(project, snapshot) == APP_PROJECT_OK && !snapshot->busy) return;
+        if (app_project_read(project, snapshot) == APP_PROJECT_OK && !snapshot->busy) {
+            return;
+        }
         pause_ms(5);
     }
     check(false, "worker completion timeout");
@@ -81,8 +93,15 @@ static uint32_t u32(const uint8_t *p)
 {
     return p[0] | (uint32_t)p[1] << 8 | (uint32_t)p[2] << 16 | (uint32_t)p[3] << 24;
 }
-static uint64_t u64(const uint8_t *p) { return u32(p) | (uint64_t)u32(p + 4) << 32; }
-static void put16(uint8_t *p, uint16_t v) { p[0] = (uint8_t)v; p[1] = (uint8_t)(v >> 8); }
+static uint64_t u64(const uint8_t *p)
+{
+    return u32(p) | (uint64_t)u32(p + 4) << 32;
+}
+static void put16(uint8_t *p, uint16_t v)
+{
+    p[0] = (uint8_t)v;
+    p[1] = (uint8_t)(v >> 8);
+}
 static void put32(uint8_t *p, uint32_t v)
 {
     p[0] = (uint8_t)v; p[1] = (uint8_t)(v >> 8); p[2] = (uint8_t)(v >> 16); p[3] = (uint8_t)(v >> 24);
@@ -94,12 +113,17 @@ static uint32_t crc(const uint8_t *bytes, size_t size)
     uint32_t c = UINT32_C(0xffffffff);
     for (size_t i = 0; i < size; ++i) {
         uint32_t value = (c ^ bytes[i]) & 255U;
-        for (unsigned j = 0; j < 8; ++j) value = value & 1U ? (value >> 1) ^ UINT32_C(0xedb88320) : value >> 1;
+        for (unsigned j = 0; j < 8; ++j) {
+            value = value & 1U ? (value >> 1) ^ UINT32_C(0xedb88320) : value >> 1;
+        }
         c = (c >> 8) ^ value;
     }
     return c ^ UINT32_C(0xffffffff);
 }
-static bool close_float(float a, float b) { return isfinite(a) && isfinite(b) && fabsf(a - b) < 0.00001f; }
+static bool close_float(float a, float b)
+{
+    return isfinite(a) && isfinite(b) && fabsf(a - b) < 0.00001f;
+}
 static void current_generation(const fixture_t *f, const char *id, const char *which, char out[PATH_BYTES])
 {
     char base[PATH_BYTES], path[PATH_BYTES];
@@ -112,17 +136,21 @@ static void current_generation(const fixture_t *f, const char *id, const char *w
 static void request_done(fixture_t *f, const app_project_request_t *request, app_project_error_t expected)
 {
     const app_project_error_t admitted = app_project_request(f->project, request);
-    if (admitted != APP_PROJECT_OK) fprintf(stderr, "admission=%s action=%d\n", app_project_error_name(admitted), request->action);
+    if (admitted != APP_PROJECT_OK) {
+        fprintf(stderr, "admission=%s action=%d\n", app_project_error_name(admitted), request->action);
+    }
     check(admitted == APP_PROJECT_OK, "admit worker job");
     idle(f->project, f->snapshot);
     if (f->snapshot->error != expected) fprintf(stderr, "action=%d error=%s wanted=%s\n", request->action,
-        app_project_error_name(f->snapshot->error), app_project_error_name(expected));
+                                                    app_project_error_name(f->snapshot->error), app_project_error_name(expected));
     check(f->snapshot->error == expected, "worker job result");
 }
 static void action(fixture_t *f, app_project_action_t which, const char *name)
 {
     app_project_request_t request = {0}; request.action = which; request.discard_dirty = true;
-    if (name) snprintf(request.name, sizeof(request.name), "%s", name);
+    if (name) {
+        snprintf(request.name, sizeof(request.name), "%s", name);
+    }
     request_done(f, &request, APP_PROJECT_OK);
 }
 static void render(fixture_t *f)
@@ -139,7 +167,8 @@ static void fixture_start(fixture_t *f)
     check(f->tracker && f->synth && f->sampler && f->router && f->bus, "create real sources");
     check(app_sampler_bind_engine(f->sampler, f->tracker) && app_audio_bus_set_sampler(f->bus, f->sampler), "wire sampler");
     const app_project_config_t config = {f->tracker, f->synth, f->bus, f->sampler, f->router,
-        f->module, f->module_size, f->root};
+                                         f->module, f->module_size, f->root
+                                        };
     check(app_project_create(&config, &f->project) == APP_PROJECT_OK, "create service");
     idle(f->project, f->snapshot);
     check(f->snapshot->error == APP_PROJECT_OK && f->snapshot->dirty && f->snapshot->opened &&
@@ -182,7 +211,10 @@ static void edit_complete_state(fixture_t *f)
     f->selected_sample = UINT32_MAX;
     for (unsigned i = 0; i < app_sampler_count(f->sampler); ++i) {
         check(app_sampler_get_info(f->sampler, i, &info), "read sample metadata");
-        if (info.frames > 128) { f->selected_sample = i; break; }
+        if (info.frames > 128) {
+            f->selected_sample = i;
+            break;
+        }
     }
     check(f->selected_sample != UINT32_MAX, "fixture has an editable real sample");
     check(app_project_begin_edit(f->project), "begin sampler preview edit");
@@ -202,12 +234,16 @@ static void compare_patch(fixture_t *f)
     app_synth_patch_t patch; check(app_synth_get_patch(f->synth, &patch), "read restored patch");
     check(patch.waveform == f->expected_patch.waveform && patch.lfo_target == f->expected_patch.lfo_target,
           "synth enums roundtrip");
-    const float actual[] = {patch.wavetable_position,patch.detune_cents,patch.gain,patch.pan,patch.filter_cutoff_hz,
-        patch.filter_resonance,patch.attack_s,patch.decay_s,patch.sustain,patch.release_s,patch.lfo_hz,patch.lfo_depth};
+    const float actual[] = {patch.wavetable_position, patch.detune_cents, patch.gain, patch.pan, patch.filter_cutoff_hz,
+                            patch.filter_resonance, patch.attack_s, patch.decay_s, patch.sustain, patch.release_s, patch.lfo_hz, patch.lfo_depth
+                           };
     const app_synth_patch_t *e = &f->expected_patch;
-    const float expected[] = {e->wavetable_position,e->detune_cents,e->gain,e->pan,e->filter_cutoff_hz,
-        e->filter_resonance,e->attack_s,e->decay_s,e->sustain,e->release_s,e->lfo_hz,e->lfo_depth};
-    for (unsigned i = 0; i < 12; ++i) check(close_float(actual[i], expected[i]), "synth scalar roundtrip");
+    const float expected[] = {e->wavetable_position, e->detune_cents, e->gain, e->pan, e->filter_cutoff_hz,
+                              e->filter_resonance, e->attack_s, e->decay_s, e->sustain, e->release_s, e->lfo_hz, e->lfo_depth
+                             };
+    for (unsigned i = 0; i < 12; ++i) {
+        check(close_float(actual[i], expected[i]), "synth scalar roundtrip");
+    }
 }
 static void compare_restored(fixture_t *f)
 {
@@ -242,11 +278,13 @@ static void independent_artifacts(fixture_t *f, const char *id)
     check(size == 192 && !memcmp(manifest, "OPAYPRJ1", 8) && u32(manifest + 8) == 1 &&
           crc(manifest, 188) == u32(manifest + 188) && !strcmp((const char *)manifest + 120, id), "independent manifest CRC/ID");
     const char *names[3] = {"module.s3m", "samples.bank", "state.bin"};
-    const uint64_t lengths[3] = {u64(manifest + 28),u64(manifest + 36),384};
+    const uint64_t lengths[3] = {u64(manifest + 28), u64(manifest + 36), 384};
     for (unsigned i = 0; i < 3; ++i) {
         path_join(path, generation, names[i]); uint8_t *data = read_bytes(path, &size);
         check(size == lengths[i] && crc(data, size) == u32(manifest + 44 + i * 4), "independent asset length/CRC");
-        if (i == 0) check(size == f->expected_module_size && !memcmp(data, f->expected_module, size), "actual saved module bytes");
+        if (i == 0) {
+            check(size == f->expected_module_size && !memcmp(data, f->expected_module, size), "actual saved module bytes");
+        }
         if (i == 1) {
             check(size >= 16 && !memcmp(data, "AYSB", 4) && u32(data + 4) == 1 && u32(data + 12) == size, "contained PCM bank format");
             size_t cursor = 16; bool saw_pcm = false;
@@ -270,7 +308,7 @@ static void independent_artifacts(fixture_t *f, const char *id)
             check(cursor == size && saw_pcm, "complete contained bank");
         }
         if (i == 2) check(!memcmp(data, "OPSTATE1", 8) && u32(data + 72) == 65 && u32(data + 192) == 11,
-                          "independent saved controls");
+                              "independent saved controls");
         free(data);
     }
     free(manifest);
@@ -301,12 +339,14 @@ static void save_and_reopen(fixture_t *f)
           "blank session structure");
     for (unsigned index = 0; index < 16; ++index) {
         app_sampler_sample_info_t info = {0}; check(app_sampler_get_info(f->sampler, index, &info) && !info.frames && !info.assigned_slot,
-                                               "blank has sixteen actual EMPTY slots");
+                                                    "blank has sixteen actual EMPTY slots");
     }
     tracker_engine_play(f->tracker);
     int16_t *audio = calloc(1024, sizeof(*audio)); check(audio != NULL, "blank audio buffer");
     app_audio_bus_render(f->bus, audio, 512);
-    for (unsigned i = 0; i < 1024; ++i) check(audio[i] == 0, "blank project contains no demo sound"); free(audio);
+    for (unsigned i = 0; i < 1024; ++i) {
+        check(audio[i] == 0, "blank project contains no demo sound");
+    } free(audio);
     memset(&request, 0, sizeof(request)); request.action = APP_PROJECT_OPEN; strcpy(request.id, f->original_id);
     check(app_project_request(f->project, &request) == APP_PROJECT_DIRTY_CONFLICT, "open requires dirty confirmation");
     request.discard_dirty = true; request_done(f, &request, APP_PROJECT_OK); compare_restored(f);
@@ -331,16 +371,20 @@ static void inbox_imports(fixture_t *f)
     put32(wav + 16, 16); put16(wav + 20, 1); put16(wav + 22, 1); put32(wav + 24, 48000);
     put32(wav + 28, 96000); put16(wav + 32, 2); put16(wav + 34, 16); memcpy(wav + 36, "data", 4);
     put32(wav + 40, WAV_FRAMES * 2U);
-    for (unsigned frame = 0; frame < WAV_FRAMES; ++frame) put16(wav + 44 + frame * 2U, (uint16_t)(int16_t)((int)(frame % 97) * 200 - 9600));
+    for (unsigned frame = 0; frame < WAV_FRAMES; ++frame) {
+        put16(wav + 44 + frame * 2U, (uint16_t)(int16_t)((int)(frame % 97) * 200 - 9600));
+    }
     path_join(path, inbox, "actual.wav"); write_bytes(path, wav, 44U + WAV_FRAMES * 2U); free(wav);
     memset(&request, 0, sizeof(request)); request.action = APP_PROJECT_IMPORT_SAMPLE; strcpy(request.filename, "actual.wav");
     request_done(f, &request, APP_PROJECT_OK);
     check(app_sampler_count(f->sampler) == 17 && f->snapshot->dirty, "WAV appended real PCM");
     app_sampler_sample_info_t info = {0}; check(app_sampler_get_info(f->sampler, 16, &info) && info.frames == WAV_FRAMES &&
-        info.source == APP_SAMPLER_SOURCE_WAV && info.sample_rate == 48000, "WAV format preserved");
+                                                info.source == APP_SAMPLER_SOURCE_WAV && info.sample_rate == 48000, "WAV format preserved");
     int16_t *wave = malloc(WAV_FRAMES * sizeof(*wave)); check(wave != NULL, "PCM verifier");
     check(app_sampler_waveform(f->sampler, 16, wave, WAV_FRAMES) == WAV_FRAMES, "WAV complete PCM readable");
-    for (unsigned frame = 0; frame < WAV_FRAMES; ++frame) check(wave[frame] == (int)(frame % 97) * 200 - 9600, "WAV decoded PCM expected");
+    for (unsigned frame = 0; frame < WAV_FRAMES; ++frame) {
+        check(wave[frame] == (int)(frame % 97) * 200 - 9600, "WAV decoded PCM expected");
+    }
     request.action = APP_PROJECT_ASSIGN_SAMPLE; request.sample_index = 16; request.target_slot = 1;
     request_done(f, &request, APP_PROJECT_OK); check(app_sampler_get_info(f->sampler, 16, &info) && info.assigned_slot == 1, "blank slot assignment");
     action(f, APP_PROJECT_SAVE_AS, "Contained WAV"); char wav_id[33]; strcpy(wav_id, f->snapshot->id);
@@ -349,7 +393,9 @@ static void inbox_imports(fixture_t *f)
     memset(&request, 0, sizeof(request)); request.action = APP_PROJECT_OPEN; request.discard_dirty = true; strcpy(request.id, wav_id);
     request_done(f, &request, APP_PROJECT_OK);
     check(app_sampler_waveform(f->sampler, 16, wave, WAV_FRAMES) == WAV_FRAMES, "contained WAV reopens without inbox");
-    for (unsigned frame = 0; frame < WAV_FRAMES; ++frame) check(wave[frame] == (int)(frame % 97) * 200 - 9600, "reopened WAV PCM expected");
+    for (unsigned frame = 0; frame < WAV_FRAMES; ++frame) {
+        check(wave[frame] == (int)(frame % 97) * 200 - 9600, "reopened WAV PCM expected");
+    }
     free(wave);
     action(f, APP_PROJECT_IMPORT_ARYX, NULL); strcpy(request.id, imported_id); request_done(f, &request, APP_PROJECT_OK);
     check(app_sampler_count(f->sampler) > 0, "contained S3M reopens without inbox");
@@ -398,7 +444,9 @@ static void failure_protection(fixture_t *f)
           "corrupt first generation reported distinctly and preserved active project");
     action(f, APP_PROJECT_SAVE_AS, "Drain pending job");
     project_test_hold_writes(true); check(app_project_request(f->project, &save) == APP_PROJECT_OK, "pending save admission");
-    for (unsigned attempt = 0; attempt < 2000 && !project_test_write_is_held(); ++attempt) pause_ms(1);
+    for (unsigned attempt = 0; attempt < 2000 && !project_test_write_is_held(); ++attempt) {
+        pause_ms(1);
+    }
     check(project_test_write_is_held(), "IO hold entered");
     check(!app_project_begin_edit(f->project) && app_project_request(f->project, &save) == APP_PROJECT_BUSY, "in-flight save blocks edits/jobs");
     check(app_project_shutdown(&f->project, 0) == APP_PROJECT_TIMEOUT && f->project != NULL, "shutdown timeout retains owner and sources");
@@ -430,7 +478,9 @@ static void restart_and_pointer_recovery(fixture_t *f)
     app_project_end_edit(f->project, false);
     for (unsigned attempt = 0; attempt < 200; ++attempt) {
         idle(f->project, f->snapshot);
-        if (f->snapshot->revision > revision) break;
+        if (f->snapshot->revision > revision) {
+            break;
+        }
         pause_ms(5);
     }
     check(f->snapshot->dirty && f->snapshot->revision > revision,

@@ -19,21 +19,26 @@ static bool inside(int x, int y, int left, int top, int width, int height)
 static void result(tracker_workspace_t *w, app_sampler_result_t value)
 {
     w->sampler_error = value;
-    if (value != APP_SAMPLER_OK)
+    if (value != APP_SAMPLER_OK) {
         tracker_workspace_message(w, app_sampler_result_name(value));
+    }
     w->dirty = true;
 }
 
 static void stop_audition(tracker_workspace_t *w)
 {
-    if (w->sampler) app_sampler_audition_stop(w->sampler);
+    if (w->sampler) {
+        app_sampler_audition_stop(w->sampler);
+    }
     w->auditioning = false;
 }
 
 void tracker_sampler_ui_cancel(tracker_workspace_t *w)
 {
     stop_audition(w);
-    if (w->sampler && w->sample_edit_active) app_sampler_edit_cancel(w->sampler);
+    if (w->sampler && w->sample_edit_active) {
+        app_sampler_edit_cancel(w->sampler);
+    }
     w->sample_edit_active = w->sample_edit_dirty = false;
     w->sampler_pointer = false;
     w->sample_drag = TRACKER_SAMPLE_DRAG_NONE;
@@ -42,18 +47,28 @@ void tracker_sampler_ui_cancel(tracker_workspace_t *w)
 
 void tracker_sampler_ui_poll(tracker_workspace_t *w)
 {
-    if (!w->sampler) return;
+    if (!w->sampler) {
+        return;
+    }
     const unsigned count = app_sampler_count(w->sampler);
     const uint64_t revision = app_sampler_revision(w->sampler);
-    if (count != w->sample_count || revision != w->sampler_revision) w->dirty = true;
+    if (count != w->sample_count || revision != w->sampler_revision) {
+        w->dirty = true;
+    }
     w->sample_count = count;
     w->sampler_revision = revision;
-    if (w->sample >= count) w->sample = count ? count - 1U : 0U;
-    if (w->sample_first > w->sample) w->sample_first = w->sample / 4U * 4U;
+    if (w->sample >= count) {
+        w->sample = count ? count - 1U : 0U;
+    }
+    if (w->sample_first > w->sample) {
+        w->sample_first = w->sample / 4U * 4U;
+    }
     app_sampler_sample_info_t next = {0};
     const bool valid = count && app_sampler_get_info(w->sampler, w->sample, &next);
     if (valid != w->sample_valid || (valid && memcmp(&next, &w->sample_info, sizeof(next)))) {
-        if (valid) w->sample_info = next;
+        if (valid) {
+            w->sample_info = next;
+        }
         w->dirty = true;
     }
     w->sample_valid = valid;
@@ -63,7 +78,9 @@ void tracker_sampler_ui_poll(tracker_workspace_t *w)
     if (valid && w->dirty)
         w->waveform_count = app_sampler_waveform(w->sampler, w->sample, w->waveform,
                                                  TRACKER_WORKSPACE_WAVE_SAMPLES);
-    else if (!valid) w->waveform_count = 0;
+    else if (!valid) {
+        w->waveform_count = 0;
+    }
     app_sampler_record_status_t record;
     app_sampler_record_get_status(w->sampler, &record);
     if (memcmp(&record, &w->record, sizeof(record))) {
@@ -74,7 +91,9 @@ void tracker_sampler_ui_poll(tracker_workspace_t *w)
     }
     if (w->sample_edit_active) {
         app_sampler_edit_t edit;
-        if (app_sampler_edit_get(w->sampler, &edit)) w->edit = edit;
+        if (app_sampler_edit_get(w->sampler, &edit)) {
+            w->edit = edit;
+        }
     }
 }
 
@@ -86,7 +105,9 @@ static void audition(tracker_workspace_t *w)
         const app_sampler_result_t value = app_sampler_audition(w->sampler, w->sample);
         result(w, value);
         w->auditioning = value == APP_SAMPLER_OK;
-    } else tracker_workspace_message(w, "EMPTY SAMPLE SLOT / NOTHING TO AUDITION");
+    } else {
+        tracker_workspace_message(w, "EMPTY SAMPLE SLOT / NOTHING TO AUDITION");
+    }
     w->dirty = true;
 }
 
@@ -114,26 +135,42 @@ static void set_edit(tracker_workspace_t *w)
     result(w, value);
     if (value == APP_SAMPLER_OK) {
         w->sample_edit_dirty = memcmp(&w->edit, &w->original_edit, sizeof(w->edit)) != 0;
-    } else (void)app_sampler_edit_get(w->sampler, &w->edit);
+    } else {
+        (void)app_sampler_edit_get(w->sampler, &w->edit);
+    }
 }
 
 static void drag_edit(tracker_workspace_t *w, int x)
 {
-    if (!w->sample_edit_active || !w->sample_info.frames) return;
-    if (x < SAMPLE_WAVE_LEFT) x = SAMPLE_WAVE_LEFT;
-    if (x >= SAMPLE_WAVE_LEFT + SAMPLE_WAVE_WIDTH) x = SAMPLE_WAVE_LEFT + SAMPLE_WAVE_WIDTH - 1;
+    if (!w->sample_edit_active || !w->sample_info.frames) {
+        return;
+    }
+    if (x < SAMPLE_WAVE_LEFT) {
+        x = SAMPLE_WAVE_LEFT;
+    }
+    if (x >= SAMPLE_WAVE_LEFT + SAMPLE_WAVE_WIDTH) {
+        x = SAMPLE_WAVE_LEFT + SAMPLE_WAVE_WIDTH - 1;
+    }
     const uint32_t frame = (uint32_t)((uint64_t)(x - SAMPLE_WAVE_LEFT) *
-                                     w->sample_info.frames / (SAMPLE_WAVE_WIDTH - 1));
+                                      w->sample_info.frames / (SAMPLE_WAVE_WIDTH - 1));
     switch (w->sample_drag) {
     case TRACKER_SAMPLE_DRAG_TRIM_START:
         w->edit.trim_start = frame < w->edit.trim_end ? frame : w->edit.trim_end - 1U;
-        if (w->edit.loop_start < w->edit.trim_start) w->edit.loop_start = w->edit.trim_start;
-        if (w->edit.loop_end <= w->edit.loop_start) w->edit.loop_end = w->edit.loop_start + 1U;
+        if (w->edit.loop_start < w->edit.trim_start) {
+            w->edit.loop_start = w->edit.trim_start;
+        }
+        if (w->edit.loop_end <= w->edit.loop_start) {
+            w->edit.loop_end = w->edit.loop_start + 1U;
+        }
         break;
     case TRACKER_SAMPLE_DRAG_TRIM_END:
         w->edit.trim_end = frame > w->edit.trim_start ? frame : w->edit.trim_start + 1U;
-        if (w->edit.loop_end > w->edit.trim_end) w->edit.loop_end = w->edit.trim_end;
-        if (w->edit.loop_start >= w->edit.loop_end) w->edit.loop_start = w->edit.loop_end - 1U;
+        if (w->edit.loop_end > w->edit.trim_end) {
+            w->edit.loop_end = w->edit.trim_end;
+        }
+        if (w->edit.loop_start >= w->edit.loop_end) {
+            w->edit.loop_start = w->edit.loop_end - 1U;
+        }
         break;
     case TRACKER_SAMPLE_DRAG_LOOP_START:
         w->edit.loop_start = frame < w->edit.trim_start ? w->edit.trim_start :
@@ -154,8 +191,9 @@ static void worker(tracker_workspace_t *w, app_project_action_t action)
     memset(&w->request, 0, sizeof(w->request));
     w->request.sample_index = w->sample;
     w->request.target_slot = w->assign_slot;
-    if (action == APP_PROJECT_RECORD_KEEP)
+    if (action == APP_PROJECT_RECORD_KEEP) {
         snprintf(w->request.name, sizeof(w->request.name), "TAKE %02u", w->sample_count + 1U);
+    }
     tracker_workspace_request(w, action);
 }
 
@@ -174,11 +212,15 @@ static void tap_library(tracker_workspace_t *w, int x, int y)
         w->sample_first = w->sample_first >= 4U ? w->sample_first - 4U : 0;
         w->sample = w->sample_first;
     } else if (inside(x, y, 394, 324, 62, 25)) {
-        if (w->sample_first + 4U < w->sample_count) w->sample_first += 4U;
+        if (w->sample_first + 4U < w->sample_count) {
+            w->sample_first += 4U;
+        }
         w->sample = w->sample_first;
-    } else if (inside(x, y, 24, 382, 136, 40)) audition(w);
-    else if (inside(x, y, 172, 382, 136, 40)) begin_edit(w);
-    else if (inside(x, y, 320, 382, 136, 40) && w->sample_valid && w->sample_info.frames) {
+    } else if (inside(x, y, 24, 382, 136, 40)) {
+        audition(w);
+    } else if (inside(x, y, 172, 382, 136, 40)) {
+        begin_edit(w);
+    } else if (inside(x, y, 320, 382, 136, 40) && w->sample_valid && w->sample_info.frames) {
         stop_audition(w);
         w->sampler_tab = TRACKER_SAMPLE_ASSIGN;
         w->assign_slot = w->sample_info.assigned_slot ? w->sample_info.assigned_slot :
@@ -189,17 +231,24 @@ static void tap_library(tracker_workspace_t *w, int x, int y)
 
 static void tap_edit(tracker_workspace_t *w, int x, int y)
 {
-    if (inside(x, y, 350, 136, 106, 26)) worker(w, APP_PROJECT_UNDO_SAMPLE);
-    else if (!w->sample_edit_active) {
-        if (inside(x, y, 24, 382, 432, 40)) begin_edit(w);
+    if (inside(x, y, 350, 136, 106, 26)) {
+        worker(w, APP_PROJECT_UNDO_SAMPLE);
+    } else if (!w->sample_edit_active) {
+        if (inside(x, y, 24, 382, 432, 40)) {
+            begin_edit(w);
+        }
     } else if (inside(x, y, 24, 382, 136, 40)) {
         tracker_sampler_ui_cancel(w);
         w->sampler_tab = TRACKER_SAMPLE_LIBRARY;
-    } else if (inside(x, y, 172, 382, 136, 40)) audition(w);
-    else if (inside(x, y, 320, 382, 136, 40)) worker(w, APP_PROJECT_APPLY_SAMPLE);
-    else if (inside(x, y, 24, 288, 318, 22)) w->loop_handles = false;
-    else if (inside(x, y, 24, 312, 318, 22)) w->loop_handles = true;
-    else if (inside(x, y, 350, 308, 106, 30)) {
+    } else if (inside(x, y, 172, 382, 136, 40)) {
+        audition(w);
+    } else if (inside(x, y, 320, 382, 136, 40)) {
+        worker(w, APP_PROJECT_APPLY_SAMPLE);
+    } else if (inside(x, y, 24, 288, 318, 22)) {
+        w->loop_handles = false;
+    } else if (inside(x, y, 24, 312, 318, 22)) {
+        w->loop_handles = true;
+    } else if (inside(x, y, 350, 308, 106, 30)) {
         w->edit.loop_enabled = !w->edit.loop_enabled;
         if (w->edit.loop_end <= w->edit.loop_start) {
             w->edit.loop_start = w->edit.trim_start;
@@ -209,8 +258,12 @@ static void tap_edit(tracker_workspace_t *w, int x, int y)
     } else if (inside(x, y, 24, 342, 264, 30)) {
         const int64_t delta = x < 155 ? -100 : 100;
         int64_t next = (int64_t)w->edit.c2_speed + delta;
-        if (next < 100) next = 100;
-        if (next > 192000) next = 192000;
+        if (next < 100) {
+            next = 100;
+        }
+        if (next > 192000) {
+            next = 192000;
+        }
         w->edit.c2_speed = (uint32_t)next;
         set_edit(w);
     } else if (inside(x, y, 300, 342, 156, 30)) {
@@ -226,8 +279,12 @@ static void tap_record(tracker_workspace_t *w, int x, int y)
     const app_sampler_record_state_t state = w->record.state;
     if (inside(x, y, 24, 182, 208, 32)) {
         float gain = w->mic_gain + (x < 128 ? -6.0f : 6.0f);
-        if (gain < 0.0f) gain = 0.0f;
-        if (gain > 42.0f) gain = 42.0f;
+        if (gain < 0.0f) {
+            gain = 0.0f;
+        }
+        if (gain > 42.0f) {
+            gain = 42.0f;
+        }
         result(w, app_sampler_record_set_gain(w->sampler, gain));
     } else if (inside(x, y, 248, 182, 208, 32)) {
         app_sampler_record_set_monitor(w->sampler, !w->mic_monitor);
@@ -243,16 +300,22 @@ static void tap_record(tracker_workspace_t *w, int x, int y)
             app_sampler_record_discard(w->sampler);
             tracker_workspace_message(w, "TAKE DISCARDED / PROJECT UNCHANGED");
         } else if (inside(x, y, 172, 382, 136, 40)) {
-            if (w->auditioning) stop_audition(w);
-            else {
+            if (w->auditioning) {
+                stop_audition(w);
+            } else {
                 const app_sampler_result_t value = app_sampler_record_audition(w->sampler);
                 result(w, value);
                 w->auditioning = value == APP_SAMPLER_OK;
             }
-        } else if (inside(x, y, 320, 382, 136, 40)) worker(w, APP_PROJECT_RECORD_KEEP);
+        } else if (inside(x, y, 320, 382, 136, 40)) {
+            worker(w, APP_PROJECT_RECORD_KEEP);
+        }
     } else if (inside(x, y, 24, 382, 432, 40)) {
-        if (state == APP_SAMPLER_RECORD_RECORDING) app_sampler_record_stop(w->sampler);
-        else if (state != APP_SAMPLER_RECORD_STOPPING) worker(w, APP_PROJECT_RECORD_START);
+        if (state == APP_SAMPLER_RECORD_RECORDING) {
+            app_sampler_record_stop(w->sampler);
+        } else if (state != APP_SAMPLER_RECORD_STOPPING) {
+            worker(w, APP_PROJECT_RECORD_START);
+        }
     }
     w->dirty = true;
 }
@@ -261,9 +324,14 @@ static void tap_assign(tracker_workspace_t *w, int x, int y)
 {
     if (inside(x, y, 24, 208, 432, 108)) {
         const unsigned slot = (unsigned)((y - 208) / 54) * 8U + (unsigned)(x - 24) / 54U + 1U;
-        if (slot <= 16U) w->assign_slot = slot;
-    } else if (inside(x, y, 24, 382, 208, 40)) w->sampler_tab = TRACKER_SAMPLE_LIBRARY;
-    else if (inside(x, y, 248, 382, 208, 40)) worker(w, APP_PROJECT_ASSIGN_SAMPLE);
+        if (slot <= 16U) {
+            w->assign_slot = slot;
+        }
+    } else if (inside(x, y, 24, 382, 208, 40)) {
+        w->sampler_tab = TRACKER_SAMPLE_LIBRARY;
+    } else if (inside(x, y, 248, 382, 208, 40)) {
+        worker(w, APP_PROJECT_ASSIGN_SAMPLE);
+    }
     w->dirty = true;
 }
 
@@ -272,25 +340,37 @@ static void tap(tracker_workspace_t *w, int x, int y)
     if (inside(x, y, 24, 92, 432, 36)) {
         const int tab = (x - 24) / 148;
         if (tab < 3 && (x - 24) % 148 < 136) {
-            if (tab == (int)w->sampler_tab) return;
-            if (tab == TRACKER_SAMPLE_EDIT && !w->sample_edit_active) begin_edit(w);
-            else {
+            if (tab == (int)w->sampler_tab) {
+                return;
+            }
+            if (tab == TRACKER_SAMPLE_EDIT && !w->sample_edit_active) {
+                begin_edit(w);
+            } else {
                 tracker_sampler_ui_cancel(w);
                 w->sampler_tab = (tracker_sampler_tab_t)tab;
             }
         }
-    } else if (w->sampler_tab == TRACKER_SAMPLE_LIBRARY) tap_library(w, x, y);
-    else if (w->sampler_tab == TRACKER_SAMPLE_EDIT) tap_edit(w, x, y);
-    else if (w->sampler_tab == TRACKER_SAMPLE_RECORD) tap_record(w, x, y);
-    else tap_assign(w, x, y);
+    } else if (w->sampler_tab == TRACKER_SAMPLE_LIBRARY) {
+        tap_library(w, x, y);
+    } else if (w->sampler_tab == TRACKER_SAMPLE_EDIT) {
+        tap_edit(w, x, y);
+    } else if (w->sampler_tab == TRACKER_SAMPLE_RECORD) {
+        tap_record(w, x, y);
+    } else {
+        tap_assign(w, x, y);
+    }
 }
 
 void tracker_sampler_ui_pointer(tracker_workspace_t *w, tracker_model_t *model,
-                                 int x, int y, bool pressed)
+                                int x, int y, bool pressed)
 {
     (void)model;
-    if (!w->sampler || tracker_workspace_busy(w)) return;
-    if (!tracker_workspace_begin_source_edit(w)) return;
+    if (!w->sampler || tracker_workspace_busy(w)) {
+        return;
+    }
+    if (!tracker_workspace_begin_source_edit(w)) {
+        return;
+    }
     if (pressed && !w->sampler_pointer) {
         w->sampler_pointer = true;
         w->start_x = x;
@@ -299,26 +379,32 @@ void tracker_sampler_ui_pointer(tracker_workspace_t *w, tracker_model_t *model,
         if (w->sampler_tab == TRACKER_SAMPLE_EDIT && w->sample_edit_active &&
                 inside(x, y, SAMPLE_WAVE_LEFT, SAMPLE_WAVE_TOP, SAMPLE_WAVE_WIDTH, SAMPLE_WAVE_HEIGHT)) {
             const uint32_t frame = (uint32_t)((uint64_t)(x - SAMPLE_WAVE_LEFT) *
-                                             w->sample_info.frames / SAMPLE_WAVE_WIDTH);
+                                              w->sample_info.frames / SAMPLE_WAVE_WIDTH);
             const uint32_t a = w->loop_handles ? w->edit.loop_start : w->edit.trim_start;
             const uint32_t b = w->loop_handles ? w->edit.loop_end : w->edit.trim_end;
             const uint32_t da = frame > a ? frame - a : a - frame;
             const uint32_t db = frame > b ? frame - b : b - frame;
             w->sample_drag = w->loop_handles ?
-                (da <= db ? TRACKER_SAMPLE_DRAG_LOOP_START : TRACKER_SAMPLE_DRAG_LOOP_END) :
-                (da <= db ? TRACKER_SAMPLE_DRAG_TRIM_START : TRACKER_SAMPLE_DRAG_TRIM_END);
+                             (da <= db ? TRACKER_SAMPLE_DRAG_LOOP_START : TRACKER_SAMPLE_DRAG_LOOP_END) :
+                             (da <= db ? TRACKER_SAMPLE_DRAG_TRIM_START : TRACKER_SAMPLE_DRAG_TRIM_END);
             drag_edit(w, x);
         }
     } else if (w->sampler_pointer) {
-        if (abs(x - w->start_x) > 12 || abs(y - w->start_y) > 12) w->moved = true;
-        if (w->sample_drag != TRACKER_SAMPLE_DRAG_NONE) drag_edit(w, x);
+        if (abs(x - w->start_x) > 12 || abs(y - w->start_y) > 12) {
+            w->moved = true;
+        }
+        if (w->sample_drag != TRACKER_SAMPLE_DRAG_NONE) {
+            drag_edit(w, x);
+        }
         if (!pressed) {
             const bool tapped = !w->moved && w->sample_drag == TRACKER_SAMPLE_DRAG_NONE;
             w->sampler_pointer = false;
             w->sample_drag = TRACKER_SAMPLE_DRAG_NONE;
             /* worker() releases this guard before submitting asynchronous work.
              * Bounded preview/record controls keep it through their mutation. */
-            if (tapped) tap(w, x, y);
+            if (tapped) {
+                tap(w, x, y);
+            }
             tracker_workspace_end_source_edit(w, false);
             return;
         }
@@ -332,7 +418,7 @@ static void label(tracker_graphics_t *g, int x, int y, const char *text, uint16_
 }
 
 static void button(tracker_graphics_t *g, int x, int y, int width, int height,
-                     const char *text, bool active)
+                   const char *text, bool active)
 {
     tracker_gfx_button(g, x, y, width, height, text, active ? C_CYAN : C_MUTED, active);
 }
@@ -358,7 +444,9 @@ static void library(tracker_graphics_t *g, const tracker_workspace_t *w)
     label(g, 24, 130, text, C_MUTED);
     label(g, 398, 130, "+ IMPORT", C_CYAN);
     for (unsigned row = 0; row < TRACKER_WORKSPACE_ROWS; ++row) {
-        if (!w->library_valid[row]) break;
+        if (!w->library_valid[row]) {
+            break;
+        }
         const app_sampler_sample_info_t *info = &w->library_rows[row];
         const unsigned index = w->sample_first + row;
         const int y = 140 + (int)row * 45;
@@ -375,7 +463,9 @@ static void library(tracker_graphics_t *g, const tracker_workspace_t *w)
                  !info->frames ? " / EMPTY" : info->loop_enabled ? " / LOOP" : "");
         label(g, 36, y + 25, text, C_MUTED);
     }
-    if (!w->sample_count) label(g, 24, 220, "NO SAMPLES / IMPORT WAV OR RECORD A TAKE", C_MUTED);
+    if (!w->sample_count) {
+        label(g, 24, 220, "NO SAMPLES / IMPORT WAV OR RECORD A TAKE", C_MUTED);
+    }
     button(g, 24, 324, 62, 25, "<", false);
     button(g, 394, 324, 62, 25, ">", false);
     if (w->message[0]) {
@@ -481,16 +571,23 @@ void tracker_sampler_ui_render(uint16_t *frame, const tracker_workspace_t *w)
     tracker_graphics_t g;
     tracker_gfx_init(&g, frame);
     static const char *const tabs[] = {"LIBRARY", "EDIT", "RECORD"};
-    for (int tab = 0; tab < 3; ++tab)
+    for (int tab = 0; tab < 3; ++tab) {
         button(&g, 24 + tab * 148, 92, 136, 36, tabs[tab], (int)w->sampler_tab == tab);
+    }
     if (!w->sampler) {
         label(&g, 24, 190, "SAMPLER SERVICE UNAVAILABLE", C_ACCENT);
         return;
     }
-    if (w->sampler_tab == TRACKER_SAMPLE_LIBRARY) library(&g, w);
-    else if (w->sampler_tab == TRACKER_SAMPLE_EDIT) edit(&g, w);
-    else if (w->sampler_tab == TRACKER_SAMPLE_RECORD) record(&g, w);
-    else assign(&g, w);
-    if (w->sampler_error != APP_SAMPLER_OK)
+    if (w->sampler_tab == TRACKER_SAMPLE_LIBRARY) {
+        library(&g, w);
+    } else if (w->sampler_tab == TRACKER_SAMPLE_EDIT) {
+        edit(&g, w);
+    } else if (w->sampler_tab == TRACKER_SAMPLE_RECORD) {
+        record(&g, w);
+    } else {
+        assign(&g, w);
+    }
+    if (w->sampler_error != APP_SAMPLER_OK) {
         label(&g, 24, 374, app_sampler_result_name(w->sampler_error), C_ACCENT);
+    }
 }

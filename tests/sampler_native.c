@@ -11,7 +11,9 @@ static unsigned checks;
 #define REQUIRE(condition) do { ++checks; if (!(condition)) { \
     fprintf(stderr, "sampler FAIL line %d: %s\n", __LINE__, #condition); exit(1); } } while (0)
 static bool near(float a, float b)
-{ return isfinite(a) && fabsf(a - b) < 0.00001f; }
+{
+    return isfinite(a) && fabsf(a - b) < 0.00001f;
+}
 extern void sampler_concurrency(const uint8_t *module, size_t size);
 
 static uint8_t *read_file(const char *path, size_t *size)
@@ -121,7 +123,10 @@ static void streamed_file(void)
     const unsigned frames = 1025;
     int16_t *values = malloc(frames * 2U * sizeof(int16_t));
     uint8_t *wav = malloc(44U + frames * 4U); REQUIRE(values && wav);
-    for (unsigned i = 0; i < frames; ++i) { values[i * 2U] = (int16_t)(i * 12); values[i * 2U + 1U] = (int16_t)(i * 4); }
+    for (unsigned i = 0; i < frames; ++i) {
+        values[i * 2U] = (int16_t)(i * 12);
+        values[i * 2U + 1U] = (int16_t)(i * 4);
+    }
     const size_t size = fixture_wav(wav, 16, 2, 44100, values, frames);
     FILE *file = fopen("streamed.wav", "wb"); REQUIRE(file != NULL);
     REQUIRE(fwrite(wav, 1, size, file) == size && fclose(file) == 0);
@@ -129,7 +134,9 @@ static void streamed_file(void)
     unsigned index; REQUIRE(app_sampler_import_wav_file(s, "streamed.wav", &index) == APP_SAMPLER_OK);
     int16_t *decoded = malloc(frames * sizeof(int16_t)); REQUIRE(decoded != NULL);
     REQUIRE(app_sampler_waveform(s, index, decoded, frames) == frames);
-    for (unsigned i = 0; i < frames; ++i) { REQUIRE(decoded[i] == (int16_t)(i * 8)); }
+    for (unsigned i = 0; i < frames; ++i) {
+        REQUIRE(decoded[i] == (int16_t)(i * 8));
+    }
     app_sampler_destroy(s); free(decoded); free(values); free(wav); REQUIRE(remove("streamed.wav") == 0);
     puts("sampler: streamed stereo file conversion across 256-frame chunks PASS");
 }
@@ -192,13 +199,17 @@ static void editing_and_render(void)
     REQUIRE(app_sampler_edit_set(s, &edit) == APP_SAMPLER_OK);
     REQUIRE(app_sampler_audition(s, 0) == APP_SAMPLER_OK);
     float output[64]; app_sampler_render(s, output, 32);
-    for (unsigned i = 0; i < 64; ++i) { REQUIRE(near(output[i], 0.1875f)); }
+    for (unsigned i = 0; i < 64; ++i) {
+        REQUIRE(near(output[i], 0.1875f));
+    }
     REQUIRE(app_sampler_revision(s) == revision);
     app_sampler_edit_cancel(s);
     app_sampler_sample_info_t info; REQUIRE(app_sampler_get_info(s, 0, &info));
     REQUIRE(info.trim_start == 0 && info.gain == before.gain);
     memset(output, 0x7f, sizeof(output)); app_sampler_render(s, output, 32);
-    for (unsigned i = 0; i < 64; ++i) { REQUIRE(output[i] == 0); }
+    for (unsigned i = 0; i < 64; ++i) {
+        REQUIRE(output[i] == 0);
+    }
     REQUIRE(app_sampler_edit_begin(s, 0) == APP_SAMPLER_OK);
     REQUIRE(app_sampler_edit_set(s, &edit) == APP_SAMPLER_OK && app_sampler_edit_apply(s) == APP_SAMPLER_OK);
     REQUIRE(app_sampler_revision(s) == revision + 1U);
@@ -245,7 +256,9 @@ static void assignment_and_transactions(void)
     uint8_t invalid[96] = {0};
     REQUIRE(tracker_engine_prepare(invalid, sizeof(invalid)) == NULL);
     REQUIRE(!tracker_engine_reload(engine, invalid, sizeof(invalid)) && engine == identity);
-    tracker_engine_get_status(engine, &(tracker_status_t){0});
+    tracker_engine_get_status(engine, &(tracker_status_t) {
+        0
+    });
     tracker_engine_prepared_t *prepared = tracker_engine_prepare(song, sizeof(song)); REQUIRE(prepared != NULL);
     memset(song, 0, sizeof(song)); /* Prepared owns its input, not this array. */
     tracker_engine_commit(engine, prepared); REQUIRE(engine == identity && !tracker_engine_is_playing(engine));
@@ -302,7 +315,9 @@ static void bus_and_host_record(void)
     REQUIRE(app_audio_bus_set_source_gain(bus, APP_AUDIO_SOURCE_SAMPLER, 0.5f));
     app_audio_bus_render(bus, output, 16); REQUIRE(output[0] == 6143);
     REQUIRE(app_audio_bus_begin_edit(bus, 10));
-    app_audio_bus_render(bus, output, 16); for (unsigned i = 0; i < 32; ++i) { REQUIRE(output[i] == 0); }
+    app_audio_bus_render(bus, output, 16); for (unsigned i = 0; i < 32; ++i) {
+        REQUIRE(output[i] == 0);
+    }
     app_audio_bus_end_edit(bus);
     const uint64_t revision = app_sampler_revision(s);
     REQUIRE(app_sampler_record_start(s) == APP_SAMPLER_UNSUPPORTED);

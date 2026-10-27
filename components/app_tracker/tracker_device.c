@@ -289,10 +289,16 @@ static esp_err_t workspace_rpc(const esp_iris_rpc_request_t *request,
                                size_t *response_size, void *context)
 {
     tracker_device_t *device = context;
-    if (!request || !response || !response_size || request->payload_size) return ESP_ERR_INVALID_ARG;
+    if (!request || !response || !response_size || request->payload_size) {
+        return ESP_ERR_INVALID_ARG;
+    }
     if (!atomic_load_explicit(&device->active, memory_order_acquire) ||
-            !atomic_load_explicit(&device->snapshot_ready, memory_order_acquire)) return ESP_ERR_INVALID_STATE;
-    if (xSemaphoreTake(device->snapshot_lock, pdMS_TO_TICKS(50)) != pdTRUE) return ESP_ERR_TIMEOUT;
+            !atomic_load_explicit(&device->snapshot_ready, memory_order_acquire)) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    if (xSemaphoreTake(device->snapshot_lock, pdMS_TO_TICKS(50)) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
     const app_tracker_snapshot_t *s = &device->snapshot;
     const int count = snprintf((char *)response, capacity,
                                "{\"workspace\":%d,\"home\":%d,\"opened\":%d,\"dirty\":%d,\"busy\":%d,\"generation\":%llu,\"name\":\"",
@@ -306,19 +312,26 @@ static esp_err_t workspace_rpc(const esp_iris_rpc_request_t *request,
     for (size_t i = 0; valid && i < sizeof(s->project_name) && s->project_name[i]; ++i) {
         const uint8_t value = (uint8_t)s->project_name[i];
         const size_t bytes = value < 32U ? 6U : value == '"' || value == '\\' ? 2U : 1U;
-        if (used + bytes + 3U >= capacity) { valid = false; break; }
+        if (used + bytes + 3U >= capacity) {
+            valid = false;
+            break;
+        }
         if (value < 32U) {
             response[used++] = '\\'; response[used++] = 'u';
             response[used++] = '0'; response[used++] = '0';
             response[used++] = (uint8_t)hex[value >> 4];
             response[used++] = (uint8_t)hex[value & 15U];
         } else {
-            if (bytes == 2U) response[used++] = '\\';
+            if (bytes == 2U) {
+                response[used++] = '\\';
+            }
             response[used++] = value;
         }
     }
     (void)xSemaphoreGive(device->snapshot_lock);
-    if (!valid || used + 3U > capacity) return ESP_ERR_INVALID_SIZE;
+    if (!valid || used + 3U > capacity) {
+        return ESP_ERR_INVALID_SIZE;
+    }
     response[used++] = '"'; response[used++] = '}'; response[used] = '\0';
     *response_size = used;
     return ESP_OK;
@@ -512,7 +525,7 @@ esp_err_t app_tracker_start_bus(esp_gsp_handle_t ui, tracker_engine_t *engine,
                                 app_tracker_t **out_handle)
 {
     return app_tracker_start_workstation(ui, engine, synth, bus, NULL, NULL, NULL,
-                                          NULL, NULL, out_handle);
+                                         NULL, NULL, out_handle);
 }
 
 esp_err_t app_tracker_start(esp_gsp_handle_t ui, tracker_engine_t *engine,

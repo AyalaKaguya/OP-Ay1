@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 """Strict native sample-bank, import/edit/render and concurrent reload checks."""
+
 from __future__ import annotations
 
 import argparse
@@ -29,22 +30,46 @@ def main() -> int:
         "app_synth": ("app_synth.c",),
     }.items():
         sources.extend(root / "components" / owner / name for name in names)
-    includes = [root / "components" / name / "include" for name in
-                ("app_sampler", "app_tracker_engine", "app_audio", "app_synth")]
+    includes = [
+        root / "components" / name / "include"
+        for name in ("app_sampler", "app_tracker_engine", "app_audio", "app_synth")
+    ]
     executable = output / ("sampler_native.exe" if os.name == "nt" else "sampler_native")
     if compiler.name.lower() in ("cl", "cl.exe", "clang-cl", "clang-cl.exe"):
-        command = [str(compiler), "/nologo", "/utf-8", "/std:c11", "/experimental:c11atomics",
-                   "/W4", "/WX", "/O2", "/D_CRT_SECURE_NO_WARNINGS",
-                   *["/I" + str(path) for path in includes], *args.cflag,
-                   *map(str, sources), "/Fe:" + str(executable)]
+        command = [
+            str(compiler),
+            "/nologo",
+            "/utf-8",
+            "/std:c11",
+            "/experimental:c11atomics",
+            "/W4",
+            "/WX",
+            "/O2",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            *["/I" + str(path) for path in includes],
+            *args.cflag,
+            *map(str, sources),
+            "/Fe:" + str(executable),
+        ]
     else:
-        command = [str(compiler), "-std=c11", "-Wall", "-Wextra", "-Werror", "-O2",
-                   *["-I" + str(path) for path in includes], *args.cflag,
-                   *map(str, sources), "-lm", "-pthread", "-o", str(executable)]
+        command = [
+            str(compiler),
+            "-std=c11",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-O2",
+            *["-I" + str(path) for path in includes],
+            *args.cflag,
+            *map(str, sources),
+            "-lm",
+            "-pthread",
+            "-o",
+            str(executable),
+        ]
     print(f"sampler: native compiler {compiler}", flush=True)
     subprocess.run(command, cwd=output, env=env, check=True, timeout=120)
-    subprocess.run([str(executable), str(root / "main/assets/aryx.s3m")],
-                   cwd=output, env=env, check=True, timeout=90)
+    subprocess.run([str(executable), str(root / "main/assets/aryx.s3m")], cwd=output, env=env, check=True, timeout=90)
     return 0
 
 

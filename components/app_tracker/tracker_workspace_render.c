@@ -8,8 +8,9 @@
 static const char *screen_name(const tracker_workspace_t *w, const tracker_model_t *m)
 {
     static const char *const pages[] = {"WAVES", "PATTERN", "PLAYBACK", "MIXER", "SECTION PADS", "SYNTH"};
-    if (w->screen == TRACKER_WORKSPACE_LEGACY)
+    if (w->screen == TRACKER_WORKSPACE_LEGACY) {
         return m->view.page >= 0 && m->view.page < 6 ? pages[m->view.page] : "WORKSTATION";
+    }
     switch (w->screen) {
     case TRACKER_WORKSPACE_HOME: return "OP-AY1";
     case TRACKER_WORKSPACE_PROJECTS: return "OPEN PROJECT";
@@ -34,7 +35,7 @@ static void label(tracker_graphics_t *g, int x, int y, const char *text)
 }
 
 static void button(tracker_graphics_t *g, int x, int y, int width, int height,
-                     const char *text, bool active)
+                   const char *text, bool active)
 {
     tracker_gfx_button(g, x, y, width, height, text, active ? C_CYAN : C_MUTED, active);
 }
@@ -47,13 +48,15 @@ static void home_icon(tracker_graphics_t *g, int x, int y)
 }
 
 void tracker_workspace_render_header(uint16_t *frame, const tracker_workspace_t *w,
-                                      const tracker_model_t *model)
+                                     const tracker_model_t *model)
 {
     tracker_graphics_t g;
     tracker_gfx_init(&g, frame);
     tracker_gfx_clip(&g, 0, 0, 480, 480);
     tracker_gfx_rect(&g, 0, 0, 480, 40, C_PANEL);
-    if (w->screen != TRACKER_WORKSPACE_HOME) home_icon(&g, 25, 8);
+    if (w->screen != TRACKER_WORKSPACE_HOME) {
+        home_icon(&g, 25, 8);
+    }
     tracker_gfx_text_center(&g, w->screen == TRACKER_WORKSPACE_HOME ? 86 : 240, 14, 2,
                             C_TEXT, screen_name(w, model));
     tracker_gfx_text(&g, 444, 16, 1, C_MUTED, "...");
@@ -64,14 +67,16 @@ void tracker_workspace_render_header(uint16_t *frame, const tracker_workspace_t 
     tracker_gfx_line(&g, 31, 48, 35, 51, C_MUTED);
     char name[27];
     tracker_workspace_pixel_name(name, sizeof(name), w->project_view.opened ?
-                                  w->project_view.name : "NO PROJECT", 23);
+                                 w->project_view.name : "NO PROJECT", 23);
     const size_t length = strlen(name);
-    if (w->project_view.dirty && length + 2U < sizeof(name)) memcpy(name + length, " *", 3);
+    if (w->project_view.dirty && length + 2U < sizeof(name)) {
+        memcpy(name + length, " *", 3);
+    }
     tracker_gfx_text(&g, 54, 51, 2, C_TEXT, name);
     tracker_gfx_text_right(&g, 456, 55, 1,
-                            tracker_workspace_busy(w) ? C_FX : w->project_view.dirty ? C_CYAN : C_MUTED,
-                            tracker_workspace_busy(w) ? "BUSY" : !w->project_view.opened ? "--" :
-                            w->project_view.dirty ? "SAVE" : "SAVED");
+                           tracker_workspace_busy(w) ? C_FX : w->project_view.dirty ? C_CYAN : C_MUTED,
+                           tracker_workspace_busy(w) ? "BUSY" : !w->project_view.opened ? "--" :
+                           w->project_view.dirty ? "SAVE" : "SAVED");
     tracker_gfx_rect(&g, 16, 77, 448, 1, C_BORDER);
     tracker_gfx_rect(&g, 0, 432, 480, 48, C_BG);
     tracker_gfx_rect(&g, 16, 432, 448, 1, C_BORDER);
@@ -91,8 +96,11 @@ void tracker_workspace_render_header(uint16_t *frame, const tracker_workspace_t 
             for (int page = 0; page < TRACKER_PAGE_COUNT; ++page)
                 tracker_gfx_rect(&g, 196 + page * 16, 456, 8, 8,
                                  model->view.page == page ? C_TEXT : C_DISABLED);
-        } else if (w->screen == TRACKER_WORKSPACE_SETTINGS) label(&g, 352, 455, "STORAGE >");
-        else label(&g, 246, 455, w->screen == TRACKER_WORKSPACE_SAMPLER ? "PCM ASSETS / GLOBAL PROJECT" : "GLOBAL PROJECT / NAND");
+        } else if (w->screen == TRACKER_WORKSPACE_SETTINGS) {
+            label(&g, 352, 455, "STORAGE >");
+        } else {
+            label(&g, 246, 455, w->screen == TRACKER_WORKSPACE_SAMPLER ? "PCM ASSETS / GLOBAL PROJECT" : "GLOBAL PROJECT / NAND");
+        }
     }
 }
 
@@ -111,17 +119,25 @@ static void tile_icon(tracker_graphics_t *g, int x, int y, int app)
             tracker_gfx_line(g, x + 10 + i * 8, y + 35, x + 10 + i * 8, y + 42, C_MUTED);
         }
     } else if (app == 2) {
-        for (int i = 0; i < 36; ++i) tracker_gfx_line(g, x + i, y + i / 2, x + i, y + 36 - i / 2, color);
+        for (int i = 0; i < 36; ++i) {
+            tracker_gfx_line(g, x + i, y + i / 2, x + i, y + 36 - i / 2, color);
+        }
     } else if (app == 3) {
         for (int i = 0; i < 3; ++i) {
             tracker_gfx_line(g, x + i * 15, y, x + i * 15, y + 42, color);
             tracker_gfx_outline(g, x + i * 15 - 4, y + 10 + i * 8, 9, 5, color);
         }
     } else if (app == 4) {
-        for (int i = 0; i < 9; ++i) tracker_gfx_outline(g, x + i % 3 * 15, y + i / 3 * 15, 10, 10, color);
+        for (int i = 0; i < 9; ++i) {
+            tracker_gfx_outline(g, x + i % 3 * 15, y + i / 3 * 15, 10, 10, color);
+        }
     } else if (app == 5) {
-        for (int i = 0; i < 7; ++i) tracker_gfx_outline(g, x + i * 6, y + 3, 6, 38, color);
-        for (int i = 0; i < 5; ++i) tracker_gfx_rect(g, x + 5 + i * 7, y + 3, 4, 24, C_BG);
+        for (int i = 0; i < 7; ++i) {
+            tracker_gfx_outline(g, x + i * 6, y + 3, 6, 38, color);
+        }
+        for (int i = 0; i < 5; ++i) {
+            tracker_gfx_rect(g, x + 5 + i * 7, y + 3, 4, 24, C_BG);
+        }
     } else if (app == 7) {
         tracker_gfx_text(g, x, y, 1, color, "C4 01 ..");
         tracker_gfx_text(g, x, y + 11, 1, color, ".. 02 C4");
@@ -144,7 +160,9 @@ static void home(tracker_graphics_t *g, const tracker_workspace_t *w)
         const int y = cell / 2 ? 262 : 96;
         tracker_gfx_rect(g, x, y, 208, 152, app < 9 ? C_PANEL : C_BG);
         tracker_gfx_outline(g, x, y, 208, 152, app < 9 ? C_BORDER : C_LINE);
-        if (app >= 9) continue;
+        if (app >= 9) {
+            continue;
+        }
         tile_icon(g, x + 22, y + 30, app);
         tracker_gfx_text(g, x + 16, y + 105, 2, C_TEXT, titles[app]);
         label(g, x + 16, y + 132, details[app]);
@@ -160,7 +178,9 @@ static void projects(tracker_graphics_t *g, const tracker_workspace_t *w)
     for (int row = 0; row < TRACKER_WORKSPACE_ROWS; ++row) {
         const unsigned index = (unsigned)(w->project_first + row);
         const int y = 140 + row * 50;
-        if (index >= tracker_workspace_project_count(w)) break;
+        if (index >= tracker_workspace_project_count(w)) {
+            break;
+        }
         const app_project_entry_t *entry = tracker_workspace_project_entry(w, index);
         if (!entry) {
             char unavailable[34];
@@ -183,8 +203,8 @@ static void projects(tracker_graphics_t *g, const tracker_workspace_t *w)
         tracker_gfx_text_right(g, 442, y + 31, 1, C_CYAN, current ? "CURRENT" : ">");
     }
     if (!tracker_workspace_project_count(w)) label(g, 40, 194,
-        w->show_recent ? "NO RECENT PROJECTS IN THIS SESSION" :
-        w->project_view.storage_ready ? "NO SAVED PROJECTS / CREATE ONE" : "NAND UNAVAILABLE / NO FILES LOADED");
+                                                       w->show_recent ? "NO RECENT PROJECTS IN THIS SESSION" :
+                                                       w->project_view.storage_ready ? "NO SAVED PROJECTS / CREATE ONE" : "NAND UNAVAILABLE / NO FILES LOADED");
     button(g, 24, 342, 76, 28, "<", false);
     button(g, 380, 342, 76, 28, ">", false);
     char page[48];
@@ -192,7 +212,9 @@ static void projects(tracker_graphics_t *g, const tracker_workspace_t *w)
              w->show_recent ? "RECENT / THIS LAUNCH" : "PROJECTS",
              !w->show_recent && w->project_view.entries_truncated ? " / LIMITED" : "");
     label(g, 126, 353, page);
-    if (w->message[0]) label(g, 24, 366, w->message);
+    if (w->message[0]) {
+        label(g, 24, 366, w->message);
+    }
     button(g, 24, 378, 208, 44, "OPEN", true);
     button(g, 248, 378, 208, 44, "SAVE AS", false);
 }
@@ -223,13 +245,18 @@ static void import_files(tracker_graphics_t *g, const tracker_workspace_t *w)
 {
     button(g, 24, 92, 208, 36, "S3M", !w->import_wav);
     button(g, 248, 92, 208, 36, "WAV SAMPLES", w->import_wav);
-    if (!w->import_wav) button(g, 24, 138, 432, 42, "IMPORT BUILT-IN ARYX", true);
-    else label(g, 24, 155, "INBOX / RIFF PCM MONO OR STEREO");
+    if (!w->import_wav) {
+        button(g, 24, 138, 432, 42, "IMPORT BUILT-IN ARYX", true);
+    } else {
+        label(g, 24, 155, "INBOX / RIFF PCM MONO OR STEREO");
+    }
     int filtered = 0;
     int visible = 0;
     for (uint32_t i = 0; i < w->project_view.inbox_count && i < APP_PROJECT_LIST_MAX; ++i) {
         const app_project_inbox_entry_t *entry = &w->project_view.inbox[i];
-        if ((entry->kind == APP_PROJECT_INBOX_SAMPLE) != w->import_wav) continue;
+        if ((entry->kind == APP_PROJECT_INBOX_SAMPLE) != w->import_wav) {
+            continue;
+        }
         if (filtered >= w->inbox_first && visible < 3) {
             char name[34];
             tracker_workspace_pixel_name(name, sizeof(name), entry->filename, 31);
@@ -238,7 +265,9 @@ static void import_files(tracker_graphics_t *g, const tracker_workspace_t *w)
         }
         ++filtered;
     }
-    if (!visible) label(g, 24, 224, "NO MATCHING FILES IN THE PROJECT INBOX");
+    if (!visible) {
+        label(g, 24, 224, "NO MATCHING FILES IN THE PROJECT INBOX");
+    }
     button(g, 24, 342, 76, 28, "<", false);
     button(g, 380, 342, 76, 28, ">", false);
     label(g, 112, 345, "/NAND/APPS/OP-AY1/INBOX");
@@ -247,21 +276,25 @@ static void import_files(tracker_graphics_t *g, const tracker_workspace_t *w)
 }
 
 void tracker_workspace_render(uint16_t *frame, const tracker_workspace_t *w,
-                               const tracker_model_t *model)
+                              const tracker_model_t *model)
 {
     tracker_graphics_t g;
     tracker_gfx_init(&g, frame);
     tracker_gfx_rect(&g, 0, 0, 480, 432, C_BG);
-    if (w->screen == TRACKER_WORKSPACE_HOME) home(&g, w);
-    else if (w->screen == TRACKER_WORKSPACE_PROJECTS) projects(&g, w);
-    else if (w->screen == TRACKER_WORKSPACE_NEW) {
+    if (w->screen == TRACKER_WORKSPACE_HOME) {
+        home(&g, w);
+    } else if (w->screen == TRACKER_WORKSPACE_PROJECTS) {
+        projects(&g, w);
+    } else if (w->screen == TRACKER_WORKSPACE_NEW) {
         button(&g, 24, 132, 432, 96, "BLANK PROJECT", true);
         label(&g, 42, 206, "NEW EMPTY SONG / SYNTH / SAMPLE BANK");
         button(&g, 24, 248, 432, 96, "ARYX EXAMPLE", false);
         label(&g, 42, 321, "KEEP RAW S3M / EFFECTS / ORIGINAL SLOTS");
-    } else if (w->screen == TRACKER_WORKSPACE_IMPORT) import_files(&g, w);
-    else if (w->screen == TRACKER_WORKSPACE_NAME) keyboard(&g, w);
-    else if (w->screen == TRACKER_WORKSPACE_SWITCH) {
+    } else if (w->screen == TRACKER_WORKSPACE_IMPORT) {
+        import_files(&g, w);
+    } else if (w->screen == TRACKER_WORKSPACE_NAME) {
+        keyboard(&g, w);
+    } else if (w->screen == TRACKER_WORKSPACE_SWITCH) {
         tracker_gfx_text(&g, 24, 132, 3, C_ACCENT, "UNSAVED CHANGES");
         label(&g, 24, 174, "THE CURRENT PROJECT HAS MODIFIED CONTENT.");
         char name[32];
@@ -291,15 +324,20 @@ void tracker_workspace_render(uint16_t *frame, const tracker_workspace_t *w,
                      (unsigned long long)(w->project_view.storage_used_bytes / 1024U),
                      (unsigned long long)(w->project_view.storage_total_bytes / 1024U));
             label(&g, 24, 188, bytes);
-        } else label(&g, 24, 188, "CAPACITY UNKNOWN");
+        } else {
+            label(&g, 24, 188, "CAPACITY UNKNOWN");
+        }
         label(&g, 24, 238, "DEVICE PREFERENCES ARE SEPARATE FROM PROJECTS");
         label(&g, 24, 270, "I/O ERRORS KEEP THE PREVIOUS VALID VERSION");
         button(&g, 24, 374, 432, 44, "BACK TO SETTINGS", false);
-    } else if (w->screen == TRACKER_WORKSPACE_SAMPLER) tracker_sampler_ui_render(frame, w);
+    } else if (w->screen == TRACKER_WORKSPACE_SAMPLER) {
+        tracker_sampler_ui_render(frame, w);
+    }
     if (w->message[0] && w->screen != TRACKER_WORKSPACE_HOME &&
             w->screen != TRACKER_WORKSPACE_SAMPLER && w->screen != TRACKER_WORKSPACE_PROJECTS &&
-            w->screen != TRACKER_WORKSPACE_IMPORT && w->screen != TRACKER_WORKSPACE_NAME)
+            w->screen != TRACKER_WORKSPACE_IMPORT && w->screen != TRACKER_WORKSPACE_NAME) {
         label(&g, 24, 405, w->message);
+    }
     if (tracker_workspace_busy(w)) {
         tracker_gfx_rect(&g, 24, 167, 432, 104, C_PANEL);
         tracker_gfx_outline(&g, 24, 167, 432, 104, C_CYAN);

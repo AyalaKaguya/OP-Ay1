@@ -86,8 +86,12 @@ app_audio_bus_t *app_audio_bus_create(tracker_engine_t *tracker,
     bus->monitor_lock = xSemaphoreCreateMutex();
     bus->render_lock = xSemaphoreCreateMutex();
     if (bus->monitor_lock == NULL || bus->render_lock == NULL) {
-        if (bus->monitor_lock) { vSemaphoreDelete(bus->monitor_lock); }
-        if (bus->render_lock) { vSemaphoreDelete(bus->render_lock); }
+        if (bus->monitor_lock) {
+            vSemaphoreDelete(bus->monitor_lock);
+        }
+        if (bus->render_lock) {
+            vSemaphoreDelete(bus->render_lock);
+        }
         free(bus);
         return NULL;
     }
@@ -100,19 +104,23 @@ app_audio_bus_t *app_audio_bus_create(tracker_engine_t *tracker,
 
 bool app_audio_bus_begin_edit(app_audio_bus_t *bus, uint32_t timeout_ms)
 {
-    if (!bus) { return false; }
+    if (!bus) {
+        return false;
+    }
 #if defined(ESP_PLATFORM)
     return xSemaphoreTake(bus->render_lock, pdMS_TO_TICKS(timeout_ms)) == pdTRUE;
 #else
     (void)timeout_ms;
     bool expected = false;
     return atomic_compare_exchange_strong_explicit(&bus->render_lock, &expected, true,
-        memory_order_acquire, memory_order_relaxed);
+                                                   memory_order_acquire, memory_order_relaxed);
 #endif
 }
 void app_audio_bus_end_edit(app_audio_bus_t *bus)
 {
-    if (!bus) { return; }
+    if (!bus) {
+        return;
+    }
 #if defined(ESP_PLATFORM)
     (void)xSemaphoreGive(bus->render_lock);
 #else
@@ -121,9 +129,13 @@ void app_audio_bus_end_edit(app_audio_bus_t *bus)
 }
 bool app_audio_bus_set_sampler(app_audio_bus_t *bus, app_sampler_t *sampler)
 {
-    if (!bus || !app_audio_bus_begin_edit(bus, 0)) { return false; }
+    if (!bus || !app_audio_bus_begin_edit(bus, 0)) {
+        return false;
+    }
     const bool allowed = !atomic_load_explicit(&bus->render_started, memory_order_relaxed);
-    if (allowed) { bus->sampler = sampler; }
+    if (allowed) {
+        bus->sampler = sampler;
+    }
     app_audio_bus_end_edit(bus); return allowed;
 }
 

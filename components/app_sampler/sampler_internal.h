@@ -66,11 +66,20 @@ app_sampler_result_t sampler_append(app_sampler_t *sampler, sampler_sample_t *sa
                                     unsigned *index);
 void sampler_audition_clear_locked(app_sampler_t *sampler);
 app_sampler_result_t sampler_apply_live(const sampler_sample_t *sample,
-                                       tracker_engine_t *engine);
+                                        tracker_engine_t *engine);
 
 static inline uint16_t sampler_u16(const uint8_t *p)
-{ return (uint16_t)(p[0] | (uint16_t)p[1] << 8); }
+{
+    return (uint16_t)(p[0] | (uint16_t)p[1] << 8);
+}
 static inline uint32_t sampler_u32(const uint8_t *p)
-{ return (uint32_t)p[0] | (uint32_t)p[1] << 8 | (uint32_t)p[2] << 16 | (uint32_t)p[3] << 24; }
+{
+    return (uint32_t)p[0] | (uint32_t)p[1] << 8 | (uint32_t)p[2] << 16 | (uint32_t)p[3] << 24;
+}
 static inline void sampler_put32(uint8_t *p, uint32_t v)
-{ p[0] = (uint8_t)v; p[1] = (uint8_t)(v >> 8); p[2] = (uint8_t)(v >> 16); p[3] = (uint8_t)(v >> 24); }
+{
+    p[0] = (uint8_t)v;
+    p[1] = (uint8_t)(v >> 8);
+    p[2] = (uint8_t)(v >> 16);
+    p[3] = (uint8_t)(v >> 24);
+}

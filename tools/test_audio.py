@@ -17,7 +17,10 @@ def main() -> int:
     output.mkdir(parents=True, exist_ok=True)
     env = native_environment()
     compiler = compiler_path(None, env)
-    includes = [root / "components" / name / "include" for name in ("app_audio", "app_synth", "app_tracker_engine", "app_sampler")]
+    includes = [
+        root / "components" / name / "include"
+        for name in ("app_audio", "app_synth", "app_tracker_engine", "app_sampler")
+    ]
     bus_sources = [
         root / "tests/audio_bus_test.c",
         root / "components/app_audio/app_audio_bus.c",
@@ -26,8 +29,10 @@ def main() -> int:
             root / "components/app_tracker_engine" / name
             for name in ("tracker_engine.c", "tracker_module.c", "tracker_mixer.c")
         ],
-        *[root / "components/app_sampler" / name for name in
-          ("app_sampler.c", "sampler_bank.c", "sampler_formats.c", "sampler_record.c")],
+        *[
+            root / "components/app_sampler" / name
+            for name in ("app_sampler.c", "sampler_bank.c", "sampler_formats.c", "sampler_record.c")
+        ],
     ]
     init_sources = [root / "tests/audio_init_test.c", root / "components/app_audio/app_audio.c"]
     for name, sources in [("bus", bus_sources), ("init", init_sources)]:

@@ -5,9 +5,17 @@
 #include <string.h>
 
 static void fixture_u16(uint8_t *p, uint16_t value)
-{ p[0] = (uint8_t)value; p[1] = (uint8_t)(value >> 8); }
+{
+    p[0] = (uint8_t)value;
+    p[1] = (uint8_t)(value >> 8);
+}
 static void fixture_u32(uint8_t *p, uint32_t value)
-{ p[0] = (uint8_t)value; p[1] = (uint8_t)(value >> 8); p[2] = (uint8_t)(value >> 16); p[3] = (uint8_t)(value >> 24); }
+{
+    p[0] = (uint8_t)value;
+    p[1] = (uint8_t)(value >> 8);
+    p[2] = (uint8_t)(value >> 16);
+    p[3] = (uint8_t)(value >> 24);
+}
 
 /* One channel, two independent signed PCM8 loops, one 64-row pattern.
  * The first event is C4, instrument1, explicit volume32 and D00. */
@@ -35,7 +43,7 @@ static void fixture_song(uint8_t bytes[1024])
 }
 
 static size_t fixture_wav(uint8_t *out, unsigned bits, unsigned channels,
-                           uint32_t rate, const int16_t *interleaved, unsigned frames)
+                          uint32_t rate, const int16_t *interleaved, unsigned frames)
 {
     const unsigned width = bits / 8U, align = channels * width;
     const unsigned data_bytes = frames * align, padding = data_bytes & 1U;
@@ -47,8 +55,11 @@ static size_t fixture_wav(uint8_t *out, unsigned bits, unsigned channels,
     fixture_u16(out + 32, (uint16_t)align); fixture_u16(out + 34, (uint16_t)bits);
     memcpy(out + 36, "data", 4); fixture_u32(out + 40, data_bytes);
     for (unsigned i = 0; i < frames * channels; ++i) {
-        if (bits == 8U) { out[44U + i] = (uint8_t)(interleaved[i] / 256 + 128); }
-        else { fixture_u16(out + 44U + i * 2U, (uint16_t)interleaved[i]); }
+        if (bits == 8U) {
+            out[44U + i] = (uint8_t)(interleaved[i] / 256 + 128);
+        } else {
+            fixture_u16(out + 44U + i * 2U, (uint16_t)interleaved[i]);
+        }
     }
     return 44U + data_bytes + padding;
 }

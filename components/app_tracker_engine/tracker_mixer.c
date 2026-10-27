@@ -43,7 +43,7 @@ static int sample_value(const tracker_module_t *module,
             const uint16_t value = (uint16_t)(raw[0] | (uint16_t)raw[1] << 8);
             mono += module->unsigned_samples ? (int32_t)value - 32768 : (int16_t)value;
         } else {
-            mono += (module->unsigned_samples ? (int)*raw - 128 : (int)(int8_t)*raw) * 256;
+            mono += (module->unsigned_samples ? (int) * raw - 128 : (int)(int8_t) * raw) * 256;
         }
     }
     return mono / (int32_t)channels;

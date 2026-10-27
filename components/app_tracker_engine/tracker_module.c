@@ -39,7 +39,9 @@ static bool decode_pattern(const tracker_module_t *module, int pattern,
     memset(rows, TRACKER_EMPTY,
            (size_t)TRACKER_PATTERN_ROWS * TRACKER_MAX_CHANNELS *
            sizeof(*rows));
-    if (offset == 0) { return true; } /* A null paragraph denotes an empty pattern. */
+    if (offset == 0) {
+        return true;    /* A null paragraph denotes an empty pattern. */
+    }
     if (!range_contains(size, offset, S3M_PATTERN_DATA_MIN)) {
         return false;
     }
@@ -263,7 +265,9 @@ bool tracker_module_parse(tracker_module_t *module, const uint8_t *s3m,
     for (int pattern = 0; pattern < pattern_count; ++pattern) {
         const size_t offset =
             (size_t)tracker_read_u16(s3m, pattern_offset + pattern * 2) * 16;
-        if (!decode_pattern(module, pattern, s3m, size, offset)) { return false; }
+        if (!decode_pattern(module, pattern, s3m, size, offset)) {
+            return false;
+        }
     }
     return true;
 }

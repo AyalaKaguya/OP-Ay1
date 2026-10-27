@@ -110,7 +110,7 @@ void app_main(void)
     const esp_iris_file_volume_config_t inbox = {
         .id = "opay_inbox", .base_path = "/nand/apps/op-ay1/inbox",
         .capabilities = ESP_IRIS_FILE_VOLUME_READ | ESP_IRIS_FILE_VOLUME_LIST |
-                        ESP_IRIS_FILE_VOLUME_WRITE | ESP_IRIS_FILE_VOLUME_ATOMIC_REPLACE,
+        ESP_IRIS_FILE_VOLUME_WRITE | ESP_IRIS_FILE_VOLUME_ATOMIC_REPLACE,
     };
     ESP_ERROR_CHECK_WITHOUT_ABORT(esp_iris_file_volume_register_deferred(&inbox, inbox_status, NULL));
     /* Recovery must stay reachable even when the UI bundle cannot be loaded. */

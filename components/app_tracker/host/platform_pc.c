@@ -102,9 +102,14 @@ static void write_json_name(FILE *file, const char *value)
 {
     fputc('"', file);
     for (const unsigned char *p = (const unsigned char *)value; *p; ++p) {
-        if (*p == '"' || *p == '\\') fputc('\\', file);
-        if (*p < 32) fprintf(file, "\\u%04x", (unsigned)*p);
-        else fputc(*p, file);
+        if (*p == '"' || *p == '\\') {
+            fputc('\\', file);
+        }
+        if (*p < 32) {
+            fprintf(file, "\\u%04x", (unsigned)*p);
+        } else {
+            fputc(*p, file);
+        }
     }
     fputc('"', file);
 }
@@ -202,8 +207,12 @@ esp_gsp_err_t gsp_bridge_app_init(esp_gsp_handle_t ui)
     if (!backend.synth || !backend.sampler || !backend.bus) {
         return ESP_GSP_ERR_NO_MEM;
     }
-    if (!app_sampler_bind_engine(backend.sampler, backend.tracker)) return ESP_GSP_FAIL;
-    if (!app_audio_bus_set_sampler(backend.bus, backend.sampler)) return ESP_GSP_FAIL;
+    if (!app_sampler_bind_engine(backend.sampler, backend.tracker)) {
+        return ESP_GSP_FAIL;
+    }
+    if (!app_audio_bus_set_sampler(backend.bus, backend.sampler)) {
+        return ESP_GSP_FAIL;
+    }
     backend.audio = host_audio_create(backend.bus);
     if (!backend.audio) {
         return ESP_GSP_ERR_NO_MEM;
@@ -215,7 +224,9 @@ esp_gsp_err_t gsp_bridge_app_init(esp_gsp_handle_t ui)
     app_settings_snapshot_defaults(&backend.settings);
     app_settings_idle_init(&backend.idle, gsp_sim_bridge_time_ms());
     const char *project_root = getenv("OP_AY1_PROJECT_ROOT");
-    if (!project_root || !*project_root) project_root = OP_AY1_PROJECT_ROOT_DEFAULT;
+    if (!project_root || !*project_root) {
+        project_root = OP_AY1_PROJECT_ROOT_DEFAULT;
+    }
     const app_project_config_t project_config = {
         .tracker = backend.tracker, .synth = backend.synth,
         .bus = backend.bus, .sampler = backend.sampler,
@@ -279,14 +290,18 @@ void gsp_bridge_app_deinit(esp_gsp_handle_t ui)
     if (app_project_shutdown(&backend.project, 2000) != APP_PROJECT_OK ||
             !app_usb_midi_shutdown(&backend.usb, 1000)) {
         /* An IO/capture owner may still borrow these sources after timeout. */
-        if (backend.state_log) fclose(backend.state_log);
+        if (backend.state_log) {
+            fclose(backend.state_log);
+        }
         return;
     }
     app_note_router_destroy(backend.router);
     app_audio_bus_destroy(backend.bus);
     if (!app_sampler_shutdown(&backend.sampler, 2000)) {
         /* Capture owns its resources until it confirms exit. */
-        if (backend.state_log) fclose(backend.state_log);
+        if (backend.state_log) {
+            fclose(backend.state_log);
+        }
         return;
     }
     app_synth_destroy(backend.synth);

@@ -109,8 +109,9 @@ static void render_frame(app_tracker_t *state)
     } else {
         tracker_render_controls(frame, &m->view);
     }
-    if (state->workspace.screen == TRACKER_WORKSPACE_LEGACY)
+    if (state->workspace.screen == TRACKER_WORKSPACE_LEGACY) {
         tracker_workspace_fit_legacy(frame);
+    }
     tracker_workspace_render_header(frame, &state->workspace, m);
     const uint16_t page_progress = tracker_transition_sample(&state->page_motion, now);
     if (state->page_motion.active) {
@@ -215,7 +216,7 @@ static void finish_source_edit(app_tracker_t *state, uint32_t before)
     const bool changed = state->model.edit_revision != before;
     if (changed && w->project) {
         (void)app_project_set_controls(w->project, state->model.view.volume,
-                                        w->project_view.pad_patterns);
+                                       w->project_view.pad_patterns);
     }
     tracker_workspace_end_source_edit(w, changed);
 }
@@ -226,7 +227,9 @@ static void tick_sources(app_tracker_t *state)
         (void)atomic_exchange_explicit(&state->transport_requests, 0, memory_order_acquire);
         return;
     }
-    if (!tracker_workspace_begin_source_edit(&state->workspace)) return;
+    if (!tracker_workspace_begin_source_edit(&state->workspace)) {
+        return;
+    }
     if (state->transport_generation != state->workspace.session_generation) {
         /* A button request made for the old/busy session cannot start the new
          * project after a successful replacement. */
@@ -236,8 +239,9 @@ static void tick_sources(app_tracker_t *state)
     const uint32_t before = state->model.edit_revision;
     const unsigned requests = atomic_exchange_explicit(&state->transport_requests,
                                                        0, memory_order_acquire);
-    if (requests && (!state->workspace.project || state->workspace.project_view.opened))
+    if (requests && (!state->workspace.project || state->workspace.project_view.opened)) {
         tracker_model_transport(&state->model, (requests & 2U) != 0, false);
+    }
     tracker_model_tick(&state->model, now_ms(state));
     apply_volume(state);
     finish_source_edit(state, before);
@@ -290,14 +294,14 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
             tracker_workspace_cancel_input(&state->workspace);
         } else if (top_tap && !state->settings.open) {
             (void)tracker_workspace_pointer(&state->workspace, &state->model,
-                                             &state->settings, x, y, true);
+                                            &state->settings, x, y, true);
             (void)tracker_workspace_pointer(&state->workspace, &state->model,
-                                             &state->settings, x, y, false);
+                                            &state->settings, x, y, false);
         }
         state->model.dirty = true;
     } else {
         const bool consumed = tracker_workspace_pointer(&state->workspace, &state->model,
-                                                          &state->settings, x, y, pressed);
+                                                        &state->settings, x, y, pressed);
         if (!consumed && tracker_workspace_begin_source_edit(&state->workspace)) {
             const uint32_t before = state->model.edit_revision;
             tracker_model_pointer(&state->model, x, tracker_workspace_legacy_y(y), pressed, now_ms(state));
@@ -355,8 +359,8 @@ static void tick(esp_gsp_handle_t ui, void *context)
     tick_sources(state);
     /* Waveforms retain 20Hz; controls refresh at 10Hz and input is immediate. */
     if (state->model.dirty || state->workspace.dirty || (!state->settings.display.screen_off &&
-                               (state->page_motion.active || state->drawer_motion.active || state->model.view.page == TRACKER_PAGE_WAVES ||
-                                state->ticks % 2 == 0))) {
+                                                         (state->page_motion.active || state->drawer_motion.active || state->model.view.page == TRACKER_PAGE_WAVES ||
+                                                          state->ticks % 2 == 0))) {
         repaint(state);
     }
 }

@@ -111,22 +111,22 @@ typedef struct {
 } tracker_workspace_t;
 
 void tracker_workspace_init(tracker_workspace_t *workspace,
-                             app_project_t *project, app_sampler_t *sampler);
+                            app_project_t *project, app_sampler_t *sampler);
 void tracker_workspace_poll(tracker_workspace_t *workspace, tracker_model_t *model);
 void tracker_workspace_cancel_input(tracker_workspace_t *workspace);
 bool tracker_workspace_pointer(tracker_workspace_t *workspace, tracker_model_t *model,
-                                 tracker_settings_t *settings, int x, int y,
-                                 bool pressed);
+                               tracker_settings_t *settings, int x, int y,
+                               bool pressed);
 void tracker_workspace_render(uint16_t *frame, const tracker_workspace_t *workspace,
-                               const tracker_model_t *model);
+                              const tracker_model_t *model);
 void tracker_workspace_render_header(uint16_t *frame,
-                                      const tracker_workspace_t *workspace,
-                                      const tracker_model_t *model);
+                                     const tracker_workspace_t *workspace,
+                                     const tracker_model_t *model);
 /* Original tracker page band 40..431 is mapped below the project strip. */
 void tracker_workspace_fit_legacy(uint16_t *frame);
 int tracker_workspace_legacy_y(int y);
 int tracker_workspace_route(const tracker_workspace_t *workspace,
-                             const tracker_model_t *model);
+                            const tracker_model_t *model);
 bool tracker_workspace_busy(const tracker_workspace_t *workspace);
 unsigned tracker_workspace_project_count(const tracker_workspace_t *workspace);
 const app_project_entry_t *tracker_workspace_project_entry(const tracker_workspace_t *workspace,
@@ -137,10 +137,10 @@ void tracker_workspace_end_source_edit(tracker_workspace_t *workspace, bool chan
 void tracker_sampler_ui_poll(tracker_workspace_t *workspace);
 void tracker_sampler_ui_cancel(tracker_workspace_t *workspace);
 void tracker_sampler_ui_pointer(tracker_workspace_t *workspace, tracker_model_t *model,
-                                 int x, int y, bool pressed);
+                                int x, int y, bool pressed);
 void tracker_sampler_ui_render(uint16_t *frame, const tracker_workspace_t *workspace);
 void tracker_workspace_request(tracker_workspace_t *workspace,
-                                app_project_action_t action);
+                               app_project_action_t action);
 void tracker_workspace_message(tracker_workspace_t *workspace, const char *message);
 void tracker_workspace_pixel_name(char *out, size_t capacity, const char *input,
-                                   unsigned maximum_characters);
+                                  unsigned maximum_characters);

@@ -21,7 +21,10 @@ static void capture_worker(void *context)
     (void)ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
     esp_codec_dev_handle_t mic = bsp_audio_codec_microphone_init();
     bool opened = false;
-    if (!mic) { result = APP_SAMPLER_IO; goto finished; }
+    if (!mic) {
+        result = APP_SAMPLER_IO;
+        goto finished;
+    }
     esp_codec_dev_sample_info_t format = {
         .sample_rate = APP_SAMPLER_CAPTURE_RATE, .channel = 2,
         .bits_per_sample = 16, .channel_mask = 0,
@@ -36,7 +39,9 @@ static void capture_worker(void *context)
         const bool stop = s->capture_stop || s->closing || s->record.frames >= APP_SAMPLER_MAX_FRAMES;
         const float gain = s->record.gain_db;
         sampler_unlock(s);
-        if (stop) { break; }
+        if (stop) {
+            break;
+        }
         if (gain != applied_gain) {
             if (esp_codec_dev_set_in_gain(mic, gain) != ESP_CODEC_DEV_OK) {
                 result = APP_SAMPLER_IO; break;
@@ -54,7 +59,9 @@ static void capture_worker(void *context)
             const int32_t mono = ((int32_t)s->capture_io[frame * 2U] + s->capture_io[frame * 2U + 1U]) / 2;
             s->take->data[s->record.frames + frame] = (int16_t)mono;
             const float level = fabsf((float)mono / 32768.0f);
-            if (level > peak) { peak = level; }
+            if (level > peak) {
+                peak = level;
+            }
             if (s->record.monitor) {
                 if (s->monitor_count == SAMPLER_MONITOR_FRAMES) {
                     s->monitor_tail = (s->monitor_tail + 1U) % SAMPLER_MONITOR_FRAMES;
@@ -71,21 +78,28 @@ static void capture_worker(void *context)
 finished:
     /* BSP retains codec/I2S handles. The owned codec API releases only its input
      * reference; the shared ES8311 DAC/I2S TX stay enabled for app_audio. */
-    if (opened && esp_codec_dev_close(mic) != ESP_CODEC_DEV_OK) { result = APP_SAMPLER_IO; }
+    if (opened && esp_codec_dev_close(mic) != ESP_CODEC_DEV_OK) {
+        result = APP_SAMPLER_IO;
+    }
     sampler_lock(s);
     const uint32_t frames = s->record.frames;
     sampler_pcm_t *take = s->take;
     sampler_unlock(s);
     if (take && frames && frames < take->capacity) {
         sampler_pcm_t *smaller = heap_caps_realloc(take,
-            sizeof(*take) + (size_t)frames * 2U, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-        if (smaller) { take = smaller; take->capacity = frames; }
+                                                   sizeof(*take) + (size_t)frames * 2U, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+        if (smaller) {
+            take = smaller;
+            take->capacity = frames;
+        }
     }
     sampler_lock(s);
     s->take = take;
     s->record.result = result;
     s->record.state = result == APP_SAMPLER_OK && frames ? APP_SAMPLER_RECORD_READY : APP_SAMPLER_RECORD_ERROR;
-    if (!frames && result == APP_SAMPLER_OK) { s->record.result = APP_SAMPLER_BAD_STATE; }
+    if (!frames && result == APP_SAMPLER_OK) {
+        s->record.result = APP_SAMPLER_BAD_STATE;
+    }
     s->record.monitor = false; s->monitor_count = 0; s->record.peak = 0;
     s->capture_task = NULL;
     sampler_unlock(s);
@@ -96,7 +110,9 @@ finished:
 
 app_sampler_result_t app_sampler_record_start(app_sampler_t *s)
 {
-    if (!s) { return APP_SAMPLER_INVALID; }
+    if (!s) {
+        return APP_SAMPLER_INVALID;
+    }
 #if !defined(ESP_PLATFORM)
     sampler_lock(s);
     s->record.state = APP_SAMPLER_RECORD_UNSUPPORTED;
@@ -107,10 +123,15 @@ app_sampler_result_t app_sampler_record_start(app_sampler_t *s)
     if (s->capture_task || s->take || s->closing || s->editing) {
         sampler_unlock(s); return APP_SAMPLER_BUSY;
     }
-    if (s->bank->count >= APP_SAMPLER_MAX_SAMPLES) { sampler_unlock(s); return APP_SAMPLER_FULL; }
+    if (s->bank->count >= APP_SAMPLER_MAX_SAMPLES) {
+        sampler_unlock(s);
+        return APP_SAMPLER_FULL;
+    }
     sampler_unlock(s);
     sampler_pcm_t *take = sampler_pcm_create(APP_SAMPLER_MAX_FRAMES);
-    if (!take) { return APP_SAMPLER_NO_MEMORY; }
+    if (!take) {
+        return APP_SAMPLER_NO_MEMORY;
+    }
     sampler_lock(s);
     if (s->capture_task || s->take || s->closing || s->editing) {
         sampler_unlock(s); sampler_pcm_release(take); return APP_SAMPLER_BUSY;
@@ -133,28 +154,42 @@ app_sampler_result_t app_sampler_record_start(app_sampler_t *s)
 }
 void app_sampler_record_stop(app_sampler_t *s)
 {
-    if (!s) { return; }
+    if (!s) {
+        return;
+    }
     sampler_lock(s);
     s->capture_stop = true;
-    if (s->record.state == APP_SAMPLER_RECORD_RECORDING) { s->record.state = APP_SAMPLER_RECORD_STOPPING; }
+    if (s->record.state == APP_SAMPLER_RECORD_RECORDING) {
+        s->record.state = APP_SAMPLER_RECORD_STOPPING;
+    }
     sampler_unlock(s);
 }
 void app_sampler_record_get_status(app_sampler_t *s, app_sampler_record_status_t *status)
 {
-    if (!status) { return; }
+    if (!status) {
+        return;
+    }
     memset(status, 0, sizeof(*status));
-    if (!s) { status->state = APP_SAMPLER_RECORD_UNSUPPORTED; status->result = APP_SAMPLER_UNSUPPORTED; return; }
+    if (!s) {
+        status->state = APP_SAMPLER_RECORD_UNSUPPORTED;
+        status->result = APP_SAMPLER_UNSUPPORTED;
+        return;
+    }
     sampler_lock(s); *status = s->record; sampler_unlock(s);
 }
 app_sampler_result_t app_sampler_record_set_gain(app_sampler_t *s, float db)
 {
-    if (!s || !isfinite(db) || db < 0 || db > 42.0f) { return APP_SAMPLER_RANGE; }
+    if (!s || !isfinite(db) || db < 0 || db > 42.0f) {
+        return APP_SAMPLER_RANGE;
+    }
     sampler_lock(s); s->record.gain_db = floorf(db / 6.0f + 0.5f) * 6.0f; sampler_unlock(s);
     return APP_SAMPLER_OK;
 }
 void app_sampler_record_set_monitor(app_sampler_t *s, bool enabled)
 {
-    if (!s) { return; }
+    if (!s) {
+        return;
+    }
     sampler_lock(s);
     s->record.monitor = enabled;
     s->monitor_count = 0; s->monitor_head = s->monitor_tail = 0;
@@ -170,7 +205,9 @@ static void take_info(app_sampler_sample_info_t *i, uint32_t frames, const char 
 }
 app_sampler_result_t app_sampler_record_audition(app_sampler_t *s)
 {
-    if (!s) { return APP_SAMPLER_INVALID; }
+    if (!s) {
+        return APP_SAMPLER_INVALID;
+    }
     sampler_lock(s);
     if (s->record.state != APP_SAMPLER_RECORD_READY || !s->take || s->closing) {
         sampler_unlock(s); return APP_SAMPLER_BAD_STATE;
@@ -183,9 +220,13 @@ app_sampler_result_t app_sampler_record_audition(app_sampler_t *s)
 }
 app_sampler_result_t app_sampler_record_keep(app_sampler_t *s, const char *name, unsigned *index)
 {
-    if (!s) { return APP_SAMPLER_INVALID; }
+    if (!s) {
+        return APP_SAMPLER_INVALID;
+    }
     sampler_sample_t *sample = calloc(1, sizeof(*sample));
-    if (!sample) { return APP_SAMPLER_NO_MEMORY; }
+    if (!sample) {
+        return APP_SAMPLER_NO_MEMORY;
+    }
     sampler_lock(s);
     if (s->record.state != APP_SAMPLER_RECORD_READY || !s->take || s->closing) {
         sampler_unlock(s); free(sample); return APP_SAMPLER_BAD_STATE;
@@ -194,14 +235,21 @@ app_sampler_result_t app_sampler_record_keep(app_sampler_t *s, const char *name,
     take_info(&sample->info, s->record.frames, name);
     sampler_unlock(s);
     const app_sampler_result_t result = sampler_append(s, sample, index);
-    if (result == APP_SAMPLER_OK) { app_sampler_record_discard(s); }
+    if (result == APP_SAMPLER_OK) {
+        app_sampler_record_discard(s);
+    }
     sampler_pcm_release(sample->pcm); free(sample); return result;
 }
 void app_sampler_record_discard(app_sampler_t *s)
 {
-    if (!s) { return; }
+    if (!s) {
+        return;
+    }
     sampler_lock(s);
-    if (s->capture_task) { sampler_unlock(s); return; }
+    if (s->capture_task) {
+        sampler_unlock(s);
+        return;
+    }
     sampler_pcm_t *take = s->take;
     s->take = NULL; s->record.frames = 0; s->record.peak = 0;
     s->record.monitor = false; s->monitor_count = 0;
@@ -210,6 +258,8 @@ void app_sampler_record_discard(app_sampler_t *s)
 #else
     s->record.state = APP_SAMPLER_RECORD_UNSUPPORTED; s->record.result = APP_SAMPLER_UNSUPPORTED;
 #endif
-    if (s->audition == take) { sampler_audition_clear_locked(s); }
+    if (s->audition == take) {
+        sampler_audition_clear_locked(s);
+    }
     sampler_unlock(s); sampler_pcm_release(take);
 }

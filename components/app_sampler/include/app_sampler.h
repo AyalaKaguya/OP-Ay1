@@ -85,20 +85,20 @@ unsigned app_sampler_waveform(app_sampler_t *sampler, unsigned index,
  * WAV accepts RIFF PCM 8/16-bit mono/stereo, 8..192 kHz, <=60 seconds; stereo is
  * averaged in int32. It appends one sample and writes index only on success. */
 app_sampler_result_t app_sampler_import_wav(app_sampler_t *sampler,
-    const uint8_t *bytes, size_t size, const char *name, unsigned *index);
+                                            const uint8_t *bytes, size_t size, const char *name, unsigned *index);
 app_sampler_result_t app_sampler_import_wav_file(app_sampler_t *sampler,
-    const char *path, unsigned *index);
+                                                 const char *path, unsigned *index);
 app_sampler_result_t app_sampler_edit_begin(app_sampler_t *sampler, unsigned index);
 bool app_sampler_edit_get(app_sampler_t *sampler, app_sampler_edit_t *edit);
 app_sampler_result_t app_sampler_edit_set(app_sampler_t *sampler,
-                                         const app_sampler_edit_t *edit);
+                                          const app_sampler_edit_t *edit);
 app_sampler_result_t app_sampler_edit_apply(app_sampler_t *sampler);
 void app_sampler_edit_cancel(app_sampler_t *sampler);
 app_sampler_result_t app_sampler_undo(app_sampler_t *sampler);
 /* Explicit replacement only; deep-copies trimmed PCM into engine and preserves
  * every pattern cell/effect. assigned_slot is persisted for later project load. */
 app_sampler_result_t app_sampler_assign_slot(app_sampler_t *sampler,
-    unsigned index, tracker_engine_t *engine, unsigned slot);
+                                             unsigned index, tracker_engine_t *engine, unsigned slot);
 app_sampler_result_t app_sampler_audition(app_sampler_t *sampler, unsigned index);
 void app_sampler_audition_stop(app_sampler_t *sampler);
 /* Sole audio owner: interleaved stereo float at 48 kHz, no render allocation. */
@@ -112,7 +112,7 @@ app_sampler_result_t app_sampler_record_set_gain(app_sampler_t *sampler, float d
 void app_sampler_record_set_monitor(app_sampler_t *sampler, bool enabled);
 app_sampler_result_t app_sampler_record_audition(app_sampler_t *sampler);
 app_sampler_result_t app_sampler_record_keep(app_sampler_t *sampler,
-    const char *name, unsigned *index);
+                                             const char *name, unsigned *index);
 void app_sampler_record_discard(app_sampler_t *sampler);
 
 /* Project worker transaction. Snapshot is immutable and retains shared PCM, so
@@ -127,7 +127,7 @@ app_sampler_bank_t *app_sampler_bank_prepare(const uint8_t *bytes, size_t size,
 app_sampler_bank_t *app_sampler_bank_from_s3m(const uint8_t *bytes, size_t size,
                                               app_sampler_result_t *result);
 app_sampler_result_t app_sampler_bank_encode(const app_sampler_bank_t *bank,
-                                              uint8_t **bytes, size_t *size);
+                                             uint8_t **bytes, size_t *size);
 void app_sampler_bank_destroy(app_sampler_bank_t *bank);
 void app_sampler_bank_commit(app_sampler_t *sampler, app_sampler_bank_t *bank);
 unsigned app_sampler_bank_count(const app_sampler_bank_t *bank);
@@ -135,4 +135,4 @@ bool app_sampler_bank_get_info(const app_sampler_bank_t *bank, unsigned index,
                                app_sampler_sample_info_t *info);
 /* Apply saved explicit slot assignments to a staged engine before either commit. */
 app_sampler_result_t app_sampler_bank_apply_slots(const app_sampler_bank_t *bank,
-                                                 tracker_engine_prepared_t *song);
+                                                  tracker_engine_prepared_t *song);
