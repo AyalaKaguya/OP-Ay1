@@ -421,6 +421,21 @@ def run(s: Session, args):
     source_entries = s.bank_entries(song["bank"])
     assert len(source_entries) == 9 and sum(entry["frames"] > 0 for entry in source_entries) == 8
     s.screenshot("sample-library")
+    for _ in range(5):
+        s.drag(200, 350, 200, 160)
+    scrolled = s.read()
+    assert scrolled["sample_index"] == original["sample_index"] and not scrolled["project_dirty"]
+    s.screenshot("sample-library-bottom")
+    s.tap(80, 332)
+    empty = s.read(lambda v: v["sample_index"] == 8 and v["sample_trim_end"] == 0)
+    assert empty["workspace"] == SAMPLER and not empty["project_dirty"]
+    for _ in range(5):
+        s.drag(200, 160, 200, 350)
+    assert s.read()["sample_index"] == 8, "Scrolling must not change the selected sample"
+    s.tap(80, 176)
+    s.read(lambda v: v["sample_index"] == 0 and v["sample_trim_end"] == original["sample_trim_end"])
+    s.screenshot("sample-library-top-restored")
+    s.checks.append("large sampler rows scroll to both bounds without selecting; taps select original and empty slots")
     s.tap(235, 402)
     s.read(lambda v: v["sample_edit_active"])
     s.drag(25, 220, 100, 220)
