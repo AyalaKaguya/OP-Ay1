@@ -39,6 +39,10 @@ void tracker_settings_receive_display(tracker_settings_t *settings,
  * out_opened is set only when the gesture opens the menu. */
 bool tracker_settings_pointer(tracker_settings_t *settings, int x, int y,
                               bool pressed, bool *out_opened);
+/* Embedded settings have no drawer-dismiss action or close button. */
+bool tracker_settings_page_pointer(tracker_settings_t *settings, int x, int y,
+                                   bool pressed);
 void tracker_settings_render(uint16_t *frame, const tracker_settings_t *settings);
 /* Draw the full panel even while a closing animation has logically closed it. */
 void tracker_settings_render_panel(uint16_t *frame, const tracker_settings_t *settings);
+void tracker_settings_render_page(uint16_t *frame, const tracker_settings_t *settings);

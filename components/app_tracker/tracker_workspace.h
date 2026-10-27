@@ -61,6 +61,7 @@ typedef struct {
     bool switch_after_save;
     bool job_waiting;
     bool job_observed_busy;
+    bool job_background;
     bool snapshot_valid;
     bool dirty;
     bool pointer_down;

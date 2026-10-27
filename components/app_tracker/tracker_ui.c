@@ -116,7 +116,7 @@ static void render_frame(app_tracker_t *state)
     }
     if (state->workspace.screen == TRACKER_WORKSPACE_SETTINGS) {
         memset(frame, 0, FRAME_BYTES);
-        tracker_settings_render_panel(frame, &state->settings);
+        tracker_settings_render_page(frame, &state->settings);
         for (int y = 431; y >= TRACKER_WORKSPACE_HEADER; --y) {
             const int source = (y - TRACKER_WORKSPACE_HEADER) * 432 /
                                (432 - TRACKER_WORKSPACE_HEADER);
@@ -358,7 +358,7 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
     const int before_home = state->workspace.home_page;
     const tracker_workspace_screen_t before_screen = state->workspace.screen;
     bool opened = false;
-    const bool settings_page = !state->settings.open &&
+    const bool settings_page = !state->settings.open && !state->settings.top_candidate &&
                                state->workspace.screen == TRACKER_WORKSPACE_SETTINGS &&
                                (state->settings.pointer_down ||
                                 (!state->workspace.pointer_down && y >= 78 && y < 432));

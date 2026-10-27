@@ -178,6 +178,7 @@ static void submit_request(tracker_workspace_t *w)
     }
     w->job_waiting = true;
     w->job_observed_busy = false;
+    w->job_background = false;
     w->dirty = true;
     tracker_workspace_message(w, "");
 }
@@ -229,6 +230,9 @@ void tracker_workspace_init(tracker_workspace_t *w,
 
 static void completed_job(tracker_workspace_t *w)
 {
+    const bool background = w->job_background;
+    const tracker_workspace_screen_t current_screen = w->screen;
+    w->job_background = false;
     w->job_waiting = false;
     w->ui_error = w->project_view.error;
     if (w->ui_error != APP_PROJECT_OK) {
@@ -279,6 +283,9 @@ static void completed_job(tracker_workspace_t *w)
         w->auditioning = false;
         w->sampler_tab = TRACKER_SAMPLE_EDIT;
         show(w, TRACKER_WORKSPACE_SAMPLER);
+    }
+    if (background) {
+        show(w, current_screen);
     }
 }
 
@@ -396,6 +403,7 @@ void tracker_workspace_home(tracker_workspace_t *w, tracker_model_t *model)
     /* An admitted save still completes, without pulling the user back into
      * the screen they just left when its asynchronous completion arrives. */
     w->return_screen = TRACKER_WORKSPACE_HOME;
+    w->job_background = tracker_workspace_busy(w);
 }
 
 void tracker_workspace_swipe_home(tracker_workspace_t *w, tracker_model_t *model,
@@ -658,13 +666,8 @@ bool tracker_workspace_pointer(tracker_workspace_t *w, tracker_model_t *model,
         const int local_y = (y - 78) * 432 / (432 - 78);
         settings->open = true;
         settings->page_pointer_down = false;
-        bool opened = false;
-        (void)tracker_settings_pointer(settings, x, local_y, pressed, &opened);
-        const bool retained = settings->open;
+        (void)tracker_settings_page_pointer(settings, x, local_y, pressed);
         settings->open = false;
-        if (!retained) {
-            show(w, TRACKER_WORKSPACE_HOME);
-        }
         w->dirty = true;
         return true;
     }

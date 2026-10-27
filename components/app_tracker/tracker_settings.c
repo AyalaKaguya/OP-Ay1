@@ -69,7 +69,7 @@ static void brightness(tracker_settings_t *s, int x)
     s->display_request = true;
 }
 
-static void tap(tracker_settings_t *s, int x, int y)
+static void tap(tracker_settings_t *s, int x, int y, bool embedded)
 {
     if (s->usb_confirm) {
         if (inside(x, y, 30, 246, 206, 48)) {
@@ -81,7 +81,7 @@ static void tap(tracker_settings_t *s, int x, int y)
         }
         return;
     }
-    if (inside(x, y, 420, 0, 60, 44) || y >= MENU_BOTTOM) {
+    if (!embedded && (inside(x, y, 420, 0, 60, 44) || y >= MENU_BOTTOM)) {
         s->open = false;
         return;
     }
@@ -125,8 +125,8 @@ static void tap(tracker_settings_t *s, int x, int y)
     }
 }
 
-bool tracker_settings_pointer(tracker_settings_t *s, int x, int y,
-                              bool pressed, bool *out_opened)
+static bool pointer(tracker_settings_t *s, int x, int y,
+                     bool pressed, bool *out_opened, bool embedded)
 {
     if (out_opened) {
         *out_opened = false;
@@ -182,14 +182,25 @@ bool tracker_settings_pointer(tracker_settings_t *s, int x, int y,
         s->top_candidate = false;
         s->brightness_drag = false;
         if (!top && !slider && s->open) {
-            if (!s->usb_confirm && dy < -48 && abs(dy) > abs(dx) * 2) {
+            if (!embedded && !s->usb_confirm && dy < -48 && abs(dy) > abs(dx) * 2) {
                 s->open = false;
             } else if (!s->moved) {
-                tap(s, x, y);
+                tap(s, x, y, embedded);
             }
         }
     }
     return true;
+}
+
+bool tracker_settings_pointer(tracker_settings_t *s, int x, int y,
+                              bool pressed, bool *out_opened)
+{
+    return pointer(s, x, y, pressed, out_opened, false);
+}
+
+bool tracker_settings_page_pointer(tracker_settings_t *s, int x, int y, bool pressed)
+{
+    return pointer(s, x, y, pressed, NULL, true);
 }
 
 static const char *charge_name(app_settings_charge_t charge)
@@ -232,7 +243,7 @@ void tracker_settings_render(uint16_t *frame, const tracker_settings_t *s)
     }
 }
 
-void tracker_settings_render_panel(uint16_t *frame, const tracker_settings_t *s)
+static void render_panel(uint16_t *frame, const tracker_settings_t *s, bool embedded)
 {
     /* Dim the live page, then draw actual controls rather than a concept bitmap. */
     for (unsigned i = 0; i < 480U * 480U; ++i) {
@@ -251,8 +262,10 @@ void tracker_settings_render_panel(uint16_t *frame, const tracker_settings_t *s)
     } else {
         tracker_gfx_text(&g, 30, 14, 2, C_TEXT, "QUICK SETTINGS");
     }
-    tracker_gfx_line(&g, 435, 14, 445, 24, C_MUTED);
-    tracker_gfx_line(&g, 445, 14, 435, 24, C_MUTED);
+    if (!embedded) {
+        tracker_gfx_line(&g, 435, 14, 445, 24, C_MUTED);
+        tracker_gfx_line(&g, 445, 14, 435, 24, C_MUTED);
+    }
     tracker_gfx_rect(&g, 16, 40, 448, 1, C_BORDER);
     if (s->timeouts_open) {
         tracker_gfx_rect(&g, 202, MENU_BOTTOM - 8, 76, 3, C_MUTED);
@@ -329,4 +342,14 @@ void tracker_settings_render_panel(uint16_t *frame, const tracker_settings_t *s)
         button(&g, 30, 246, 206, 48, "CANCEL", false, C_TEXT);
         button(&g, 244, 246, 206, 48, "MIDI HOST", true, C_CYAN);
     }
+}
+
+void tracker_settings_render_panel(uint16_t *frame, const tracker_settings_t *s)
+{
+    render_panel(frame, s, false);
+}
+
+void tracker_settings_render_page(uint16_t *frame, const tracker_settings_t *s)
+{
+    render_panel(frame, s, true);
 }
