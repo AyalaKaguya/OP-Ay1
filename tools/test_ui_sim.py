@@ -214,7 +214,9 @@ def main() -> int:
                         break
                     expected = (current["home_page"] + 1) % 3
                     drag(400, 460, 80, 460)
-                    current = state(lambda s: s["workspace"] == 0 and s["home_page"] == expected and not s["page_motion"])
+                    current = state(
+                        lambda s: s["workspace"] == 0 and s["home_page"] == expected and not s["page_motion"]
+                    )
                 assert current["home_page"] == module // 4, current
                 tap(352 if module % 2 else 128, 334 if module % 4 >= 2 else 176)
                 return state(lambda s: s["workspace"] == 11 and s["page"] == index and not s["page_motion"])

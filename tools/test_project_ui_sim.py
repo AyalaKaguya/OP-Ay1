@@ -364,7 +364,9 @@ def run(s: Session, args):
             current = s.read(lambda v: v["workspace"] == LEGACY and v["page"] == self_page and not v["page_motion"])
         assert current["project_generation"] == original_generation and current["project_name"] == "SONG A"
         assert not current["project_dirty"]
-    s.checks.append("ARYX import preserves nine slots; HOME selects every module; module horizontal swipes never navigate")
+    s.checks.append(
+        "ARYX import preserves nine slots; HOME selects every module; module horizontal swipes never navigate"
+    )
 
     s.legacy(2)
     s.legacy_tap(340, 250)
