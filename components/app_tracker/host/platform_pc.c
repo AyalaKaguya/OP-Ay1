@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "app_tracker.h"
+#include "app_project.h"
+#include "app_sampler.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,14 +17,18 @@ static struct {
     app_audio_bus_t *bus;
     app_note_router_t *router;
     app_usb_midi_t *usb;
+    app_project_t *project;
+    app_sampler_t *sampler;
     app_settings_snapshot_t settings;
     app_settings_idle_t idle;
     bool idle_busy;
     host_audio_t *audio;
     uint8_t *module;
+    size_t module_size;
     void *audio_timer;
     void *state_timer;
     FILE *state_log;
+    app_tracker_snapshot_t snapshot;
 } backend;
 
 static bool read_settings(void *context, app_settings_snapshot_t *snapshot)
@@ -92,6 +98,17 @@ static void render_audio(esp_gsp_handle_t ui, void *context)
     host_audio_step(backend.audio, gsp_sim_bridge_time_ms());
 }
 
+static void write_json_name(FILE *file, const char *value)
+{
+    fputc('"', file);
+    for (const unsigned char *p = (const unsigned char *)value; *p; ++p) {
+        if (*p == '"' || *p == '\\') fputc('\\', file);
+        if (*p < 32) fprintf(file, "\\u%04x", (unsigned)*p);
+        else fputc(*p, file);
+    }
+    fputc('"', file);
+}
+
 static void report_state(esp_gsp_handle_t ui, void *context)
 {
     (void)ui;
@@ -99,24 +116,29 @@ static void report_state(esp_gsp_handle_t ui, void *context)
     if (!backend.state_log || !backend.controller) {
         return;
     }
-    app_tracker_snapshot_t s;
-    if (app_tracker_read(backend.controller, &s) == ESP_GSP_OK) {
+    app_tracker_snapshot_t *s = &backend.snapshot;
+    if (app_tracker_read(backend.controller, s) == ESP_GSP_OK) {
         fprintf(backend.state_log,
                 "{\"time\":%llu,\"page\":%d,\"volume\":%d,\"scroll\":%d,"
                 "\"note\":%d,\"tab\":%d,\"preset\":%d,\"playing\":%s,"
                 "\"launched\":%d,\"pending\":%d,\"stop\":%s,\"voices\":%u,"
                 "\"peak\":%.6f,\"frames\":%llu,\"gain\":[%d,%d,%d,%d],"
-                "\"mute\":[%d,%d,%d,%d],\"solo\":[%d,%d,%d,%d],\"error\":%d,\"page_motion\":%d,\"menu_motion\":%d,\"progress\":%u}\n",
-                (unsigned long long)gsp_sim_bridge_time_ms(), s.page, s.volume,
-                s.mix_scroll, s.held_note, s.synth_tab, s.preset,
-                s.playing ? "true" : "false", s.launched_pattern,
-                s.pending_pattern, s.stop_pending ? "true" : "false",
-                (unsigned)s.active_voices, (double)s.synth_peak,
-                (unsigned long long)s.rendered_frames,
-                s.gain_steps[0], s.gain_steps[1], s.gain_steps[2], s.gain_steps[3],
-                s.muted[0], s.muted[1], s.muted[2], s.muted[3],
-                s.soloed[0], s.soloed[1], s.soloed[2], s.soloed[3], s.last_error,
-                s.page_animating, s.menu_animating, (unsigned)s.transition_progress);
+                "\"mute\":[%d,%d,%d,%d],\"solo\":[%d,%d,%d,%d],\"error\":%d,\"page_motion\":%d,\"menu_motion\":%d,\"progress\":%u,"
+                "\"workspace\":%d,\"home_page\":%d,\"project_opened\":%d,\"project_busy\":%d,\"project_dirty\":%d,\"project_generation\":%llu,\"project_name\":",
+                (unsigned long long)gsp_sim_bridge_time_ms(), s->page, s->volume,
+                s->mix_scroll, s->held_note, s->synth_tab, s->preset,
+                s->playing ? "true" : "false", s->launched_pattern,
+                s->pending_pattern, s->stop_pending ? "true" : "false",
+                (unsigned)s->active_voices, (double)s->synth_peak,
+                (unsigned long long)s->rendered_frames,
+                s->gain_steps[0], s->gain_steps[1], s->gain_steps[2], s->gain_steps[3],
+                s->muted[0], s->muted[1], s->muted[2], s->muted[3],
+                s->soloed[0], s->soloed[1], s->soloed[2], s->soloed[3], s->last_error,
+                s->page_animating, s->menu_animating, (unsigned)s->transition_progress,
+                s->workspace_screen, s->home_page, s->project_opened, s->project_busy,
+                s->project_dirty, (unsigned long long)s->project_generation);
+        write_json_name(backend.state_log, s->project_name);
+        fputs("}\n", backend.state_log);
         fflush(backend.state_log);
     }
     app_tracker_settings_snapshot_t q;
@@ -156,6 +178,7 @@ static bool read_module(void)
     fclose(f);
     if (loaded) {
         backend.tracker = tracker_engine_create(backend.module, (size_t)bytes);
+        backend.module_size = (size_t)bytes;
     }
     return backend.tracker != NULL;
 }
@@ -166,10 +189,13 @@ esp_gsp_err_t gsp_bridge_app_init(esp_gsp_handle_t ui)
         return ESP_GSP_ERR_INVALID_STATE;
     }
     backend.synth = app_synth_create(APP_AUDIO_SAMPLE_RATE);
+    backend.sampler = app_sampler_create();
     backend.bus = app_audio_bus_create(backend.tracker, backend.synth);
-    if (!backend.synth || !backend.bus) {
+    if (!backend.synth || !backend.sampler || !backend.bus) {
         return ESP_GSP_ERR_NO_MEM;
     }
+    if (!app_sampler_bind_engine(backend.sampler, backend.tracker)) return ESP_GSP_FAIL;
+    if (!app_audio_bus_set_sampler(backend.bus, backend.sampler)) return ESP_GSP_FAIL;
     backend.audio = host_audio_create(backend.bus);
     if (!backend.audio) {
         return ESP_GSP_ERR_NO_MEM;
@@ -180,6 +206,20 @@ esp_gsp_err_t gsp_bridge_app_init(esp_gsp_handle_t ui)
     }
     app_settings_snapshot_defaults(&backend.settings);
     app_settings_idle_init(&backend.idle, gsp_sim_bridge_time_ms());
+    const char *project_root = getenv("OP_AY1_PROJECT_ROOT");
+    if (!project_root || !*project_root) project_root = OP_AY1_PROJECT_ROOT_DEFAULT;
+    const app_project_config_t project_config = {
+        .tracker = backend.tracker, .synth = backend.synth,
+        .bus = backend.bus, .sampler = backend.sampler,
+        .router = backend.router,
+        .example_data = backend.module, .example_size = backend.module_size,
+        .root_path = project_root,
+    };
+    const app_project_error_t project_result = app_project_create(&project_config, &backend.project);
+    if (project_result != APP_PROJECT_OK) {
+        fprintf(stderr, "Project service: %s\n", app_project_error_name(project_result));
+        return ESP_GSP_FAIL;
+    }
     const char *state_path = getenv("OP_AY1_SIM_STATE_LOG");
     if (state_path && *state_path) {
         backend.state_log = fopen(state_path, "w");
@@ -190,6 +230,7 @@ esp_gsp_err_t gsp_bridge_app_init(esp_gsp_handle_t ui)
     const app_tracker_config_t config = {
         .tracker = backend.tracker, .synth = backend.synth, .audio_bus = backend.bus,
         .note_router = backend.router, .usb_midi = backend.usb,
+        .project = backend.project, .sampler = backend.sampler,
         .visualize_display_power = true,
         .hooks = {
             .time_ms = clock_ms, .set_volume = set_volume,
@@ -227,9 +268,19 @@ void gsp_bridge_app_deinit(esp_gsp_handle_t ui)
         return;
     }
     host_audio_destroy(backend.audio);
-    (void)app_usb_midi_shutdown(&backend.usb, 1000);
+    if (app_project_shutdown(&backend.project, 2000) != APP_PROJECT_OK ||
+            !app_usb_midi_shutdown(&backend.usb, 1000)) {
+        /* An IO/capture owner may still borrow these sources after timeout. */
+        if (backend.state_log) fclose(backend.state_log);
+        return;
+    }
     app_note_router_destroy(backend.router);
     app_audio_bus_destroy(backend.bus);
+    if (!app_sampler_shutdown(&backend.sampler, 2000)) {
+        /* Capture owns its resources until it confirms exit. */
+        if (backend.state_log) fclose(backend.state_log);
+        return;
+    }
     app_synth_destroy(backend.synth);
     tracker_engine_destroy(backend.tracker);
     free(backend.module);

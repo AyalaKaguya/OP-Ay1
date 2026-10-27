@@ -18,6 +18,7 @@ gsp_add_backend(op_ay1_backend
     SOURCES
         ../tracker_font.c ../tracker_graphics.c ../tracker_render.c
         ../tracker_pages.c ../tracker_model.c ../tracker_synth.c ../tracker_ui.c ../tracker_settings.c ../tracker_transition.c
+        ../tracker_workspace.c ../tracker_workspace_render.c ../tracker_sampler_ui.c
         ../../app_tracker_engine/tracker_engine.c
         ../../app_tracker_engine/tracker_module.c
         ../../app_tracker_engine/tracker_mixer.c
@@ -28,10 +29,19 @@ gsp_add_backend(op_ay1_backend
         ../../app_usb_midi/midi_packets.c
         ../../app_usb_midi/midi_descriptor.c
         ../../app_settings/app_settings.c
+        ../../app_sampler/app_sampler.c
+        ../../app_sampler/sampler_bank.c
+        ../../app_sampler/sampler_formats.c
+        ../../app_sampler/sampler_record.c
+        ../../app_project/app_project.c
+        ../../app_project/project_platform.c
+        ../../app_project/project_files.c
+        ../../app_project/project_session.c
         platform_pc.c audio_pc.c backend_main.c
     INCLUDE_DIRECTORIES
         ../include .. ../../app_tracker_engine/include ../../app_audio/include
         ../../app_synth/include ../../app_note_router/include ../../app_usb_midi/include ../../app_settings/include
+        ../../app_sampler/include ../../app_project/include
     SCENES ../ui/main.json)
 
 # The standard main closes the bridge before application teardown can report
@@ -43,11 +53,14 @@ set_property(TARGET op_ay1_backend PROPERTY SOURCES "${backend_sources}")
 target_compile_features(op_ay1_backend PRIVATE c_std_11)
 target_compile_definitions(op_ay1_backend PRIVATE
     OP_AY1_MODULE_PATH="${APP_ROOT}/main/assets/aryx.s3m")
+target_compile_definitions(op_ay1_backend PRIVATE
+    OP_AY1_PROJECT_ROOT_DEFAULT="${APP_ROOT}/build-sim/project-data")
 if(MSVC)
     target_compile_options(op_ay1_backend PRIVATE /W4 /WX /utf-8 /experimental:c11atomics)
     target_compile_definitions(op_ay1_backend PRIVATE _CRT_SECURE_NO_WARNINGS)
     target_link_libraries(op_ay1_backend PRIVATE winmm)
 else()
     target_compile_options(op_ay1_backend PRIVATE -Wall -Wextra -Werror)
-    target_link_libraries(op_ay1_backend PRIVATE m)
+    find_package(Threads REQUIRED)
+    target_link_libraries(op_ay1_backend PRIVATE m Threads::Threads)
 endif()
