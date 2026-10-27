@@ -126,7 +126,7 @@ static void tap(tracker_settings_t *s, int x, int y, bool embedded)
 }
 
 static bool pointer(tracker_settings_t *s, int x, int y,
-                     bool pressed, bool *out_opened, bool embedded)
+                    bool pressed, bool *out_opened, bool embedded)
 {
     if (out_opened) {
         *out_opened = false;
