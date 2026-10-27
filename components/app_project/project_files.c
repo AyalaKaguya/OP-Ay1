@@ -10,6 +10,10 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#if defined(APP_PROJECT_IO_INTERPOSE)
+#include "project_io_faults.h"
+#endif
+
 #if defined(_WIN32)
 #include <direct.h>
 #include <io.h>
@@ -304,9 +308,15 @@ app_project_error_t project_file_load(app_project_t *p, const char *id, project_
     app_project_error_t error = pointer_read(base, "CURRENT", token);
     if (error == APP_PROJECT_OK) error = generation_load(p, id, token, payload, false);
     if (error == APP_PROJECT_CORRUPT || error == APP_PROJECT_NOT_FOUND) {
+        const app_project_error_t original_error = error;
         project_payload_destroy(payload);
         error = pointer_read(base, "PREVIOUS", token);
         if (error == APP_PROJECT_OK) error = generation_load(p, id, token, payload, false);
+        else if (error == APP_PROJECT_NOT_FOUND && original_error == APP_PROJECT_CORRUPT) {
+            /* A damaged first generation is a corrupt project, not a missing
+             * project merely because it has no prior fallback yet. */
+            error = original_error;
+        }
     }
     return error;
 }

@@ -102,6 +102,22 @@ decode; save verification does not allocate a second full bank. Storage IO and
 capture are not claimed to satisfy device real-time, power-loss or physical
 microphone acceptance merely from source inspection.
 
-This change adds no test code and performs no compilation, simulator run,
-filesystem/device operation, firmware update or format. Public API/source review
-is the validation boundary for this prototype implementation request.
+## Host validation
+
+`python tools/test_project.py` builds the production worker, filesystem code,
+tracker, synth, sampler, note router and bus with native warnings as errors,
+then runs against a new isolated temporary directory. `--keep-data` retains
+that directory for independent artifact inspection. The normal successful run
+deletes only the generated `project-data-*` directory beneath its build root.
+
+The checks cover full synth/mixer/master/orders/Pad/PCM save-load roundtrips,
+independent manifest/file CRC rereads, sixteen genuinely empty blank slots,
+Save As IDs, same-ID dirty/playing preservation, S3M/WAV imports that reopen
+after the inbox source is deleted, an independent service restart, current and
+previous generation corruption, and edit/job/shutdown admission. A test-target
+IO interposer injects ENOSPC and a blocked write; ordinary builds contain no
+interposer, and a failed save cannot replace the verified CURRENT pointer.
+
+These checks use the actual host filesystem and production worker. They do
+not mount NAND, prove electrical durability, run microphone capture or write
+device firmware. NAND/physical power-loss acceptance remains separate.
