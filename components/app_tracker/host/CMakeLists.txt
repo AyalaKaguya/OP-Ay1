@@ -1,5 +1,34 @@
 cmake_minimum_required(VERSION 3.20)
+# Keep the diagnostic language stable between detection and compilation. The
+# installed compiler can fall back to another language when English is absent.
+if(CMAKE_HOST_WIN32)
+    set(ENV{VSLANG} 1033)
+endif()
 project(op_ay1_backend LANGUAGES C)
+
+if(MSVC)
+    # CMake's AUTO decoding uses the legacy Windows code page here, while the
+    # compiler writes UTF-8. Probe the actual prefix using the correct encoding;
+    # a mismatched prefix makes Ninja silently record zero header dependencies.
+    set(opay_showdir "${CMAKE_BINARY_DIR}/CMakeFiles/OpayShowIncludes")
+    file(WRITE "${opay_showdir}/opay_includes.h" "\n")
+    file(WRITE "${opay_showdir}/main.c" "#include \"opay_includes.h\"\n")
+    execute_process(COMMAND "${CMAKE_C_COMPILER}" /nologo /showIncludes /c main.c
+        WORKING_DIRECTORY "${opay_showdir}" OUTPUT_VARIABLE opay_includes
+        ERROR_VARIABLE opay_includes_error RESULT_VARIABLE opay_includes_result
+        ENCODING UTF-8)
+    if(opay_includes_result EQUAL 0 AND
+       "${opay_includes}" MATCHES "(^|\n)([^:\n][^:\n]+:[^:\n]*[^: \n][^: \n]:?[ \t]+)([A-Za-z]:\\\\|\\./|\\.\\\\|/)")
+        set(CMAKE_CL_SHOWINCLUDES_PREFIX "${CMAKE_MATCH_2}")
+    else()
+        message(FATAL_ERROR "Cannot detect the native MSVC header-dependency prefix")
+    endif()
+    set(opay_native_launcher "${CMAKE_COMMAND}" -E env VSLANG=1033)
+    if(CMAKE_C_COMPILER_LAUNCHER)
+        list(APPEND opay_native_launcher ${CMAKE_C_COMPILER_LAUNCHER})
+    endif()
+    set(CMAKE_C_COMPILER_LAUNCHER ${opay_native_launcher})
+endif()
 
 if(NOT ESP_GSP_COMPONENT_DIR AND DEFINED ENV{ESP_GSP_COMPONENT_DIR})
     set(ESP_GSP_COMPONENT_DIR "$ENV{ESP_GSP_COMPONENT_DIR}")
