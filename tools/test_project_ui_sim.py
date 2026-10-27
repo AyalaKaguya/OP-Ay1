@@ -429,7 +429,13 @@ def run(s: Session, args):
     s.tap(402, 323)
     s.tap(262, 355)  # C2 speed +100 Hz
     s.tap(440, 355)  # gain +5 percent
-    draft = s.read(lambda v: v["sample_edit_dirty"] and v["sample_trim_start"] > 0)
+    draft = s.read(
+        lambda v: v["sample_edit_dirty"]
+        and v["sample_trim_start"] > 0
+        and v["sample_loop_enabled"] != original["sample_loop_enabled"]
+        and v["sample_c2"] == original["sample_c2"] + 100
+        and v["sample_gain"] > original["sample_gain"]
+    )
     assert not draft["project_dirty"]
     assert draft["sample_loop_enabled"] != original["sample_loop_enabled"]
     assert draft["sample_c2"] == original["sample_c2"] + 100 and draft["sample_gain"] > original["sample_gain"]
