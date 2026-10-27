@@ -384,7 +384,7 @@ static bool navigation_pointer(app_tracker_t *state, int x, int y, bool pressed)
     tracker_workspace_t *w = &state->workspace;
     tracker_model_t *m = &state->model;
     if (!state->navigation_pointer) {
-        if (!pressed || y < TRACKER_NAVIGATION_EDGE_Y || state->settings.open ||
+        if (!pressed || y < TRACKER_NAVIGATION_EDGE_Y || state->back_pointer || state->settings.open ||
                 state->settings.pointer_down || state->settings.page_pointer_down ||
                 m->pointer_down || w->pointer_down || w->sampler_pointer) {
             return false;
