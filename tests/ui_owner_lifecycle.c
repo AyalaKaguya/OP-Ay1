@@ -622,6 +622,18 @@ static void test_hierarchy_back(const uint8_t *module, size_t size)
     CHECK(owner->workspace.session_generation == generation && owner->model.edit_revision == revision);
     advance(f, 250);
 
+    tap(210, body_y(110));
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_IMPORT);
+    advance(f, 250);
+    pointer_callback(&fake_ui, 8, 450, true, pointer_context);
+    CHECK(owner->back_pointer && !owner->navigation_pointer);
+    pointer_callback(&fake_ui, 140, 474, true, pointer_context);
+    CHECK(owner->back_pointer && !owner->navigation_pointer);
+    pointer_callback(&fake_ui, 140, 474, false, pointer_context);
+    CHECK(owner->workspace.screen == TRACKER_WORKSPACE_PROJECTS);
+    CHECK(!owner->back_pointer && !owner->navigation_pointer);
+    advance(f, 250);
+
     tap(80, body_y(110));
     CHECK(owner->workspace.screen == TRACKER_WORKSPACE_NEW);
     advance(f, 250);
