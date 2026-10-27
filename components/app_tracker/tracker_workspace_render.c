@@ -187,7 +187,7 @@ static void projects(tracker_graphics_t *g, const tracker_workspace_t *w)
         w->project_view.storage_ready ? "NO SAVED PROJECTS / CREATE ONE" : "NAND UNAVAILABLE / NO FILES LOADED");
     button(g, 24, 342, 76, 28, "<", false);
     button(g, 380, 342, 76, 28, ">", false);
-    char page[32];
+    char page[48];
     snprintf(page, sizeof(page), "%u %s%s", tracker_workspace_project_count(w),
              w->show_recent ? "RECENT / THIS LAUNCH" : "PROJECTS",
              !w->show_recent && w->project_view.entries_truncated ? " / LIMITED" : "");
