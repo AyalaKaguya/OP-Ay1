@@ -20,6 +20,14 @@
 #define TRACKER_SAMPLE_LIBRARY_CARD_HEIGHT 68
 #define TRACKER_SAMPLE_LIBRARY_ROWS 5
 #define TRACKER_SAMPLE_LIBRARY_WAVE_SAMPLES 72
+#define TRACKER_PROJECT_LIST_TOP 140
+#define TRACKER_PROJECT_LIST_HEIGHT 234
+#define TRACKER_PROJECT_LIST_ROW_HEIGHT 72
+#define TRACKER_PROJECT_LIST_CARD_HEIGHT 68
+#define TRACKER_INBOX_LIST_TOP 190
+#define TRACKER_INBOX_LIST_HEIGHT 184
+#define TRACKER_INBOX_LIST_ROW_HEIGHT 64
+#define TRACKER_INBOX_LIST_CARD_HEIGHT 60
 
 typedef enum {
     TRACKER_WORKSPACE_HOME = 0,
@@ -85,11 +93,16 @@ typedef struct {
     int start_y;
     int selected_project;
     int project_first;
+    int project_scroll;
     unsigned recent_count;
     char recent_ids[TRACKER_WORKSPACE_ROWS][APP_PROJECT_ID_BYTES];
     char recent_names[TRACKER_WORKSPACE_ROWS][APP_PROJECT_NAME_BYTES];
     int selected_inbox;
     int inbox_first;
+    int inbox_scroll;
+    int list_scroll_start;
+    bool selection_list_pointer;
+    bool selection_list_scrolling;
     uint64_t session_generation;
     uint64_t waiting_operation;
     bool source_edit_held;
@@ -168,6 +181,9 @@ bool tracker_workspace_busy(const tracker_workspace_t *workspace);
 unsigned tracker_workspace_project_count(const tracker_workspace_t *workspace);
 const app_project_entry_t *tracker_workspace_project_entry(const tracker_workspace_t *workspace,
                                                            unsigned row);
+unsigned tracker_workspace_inbox_count(const tracker_workspace_t *workspace);
+const app_project_inbox_entry_t *tracker_workspace_inbox_entry(const tracker_workspace_t *workspace,
+                                                               unsigned row);
 bool tracker_workspace_begin_source_edit(tracker_workspace_t *workspace);
 void tracker_workspace_end_source_edit(tracker_workspace_t *workspace, bool changed);
 

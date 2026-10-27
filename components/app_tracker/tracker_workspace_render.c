@@ -115,51 +115,67 @@ static void home(tracker_graphics_t *g, const tracker_workspace_t *w)
     }
 }
 
+static void list_scrollbar(tracker_graphics_t *g, int top, int height,
+                           unsigned count, int pitch, int scroll)
+{
+    const int total = (int)count * pitch;
+    if (total <= height) {
+        return;
+    }
+    int thumb = height * height / total;
+    if (thumb < 18) {
+        thumb = 18;
+    }
+    const int y = top + scroll * (height - thumb) / (total - height);
+    tracker_gfx_rect(g, 460, top, 3, height, C_LINE);
+    tracker_gfx_rect(g, 460, y, 3, thumb, C_MUTED);
+}
+
 static void projects(tracker_graphics_t *g, const tracker_workspace_t *w)
 {
     button(g, 24, 92, 124, 36, "+ NEW", true);
     button(g, 156, 92, 124, 36, "IMPORT", false);
     button(g, 288, 92, 80, 36, w->show_recent ? "ALL" : "RECENT", w->show_recent);
     button(g, 376, 92, 80, 36, "REFRESH", false);
-    for (int row = 0; row < TRACKER_WORKSPACE_ROWS; ++row) {
-        const unsigned index = (unsigned)(w->project_first + row);
-        const int y = 140 + row * 50;
-        if (index >= tracker_workspace_project_count(w)) {
+    const unsigned count = tracker_workspace_project_count(w);
+    char summary[48];
+    snprintf(summary, sizeof(summary), "%u %s%s", count,
+             w->show_recent ? "RECENT" : "PROJECTS",
+             !w->show_recent && w->project_view.entries_truncated ? " / LIMITED" : "");
+    label(g, 24, 130, summary);
+    tracker_gfx_clip(g, 24, TRACKER_PROJECT_LIST_TOP, 440, TRACKER_PROJECT_LIST_HEIGHT);
+    for (unsigned index = (unsigned)w->project_first; index < count; ++index) {
+        const int y = TRACKER_PROJECT_LIST_TOP + (int)index * TRACKER_PROJECT_LIST_ROW_HEIGHT - w->project_scroll;
+        if (y >= TRACKER_PROJECT_LIST_TOP + TRACKER_PROJECT_LIST_HEIGHT) {
             break;
         }
         const app_project_entry_t *entry = tracker_workspace_project_entry(w, index);
-        if (!entry) {
-            char unavailable[34];
-            tracker_workspace_pixel_name(unavailable, sizeof(unavailable), w->recent_names[index], 28);
-            tracker_gfx_outline(g, 24, y, 432, 45, C_DISABLED);
-            tracker_gfx_text(g, 40, y + 9, 2, C_DISABLED, unavailable);
-            label(g, 40, y + 30, "UNAVAILABLE");
-            continue;
-        }
-        const bool current = w->project_view.id[0] && strcmp(entry->id, w->project_view.id) == 0;
         char name[34];
-        tracker_workspace_pixel_name(name, sizeof(name), entry->name, 28);
-        tracker_gfx_rect(g, 24, y, 432, 45, C_PANEL);
-        tracker_gfx_outline(g, 24, y, 432, 45, w->selected_project == (int)index ? C_CYAN : C_BORDER);
-        tracker_gfx_text(g, 40, y + 9, 2, current ? C_CYAN : C_TEXT, name);
-        char detail[56];
-        snprintf(detail, sizeof(detail), "REV %llu / %llu KB", (unsigned long long)entry->saved_revision,
-                 (unsigned long long)(entry->bytes / 1024U));
-        label(g, 40, y + 30, detail);
-        tracker_gfx_text_right(g, 442, y + 31, 1, C_CYAN, current ? "CURRENT" : ">");
+        tracker_workspace_pixel_name(name, sizeof(name), entry ? entry->name : w->recent_names[index], 28);
+        const bool current = entry && w->project_view.id[0] && strcmp(entry->id, w->project_view.id) == 0;
+        tracker_gfx_rect(g, 24, y, 432, TRACKER_PROJECT_LIST_CARD_HEIGHT, C_PANEL);
+        tracker_gfx_outline(g, 24, y, 432, TRACKER_PROJECT_LIST_CARD_HEIGHT,
+                            !entry ? C_DISABLED : w->selected_project == (int)index ? C_CYAN : C_BORDER);
+        tracker_gfx_text(g, 40, y + 10, 2, !entry ? C_DISABLED : current ? C_CYAN : C_TEXT, name);
+        if (entry) {
+            char detail[56];
+            snprintf(detail, sizeof(detail), "REV %llu / %llu KB", (unsigned long long)entry->saved_revision,
+                     (unsigned long long)(entry->bytes / 1024U));
+            tracker_gfx_text(g, 40, y + 38, 2, C_MUTED, detail);
+            tracker_gfx_text_right(g, 442, y + 57, 1, C_CYAN, current ? "CURRENT" : "");
+        } else {
+            tracker_gfx_text(g, 40, y + 38, 2, C_DISABLED, "UNAVAILABLE");
+        }
     }
-    if (!tracker_workspace_project_count(w)) label(g, 40, 194,
-                                                       w->show_recent ? "NO RECENT PROJECTS" :
-                                                       w->project_view.storage_ready ? "NO PROJECTS" : "NAND UNAVAILABLE");
-    button(g, 24, 342, 76, 28, "<", false);
-    button(g, 380, 342, 76, 28, ">", false);
-    char page[48];
-    snprintf(page, sizeof(page), "%u %s%s", tracker_workspace_project_count(w),
-             w->show_recent ? "RECENT" : "PROJECTS",
-             !w->show_recent && w->project_view.entries_truncated ? " / LIMITED" : "");
-    label(g, 126, 353, page);
+    list_scrollbar(g, TRACKER_PROJECT_LIST_TOP, TRACKER_PROJECT_LIST_HEIGHT,
+                   count, TRACKER_PROJECT_LIST_ROW_HEIGHT, w->project_scroll);
+    tracker_gfx_clip(g, 0, 0, 480, 432);
+    if (!count) {
+        label(g, 40, 194, w->show_recent ? "NO RECENT PROJECTS" :
+              w->project_view.storage_ready ? "NO PROJECTS" : "NAND UNAVAILABLE");
+    }
     if (w->message[0]) {
-        label(g, 24, 366, w->message);
+        tracker_gfx_text_right(g, 456, 130, 1, C_MUTED, w->message);
     }
     button(g, 24, 378, 208, 44, "OPEN", true);
     button(g, 248, 378, 208, 44, "SAVE AS", false);
@@ -193,26 +209,33 @@ static void import_files(tracker_graphics_t *g, const tracker_workspace_t *w)
     if (!w->import_wav) {
         button(g, 24, 138, 432, 42, "IMPORT BUILT-IN ARYX", true);
     }
-    int filtered = 0;
-    int visible = 0;
-    for (uint32_t i = 0; i < w->project_view.inbox_count && i < APP_PROJECT_LIST_MAX; ++i) {
-        const app_project_inbox_entry_t *entry = &w->project_view.inbox[i];
-        if ((entry->kind == APP_PROJECT_INBOX_SAMPLE) != w->import_wav) {
-            continue;
+    const unsigned count = tracker_workspace_inbox_count(w);
+    tracker_gfx_clip(g, 24, TRACKER_INBOX_LIST_TOP, 440, TRACKER_INBOX_LIST_HEIGHT);
+    for (unsigned row = (unsigned)w->inbox_first; row < count; ++row) {
+        const int y = TRACKER_INBOX_LIST_TOP + (int)row * TRACKER_INBOX_LIST_ROW_HEIGHT - w->inbox_scroll;
+        if (y >= TRACKER_INBOX_LIST_TOP + TRACKER_INBOX_LIST_HEIGHT) {
+            break;
         }
-        if (filtered >= w->inbox_first && visible < 3) {
-            char name[34];
-            tracker_workspace_pixel_name(name, sizeof(name), entry->filename, 31);
-            button(g, 24, 190 + visible * 50, 432, 44, name, filtered == w->selected_inbox);
-            ++visible;
+        const app_project_inbox_entry_t *entry = tracker_workspace_inbox_entry(w, row);
+        if (!entry) {
+            break;
         }
-        ++filtered;
+        char name[34], detail[40];
+        tracker_workspace_pixel_name(name, sizeof(name), entry->filename, 31);
+        tracker_gfx_rect(g, 24, y, 432, TRACKER_INBOX_LIST_CARD_HEIGHT, C_PANEL);
+        tracker_gfx_outline(g, 24, y, 432, TRACKER_INBOX_LIST_CARD_HEIGHT,
+                            row == (unsigned)w->selected_inbox ? C_CYAN : C_BORDER);
+        tracker_gfx_text(g, 40, y + 9, 2,
+                         row == (unsigned)w->selected_inbox ? C_CYAN : C_TEXT, name);
+        snprintf(detail, sizeof(detail), "%llu KB", (unsigned long long)(entry->bytes / 1024U));
+        tracker_gfx_text(g, 40, y + 35, 2, C_MUTED, detail);
     }
-    if (!visible) {
+    list_scrollbar(g, TRACKER_INBOX_LIST_TOP, TRACKER_INBOX_LIST_HEIGHT,
+                   count, TRACKER_INBOX_LIST_ROW_HEIGHT, w->inbox_scroll);
+    tracker_gfx_clip(g, 0, 0, 480, 432);
+    if (!count) {
         label(g, 24, 224, "NO FILES");
     }
-    button(g, 24, 342, 76, 28, "<", false);
-    button(g, 380, 342, 76, 28, ">", false);
     button(g, 24, 378, 432, 44, w->import_wav ? "IMPORT SAMPLE" : "IMPORT PROJECT", true);
 }
 

@@ -8,6 +8,7 @@
 
 #define WORKSPACE_TAP_SLOP 12
 #define WORKSPACE_SWIPE_DISTANCE 64
+#define WORKSPACE_LIST_DRAG_SLOP 8
 
 static bool inside(int x, int y, int left, int top, int width, int height)
 {
@@ -62,7 +63,8 @@ bool tracker_workspace_busy(const tracker_workspace_t *w)
 
 unsigned tracker_workspace_project_count(const tracker_workspace_t *w)
 {
-    return w->show_recent ? w->recent_count : w->project_view.entry_count < APP_PROJECT_LIST_MAX ?
+    return w->show_recent ? w->recent_count < TRACKER_WORKSPACE_ROWS ? w->recent_count : TRACKER_WORKSPACE_ROWS :
+           w->project_view.entry_count < APP_PROJECT_LIST_MAX ?
            w->project_view.entry_count : APP_PROJECT_LIST_MAX;
 }
 
@@ -79,6 +81,66 @@ const app_project_entry_t *tracker_workspace_project_entry(const tracker_workspa
             return &w->project_view.entries[i];
         }
     return NULL;
+}
+
+unsigned tracker_workspace_inbox_count(const tracker_workspace_t *w)
+{
+    unsigned count = 0;
+    for (uint32_t i = 0; i < w->project_view.inbox_count && i < APP_PROJECT_LIST_MAX; ++i) {
+        if ((w->project_view.inbox[i].kind == APP_PROJECT_INBOX_SAMPLE) == w->import_wav) {
+            ++count;
+        }
+    }
+    return count;
+}
+
+const app_project_inbox_entry_t *tracker_workspace_inbox_entry(const tracker_workspace_t *w,
+                                                               unsigned row)
+{
+    for (uint32_t i = 0; i < w->project_view.inbox_count && i < APP_PROJECT_LIST_MAX; ++i) {
+        if ((w->project_view.inbox[i].kind == APP_PROJECT_INBOX_SAMPLE) == w->import_wav && row-- == 0) {
+            return &w->project_view.inbox[i];
+        }
+    }
+    return NULL;
+}
+
+static int clamp_list_scroll(int scroll, unsigned count, int pitch, int viewport)
+{
+    const int extent = (int)count * pitch - viewport;
+    const int maximum = extent > 0 ? extent : 0;
+    return scroll < 0 ? 0 : scroll > maximum ? maximum : scroll;
+}
+
+static void clamp_selection_lists(tracker_workspace_t *w)
+{
+    const unsigned projects = tracker_workspace_project_count(w);
+    const unsigned inbox = tracker_workspace_inbox_count(w);
+    const int project_scroll = clamp_list_scroll(w->project_scroll, projects,
+                                                 TRACKER_PROJECT_LIST_ROW_HEIGHT, TRACKER_PROJECT_LIST_HEIGHT);
+    const int inbox_scroll = clamp_list_scroll(w->inbox_scroll, inbox,
+                                               TRACKER_INBOX_LIST_ROW_HEIGHT, TRACKER_INBOX_LIST_HEIGHT);
+    if (project_scroll != w->project_scroll || inbox_scroll != w->inbox_scroll) {
+        w->dirty = true;
+    }
+    w->project_scroll = project_scroll;
+    w->inbox_scroll = inbox_scroll;
+    w->project_first = project_scroll / TRACKER_PROJECT_LIST_ROW_HEIGHT;
+    w->inbox_first = inbox_scroll / TRACKER_INBOX_LIST_ROW_HEIGHT;
+    if (w->selected_project < 0 || w->selected_project >= (int)projects) {
+        w->selected_project = projects ? (int)projects - 1 : 0;
+    }
+    if (w->selected_inbox < 0 || w->selected_inbox >= (int)inbox) {
+        w->selected_inbox = inbox ? (int)inbox - 1 : 0;
+    }
+}
+
+static bool selection_list_at(const tracker_workspace_t *w, int x, int y)
+{
+    return (w->screen == TRACKER_WORKSPACE_PROJECTS &&
+            inside(x, y, 24, TRACKER_PROJECT_LIST_TOP, 440, TRACKER_PROJECT_LIST_HEIGHT)) ||
+           (w->screen == TRACKER_WORKSPACE_IMPORT &&
+            inside(x, y, 24, TRACKER_INBOX_LIST_TOP, 440, TRACKER_INBOX_LIST_HEIGHT));
 }
 
 static void remember_recent(tracker_workspace_t *w)
@@ -330,15 +392,9 @@ void tracker_workspace_poll(tracker_workspace_t *w, tracker_model_t *model)
                     (w->job_observed_busy || w->project_view.operation_generation != w->waiting_operation)) {
                 completed_job(w);
             }
-            const unsigned rows = tracker_workspace_project_count(w);
-            if (w->selected_project >= (int)rows) {
-                w->selected_project = rows ? (int)rows - 1 : 0;
-            }
-            if (w->project_first > w->selected_project) {
-                w->project_first = (w->selected_project / TRACKER_WORKSPACE_ROWS) * TRACKER_WORKSPACE_ROWS;
-            }
         }
     }
+    clamp_selection_lists(w);
     if (!tracker_workspace_busy(w)) {
         tracker_sampler_ui_poll(w);
     }
@@ -348,6 +404,8 @@ void tracker_workspace_cancel_input(tracker_workspace_t *w)
 {
     w->pointer_down = false;
     w->moved = false;
+    w->selection_list_pointer = false;
+    w->selection_list_scrolling = false;
     w->sample_drag = TRACKER_SAMPLE_DRAG_NONE;
     w->sampler_pointer = false;
     w->library_list_pointer = false;
@@ -450,6 +508,7 @@ void tracker_workspace_open_import(tracker_workspace_t *w, bool wav)
     w->import_return = w->screen == TRACKER_WORKSPACE_SAMPLER ?
                        TRACKER_WORKSPACE_SAMPLER : TRACKER_WORKSPACE_PROJECTS;
     w->import_wav = wav;
+    w->selected_inbox = w->inbox_first = w->inbox_scroll = 0;
     show(w, TRACKER_WORKSPACE_IMPORT);
 }
 
@@ -539,17 +598,6 @@ static void home_open(tracker_workspace_t *w, tracker_model_t *model, int index)
     }
 }
 
-static int inbox_at(const tracker_workspace_t *w, int filtered)
-{
-    for (uint32_t i = 0; i < w->project_view.inbox_count && i < APP_PROJECT_LIST_MAX; ++i) {
-        const bool wav = w->project_view.inbox[i].kind == APP_PROJECT_INBOX_SAMPLE;
-        if (wav == w->import_wav && filtered-- == 0) {
-            return (int)i;
-        }
-    }
-    return -1;
-}
-
 static void name_key(tracker_workspace_t *w, int x, int y)
 {
     static const char *const letters[] = {"QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"};
@@ -616,27 +664,19 @@ static void tap(tracker_workspace_t *w, tracker_model_t *model,
             tracker_workspace_open_import(w, false);
         } else if (inside(x, y, 288, 92, 80, 36)) {
             w->show_recent = !w->show_recent;
-            w->selected_project = w->project_first = 0;
+            w->selected_project = w->project_first = w->project_scroll = 0;
             w->dirty = true;
         } else if (inside(x, y, 376, 92, 80, 36)) {
             memset(&w->request, 0, sizeof(w->request));
             tracker_workspace_request(w, APP_PROJECT_REFRESH);
-        } else if (inside(x, y, 24, 140, 432, 200)) {
-            const int index = w->project_first + (y - 140) / 50;
-            if (index < (int)tracker_workspace_project_count(w)) {
+        } else if (inside(x, y, 24, TRACKER_PROJECT_LIST_TOP, 432, TRACKER_PROJECT_LIST_HEIGHT)) {
+            const int offset = w->project_scroll + y - TRACKER_PROJECT_LIST_TOP;
+            const int index = offset / TRACKER_PROJECT_LIST_ROW_HEIGHT;
+            if (index < (int)tracker_workspace_project_count(w) &&
+                    offset % TRACKER_PROJECT_LIST_ROW_HEIGHT < TRACKER_PROJECT_LIST_CARD_HEIGHT) {
                 w->selected_project = index;
                 w->dirty = true;
             }
-        } else if (inside(x, y, 24, 342, 76, 28)) {
-            w->project_first = w->project_first >= 4 ? w->project_first - 4 : 0;
-            w->selected_project = w->project_first;
-            w->dirty = true;
-        } else if (inside(x, y, 380, 342, 76, 28)) {
-            if (w->project_first + 4 < (int)tracker_workspace_project_count(w)) {
-                w->project_first += 4;
-            }
-            w->selected_project = w->project_first;
-            w->dirty = true;
         } else if (inside(x, y, 24, 378, 208, 44)) {
             const app_project_entry_t *entry = tracker_workspace_project_entry(w, (unsigned)w->selected_project);
             if (entry) {
@@ -656,27 +696,21 @@ static void tap(tracker_workspace_t *w, tracker_model_t *model,
     } else if (w->screen == TRACKER_WORKSPACE_IMPORT) {
         if (inside(x, y, 24, 92, 208, 36) || inside(x, y, 248, 92, 208, 36)) {
             w->import_wav = x >= 240;
-            w->selected_inbox = w->inbox_first = 0;
+            w->selected_inbox = w->inbox_first = w->inbox_scroll = 0;
             w->dirty = true;
         } else if (!w->import_wav && inside(x, y, 24, 138, 432, 42)) {
             request_replace(w, APP_PROJECT_IMPORT_ARYX, "ARYX IMPORT", NULL, NULL);
-        } else if (inside(x, y, 24, 190, 432, 150)) {
-            w->selected_inbox = w->inbox_first + (y - 190) / 50;
-            w->dirty = true;
-        } else if (inside(x, y, 24, 342, 76, 28)) {
-            w->inbox_first = w->inbox_first >= 3 ? w->inbox_first - 3 : 0;
-            w->selected_inbox = w->inbox_first;
-            w->dirty = true;
-        } else if (inside(x, y, 380, 342, 76, 28)) {
-            if (inbox_at(w, w->inbox_first + 3) >= 0) {
-                w->inbox_first += 3;
+        } else if (inside(x, y, 24, TRACKER_INBOX_LIST_TOP, 432, TRACKER_INBOX_LIST_HEIGHT)) {
+            const int offset = w->inbox_scroll + y - TRACKER_INBOX_LIST_TOP;
+            const int index = offset / TRACKER_INBOX_LIST_ROW_HEIGHT;
+            if (index < (int)tracker_workspace_inbox_count(w) &&
+                    offset % TRACKER_INBOX_LIST_ROW_HEIGHT < TRACKER_INBOX_LIST_CARD_HEIGHT) {
+                w->selected_inbox = index;
+                w->dirty = true;
             }
-            w->selected_inbox = w->inbox_first;
-            w->dirty = true;
         } else if (inside(x, y, 24, 378, 432, 44)) {
-            const int index = inbox_at(w, w->selected_inbox);
-            if (index >= 0) {
-                const app_project_inbox_entry_t *entry = &w->project_view.inbox[index];
+            const app_project_inbox_entry_t *entry = tracker_workspace_inbox_entry(w, (unsigned)w->selected_inbox);
+            if (entry) {
                 request_replace(w, w->import_wav ? APP_PROJECT_IMPORT_SAMPLE : APP_PROJECT_IMPORT_MODULE,
                                 entry->filename, NULL, entry->filename);
             } else {
@@ -770,10 +804,15 @@ bool tracker_workspace_pointer(tracker_workspace_t *w, tracker_model_t *model,
         return true;
     }
     if (pressed && !w->pointer_down) {
+        clamp_selection_lists(w);
         w->pointer_down = true;
         w->moved = false;
         w->start_x = x;
         w->start_y = y;
+        w->selection_list_pointer = !tracker_workspace_busy(w) && selection_list_at(w, x, y);
+        w->selection_list_scrolling = false;
+        w->list_scroll_start = w->screen == TRACKER_WORKSPACE_PROJECTS ?
+                               w->project_scroll : w->inbox_scroll;
         return true;
     }
     if (!w->pointer_down) {
@@ -784,8 +823,33 @@ bool tracker_workspace_pointer(tracker_workspace_t *w, tracker_model_t *model,
     if (abs(dx) > WORKSPACE_TAP_SLOP || abs(dy) > WORKSPACE_TAP_SLOP) {
         w->moved = true;
     }
+    if (w->selection_list_pointer && tracker_workspace_busy(w)) {
+        w->selection_list_pointer = false;
+        w->selection_list_scrolling = false;
+        w->moved = true;
+    }
+    if (w->selection_list_pointer && !w->selection_list_scrolling &&
+            abs(dy) > WORKSPACE_LIST_DRAG_SLOP && abs(dy) > abs(dx)) {
+        w->selection_list_scrolling = true;
+        w->moved = true;
+    }
+    if (w->selection_list_scrolling) {
+        const bool projects = w->screen == TRACKER_WORKSPACE_PROJECTS;
+        const int next = clamp_list_scroll(w->list_scroll_start - dy,
+                                           projects ? tracker_workspace_project_count(w) : tracker_workspace_inbox_count(w),
+                                           projects ? TRACKER_PROJECT_LIST_ROW_HEIGHT : TRACKER_INBOX_LIST_ROW_HEIGHT,
+                                           projects ? TRACKER_PROJECT_LIST_HEIGHT : TRACKER_INBOX_LIST_HEIGHT);
+        int *scroll = projects ? &w->project_scroll : &w->inbox_scroll;
+        if (next != *scroll) {
+            *scroll = next;
+            w->dirty = true;
+        }
+        clamp_selection_lists(w);
+    }
     if (!pressed) {
         w->pointer_down = false;
+        w->selection_list_pointer = false;
+        w->selection_list_scrolling = false;
         if (w->screen == TRACKER_WORKSPACE_HOME && abs(dx) >= WORKSPACE_SWIPE_DISTANCE && abs(dx) > abs(dy) * 2) {
             page_home(w, model, w->home_page + (dx < 0 ? 1 : 2));
         } else if (!w->moved) {
