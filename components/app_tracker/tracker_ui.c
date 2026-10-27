@@ -13,6 +13,7 @@
 #include "tracker_render.h"
 #include "tracker_settings.h"
 #include "tracker_transition.h"
+#include "tracker_workspace.h"
 
 #define UI_TICK_MS 50
 #define FRAME_WIDTH 480
@@ -24,6 +25,7 @@ struct app_tracker {
     app_tracker_hooks_t hooks;
     tracker_model_t model;
     tracker_settings_t settings;
+    tracker_workspace_t workspace;
     app_usb_midi_t *usb;
     uint16_t *frames[2];
     uint16_t *motion_frame;
@@ -66,14 +68,15 @@ static void render_frame(app_tracker_t *state)
                                                   memory_order_acquire) & 1U;
     uint16_t *frame = state->frames[current ^ 1U];
     const uint64_t now = now_ms(state);
-    if (state->rendered_page != m->view.page) {
+    const int route = tracker_workspace_route(&state->workspace, m);
+    if (state->rendered_page != route) {
         /* Retarget from the image actually displayed, including an interrupted
          * slide. This snapshot is reused; no render-time allocation is needed. */
         memcpy(state->motion_frame, state->frames[current], FRAME_BYTES);
-        state->page_direction = m->view.page > state->rendered_page ? 1 : -1;
+        state->page_direction = route > state->rendered_page ? 1 : -1;
         tracker_transition_begin(&state->page_motion, 0, TRACKER_TRANSITION_FULL,
                                  now, TRACKER_TRANSITION_PAGE_MS);
-        state->rendered_page = m->view.page;
+        state->rendered_page = route;
     }
     if (state->rendered_menu != state->settings.open) {
         tracker_transition_retarget(&state->drawer_motion,
@@ -83,7 +86,19 @@ static void render_frame(app_tracker_t *state)
         /* The drawer reuses the motion snapshot as a fresh background. */
         tracker_transition_init(&state->page_motion, TRACKER_TRANSITION_FULL);
     }
-    if (m->view.page == TRACKER_PAGE_PATTERN) {
+    if (state->workspace.screen == TRACKER_WORKSPACE_SETTINGS) {
+        memset(frame, 0, FRAME_BYTES);
+        tracker_settings_render_panel(frame, &state->settings);
+        for (int y = 431; y >= TRACKER_WORKSPACE_HEADER; --y) {
+            const int source = (y - TRACKER_WORKSPACE_HEADER) * 432 /
+                               (432 - TRACKER_WORKSPACE_HEADER);
+            memmove(frame + (size_t)y * FRAME_WIDTH,
+                    frame + (size_t)source * FRAME_WIDTH,
+                    FRAME_WIDTH * sizeof(*frame));
+        }
+    } else if (state->workspace.screen != TRACKER_WORKSPACE_LEGACY) {
+        tracker_workspace_render(frame, &state->workspace, m);
+    } else if (m->view.page == TRACKER_PAGE_PATTERN) {
         tracker_render_pattern(frame, m->engine);
     } else if (m->view.page == TRACKER_PAGE_WAVES) {
         tracker_render_waves(frame, m->engine, state->wave_scratch,
@@ -93,27 +108,15 @@ static void render_frame(app_tracker_t *state)
     } else {
         tracker_render_controls(frame, &m->view);
     }
-    /* navigation takes a frame pointer through a short local graphics context. */
-    tracker_graphics_t navigation_gfx;
-    tracker_gfx_init(&navigation_gfx, frame);
-    tracker_gfx_clip(&navigation_gfx, 0, 432, 480, 48);
-    tracker_gfx_rect(&navigation_gfx, 0, 432, 480, 48, TRACKER_RGB565(9, 13, 15));
-    for (int page = 0; page < TRACKER_PAGE_COUNT; ++page) {
-        const int x = 200 + 16 * page;
-        const uint16_t color = m->view.page == page ? C_TEXT : C_ROW;
-        for (int y = -4; y <= 3; ++y) {
-            for (int dx = -4; dx <= 3; ++dx) {
-                if ((2 * dx + 1) * (2 * dx + 1) + (2 * y + 1) * (2 * y + 1) <= 64) {
-                    tracker_gfx_rect(&navigation_gfx, x + dx, 460 + y, 1, 1, color);
-                }
-            }
-        }
-    }
+    if (state->workspace.screen == TRACKER_WORKSPACE_LEGACY)
+        tracker_workspace_fit_legacy(frame);
+    tracker_workspace_render_header(frame, &state->workspace, m);
     const uint16_t page_progress = tracker_transition_sample(&state->page_motion, now);
     if (state->page_motion.active) {
         (void)tracker_transition_slide_rgb565(frame, state->motion_frame, frame,
                                               FRAME_WIDTH, FRAME_HEIGHT, 432,
                                               page_progress, state->page_direction);
+        tracker_workspace_render_header(frame, &state->workspace, m);
     }
     const uint16_t drawer_amount = tracker_transition_sample(&state->drawer_motion, now);
     if (drawer_amount || state->drawer_motion.active) {
@@ -141,6 +144,7 @@ static void render_frame(app_tracker_t *state)
     }
     atomic_store_explicit(&state->frame_index, current ^ 1U, memory_order_release);
     m->dirty = false;
+    state->workspace.dirty = false;
 }
 
 static void repaint(app_tracker_t *state)
@@ -165,7 +169,9 @@ static void update_settings(app_tracker_t *state)
     tracker_settings_t *s = &state->settings;
     if (state->hooks.interaction_busy) {
         state->hooks.interaction_busy(state->hooks.context,
-                                      state->model.pointer_down || s->pointer_down || state->motion_gesture ||
+                                      state->model.pointer_down || state->workspace.pointer_down ||
+                                      state->workspace.sampler_pointer || tracker_workspace_busy(&state->workspace) ||
+                                      s->pointer_down || state->motion_gesture ||
                                       state->wake_gesture || state->model.synth_view.note >= 0 ||
                                       state->page_motion.active || state->drawer_motion.active);
     }
@@ -202,6 +208,30 @@ static void update_settings(app_tracker_t *state)
     }
 }
 
+static void finish_source_edit(app_tracker_t *state, uint32_t before)
+{
+    tracker_workspace_t *w = &state->workspace;
+    const bool changed = state->model.edit_revision != before;
+    if (changed && w->project) {
+        (void)app_project_set_controls(w->project, state->model.view.volume,
+                                        w->project_view.pad_patterns);
+    }
+    tracker_workspace_end_source_edit(w, changed);
+}
+
+static void tick_sources(app_tracker_t *state)
+{
+    if (!tracker_workspace_begin_source_edit(&state->workspace)) return;
+    const uint32_t before = state->model.edit_revision;
+    const unsigned requests = atomic_exchange_explicit(&state->transport_requests,
+                                                       0, memory_order_acquire);
+    if (requests && (!state->workspace.project || state->workspace.project_view.opened))
+        tracker_model_transport(&state->model, (requests & 2U) != 0, false);
+    tracker_model_tick(&state->model, now_ms(state));
+    apply_volume(state);
+    finish_source_edit(state, before);
+}
+
 static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
                     bool pressed, void *context)
 {
@@ -213,6 +243,7 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
     if (state->hooks.record_activity && state->hooks.record_activity(state->hooks.context)) {
         state->wake_gesture = true;
         tracker_model_cancel_input(&state->model);
+        tracker_workspace_cancel_input(&state->workspace);
         state->settings.pointer_down = false;
         state->settings.page_pointer_down = false;
         state->settings.top_candidate = false;
@@ -227,25 +258,46 @@ static void pointer(esp_gsp_handle_t ui, int32_t x, int32_t y,
     }
     const bool drawing_motion = state->page_motion.active || state->drawer_motion.active;
     if (state->motion_gesture || (pressed && drawing_motion &&
-                                  !state->model.pointer_down && !state->settings.pointer_down && !state->settings.page_pointer_down &&
+                                  !state->model.pointer_down && !state->workspace.pointer_down &&
+                                  !state->workspace.sampler_pointer && !state->settings.pointer_down && !state->settings.page_pointer_down &&
                                   (state->drawer_motion.active || y < 432))) {
         state->motion_gesture = pressed;
         update_settings(state);
         return;
     }
+    tracker_workspace_poll(&state->workspace, &state->model);
     bool opened = false;
-    if (tracker_settings_pointer(&state->settings, x, y, pressed, &opened)) {
+    const bool settings_page = !state->settings.open &&
+                               state->workspace.screen == TRACKER_WORKSPACE_SETTINGS &&
+                               (state->settings.pointer_down ||
+                                (!state->workspace.pointer_down && y >= 78 && y < 432));
+    const bool top_tap = !pressed && state->settings.top_candidate && !state->settings.moved &&
+                         abs(x - state->settings.start_x) <= 12 && abs(y - state->settings.start_y) <= 12;
+    if (!settings_page && tracker_settings_pointer(&state->settings, x, y, pressed, &opened)) {
         if (opened) {
             tracker_model_cancel_input(&state->model);
+            tracker_workspace_cancel_input(&state->workspace);
+        } else if (top_tap && !state->settings.open) {
+            (void)tracker_workspace_pointer(&state->workspace, &state->model,
+                                             &state->settings, x, y, true);
+            (void)tracker_workspace_pointer(&state->workspace, &state->model,
+                                             &state->settings, x, y, false);
         }
         state->model.dirty = true;
     } else {
-        tracker_model_pointer(&state->model, x, y, pressed, now_ms(state));
+        const bool consumed = tracker_workspace_pointer(&state->workspace, &state->model,
+                                                          &state->settings, x, y, pressed);
+        if (!consumed && tracker_workspace_begin_source_edit(&state->workspace)) {
+            const uint32_t before = state->model.edit_revision;
+            tracker_model_pointer(&state->model, x, tracker_workspace_legacy_y(y), pressed, now_ms(state));
+            tracker_model_tick(&state->model, now_ms(state));
+            apply_volume(state);
+            finish_source_edit(state, before);
+        }
     }
     update_settings(state);
-    tracker_model_tick(&state->model, now_ms(state));
-    apply_volume(state);
-    if (state->model.dirty) {
+    tick_sources(state);
+    if (state->model.dirty || state->workspace.dirty) {
         repaint(state);
     }
 }
@@ -261,6 +313,7 @@ void app_tracker_cancel_pointer(app_tracker_t *state)
 {
     if (state) {
         tracker_model_cancel_input(&state->model);
+        tracker_workspace_cancel_input(&state->workspace);
         state->settings.pointer_down = false;
         state->settings.page_pointer_down = false;
         state->settings.brightness_drag = false;
@@ -286,16 +339,11 @@ static void tick(esp_gsp_handle_t ui, void *context)
     if (state->hooks.heartbeat) {
         state->hooks.heartbeat(state->hooks.context);
     }
-    const unsigned requests = atomic_exchange_explicit(&state->transport_requests,
-                                                       0, memory_order_acquire);
-    if (requests) {
-        tracker_model_transport(&state->model, (requests & 2U) != 0, false);
-    }
+    tracker_workspace_poll(&state->workspace, &state->model);
     update_settings(state);
-    tracker_model_tick(&state->model, now_ms(state));
-    apply_volume(state);
+    tick_sources(state);
     /* Waveforms retain 20Hz; controls refresh at 10Hz and input is immediate. */
-    if (state->model.dirty || (!state->settings.display.screen_off &&
+    if (state->model.dirty || state->workspace.dirty || (!state->settings.display.screen_off &&
                                (state->page_motion.active || state->drawer_motion.active || state->model.view.page == TRACKER_PAGE_WAVES ||
                                 state->ticks % 2 == 0))) {
         repaint(state);
@@ -373,10 +421,12 @@ esp_gsp_err_t app_tracker_create(esp_gsp_handle_t ui,
         return ESP_GSP_ERR_NO_MEM;
     }
     tracker_model_init(&state->model, config->tracker, config->synth, config->audio_bus);
-    state->rendered_page = state->model.view.page;
+    tracker_workspace_init(&state->workspace, config->project, config->sampler);
+    state->rendered_page = tracker_workspace_route(&state->workspace, &state->model);
     tracker_transition_init(&state->page_motion, TRACKER_TRANSITION_FULL);
     tracker_transition_init(&state->drawer_motion, 0);
     state->model.router = config->note_router;
+    tracker_workspace_poll(&state->workspace, &state->model);
     update_settings(state);
     tracker_model_tick(&state->model, now_ms(state));
     apply_volume(state);
@@ -432,6 +482,14 @@ esp_gsp_err_t app_tracker_read(app_tracker_t *state, app_tracker_snapshot_t *s)
     s->transition_progress = state->page_motion.current;
     s->page_animating = state->page_motion.active;
     s->menu_animating = state->drawer_motion.active;
+    s->workspace_screen = state->workspace.screen;
+    s->home_page = state->workspace.home_page;
+    s->project_opened = state->workspace.project_view.opened;
+    memcpy(s->project_name, state->workspace.project_view.name, sizeof(s->project_name));
+    s->project_name[sizeof(s->project_name) - 1U] = '\0';
+    s->project_busy = tracker_workspace_busy(&state->workspace);
+    s->project_dirty = state->workspace.project_view.dirty;
+    s->project_generation = state->workspace.project_view.session_generation;
     s->last_error = state->last_error;
     const int first = m->view.mix_scroll / TRACKER_MIX_STRIP_H;
     for (int slot = 0; slot < 4; ++slot) {
@@ -500,6 +558,7 @@ void app_tracker_stop(app_tracker_t **handle)
     }
     *handle = NULL;
     tracker_model_cancel_input(&state->model);
+    tracker_sampler_ui_cancel(&state->workspace);
     if (state->hooks.interaction_busy) {
         state->hooks.interaction_busy(state->hooks.context, false);
     }

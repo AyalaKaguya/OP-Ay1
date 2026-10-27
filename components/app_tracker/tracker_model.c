@@ -35,6 +35,7 @@ static void set_gain(tracker_model_t *m, int channel, int x)
     }
     const int step = clamp_int((x - TRACKER_MIX_FADER_X) * 120 /
                                (TRACKER_MIX_FADER_W - 1), 0, 120);
+    if (m->view.gain_steps[channel] != (uint8_t)step) ++m->edit_revision;
     m->view.gain_steps[channel] = (uint8_t)step;
     tracker_engine_set_channel_gain(m->engine, channel, gain_for_step(step));
     m->dirty = true;
@@ -44,7 +45,9 @@ static void set_master(tracker_model_t *m, int x)
 {
     const int raw = clamp_int((x - TRACKER_MIX_MASTER_X) * 100 /
                               (TRACKER_MIX_MASTER_W - 1), 0, 100);
-    m->view.volume = ((raw + 2) / 5) * 5;
+    const int volume = ((raw + 2) / 5) * 5;
+    if (m->view.volume != volume) ++m->edit_revision;
+    m->view.volume = volume;
     m->dirty = true;
 }
 
@@ -73,6 +76,7 @@ static void toggle_mute(tracker_model_t *m, int ch)
         return;
     }
     m->user_mute[ch] = !m->user_mute[ch];
+    ++m->edit_revision;
     apply_channel(m, ch);
     m->dirty = true;
 }
@@ -83,6 +87,7 @@ static void toggle_solo(tracker_model_t *m, int ch)
         return;
     }
     m->view.soloed[ch] = !m->view.soloed[ch];
+    ++m->edit_revision;
     if (m->view.soloed[ch]) {
         m->user_mute[ch] = false;
     }
@@ -182,6 +187,7 @@ static void launch_pad(tracker_model_t *m, int pad)
 
 static void submit_patch(tracker_model_t *m)
 {
+    ++m->edit_revision;
     m->synth_view.command_failed =
         !app_synth_set_patch(m->synth, &m->synth_view.patch);
     m->patch_pending = m->synth_view.command_failed;
@@ -195,6 +201,7 @@ static void synth_tap(tracker_model_t *m, int x, int y)
     if (in_rect(x, y, 30, 52, 420, 44)) {
         const int delta = x < 240 ? -1 : 1;
         v->preset = (v->preset + delta + APP_SYNTH_PATCH_COUNT) % APP_SYNTH_PATCH_COUNT;
+        ++m->edit_revision;
         v->patch = app_synth_patch_for_preset((app_synth_patch_id_t)v->preset);
         v->command_failed = !app_synth_set_patch_id(m->synth, (app_synth_patch_id_t)v->preset);
         m->patch_pending = v->command_failed;
@@ -241,6 +248,7 @@ static void tap(tracker_model_t *m, int x, int y)
         } else if (in_rect(x, y, 16, 338, 448, 48)) {
             const int slot = clamp_int((x - 16) / 114, 0, 3);
             const float speed = (slot + 1) * 0.5f;
+            if (m->view.speed_multiplier != speed) ++m->edit_revision;
             tracker_engine_set_speed_multiplier(m->engine, speed);
             m->view.speed_multiplier = speed;
         }
@@ -391,14 +399,47 @@ void tracker_model_init(tracker_model_t *m, tracker_engine_t *engine,
     m->synth_view.note = -1;
     m->synth_view.patch = app_synth_patch_for_preset(APP_SYNTH_PATCH_INIT);
     (void)app_synth_get_patch(synth, &m->synth_view.patch);
-    tracker_engine_set_loop(engine, false);
     tracker_engine_get_status(engine, &m->view.status);
     m->view.channel_count = m->view.status.channels;
     for (int ch = 0; ch < TRACKER_MAX_CHANNELS; ++ch) {
         m->view.gain_steps[ch] = 100;
-        tracker_engine_set_channel_gain(engine, ch, 1.0f);
-        tracker_engine_set_channel_mute(engine, ch, false);
-        tracker_engine_set_channel_solo(engine, ch, false);
+    }
+    /* Source ownership belongs to the active project; UI creation never resets
+     * a loaded song's loop, channel controls or patch. */
+    tracker_model_sync_sources(m);
+    m->dirty = true;
+}
+
+void tracker_model_sync_sources(tracker_model_t *m)
+{
+    tracker_model_cancel_input(m);
+    m->patch_pending = false;
+    m->pending_preset = -1;
+    m->synth_view.command_failed = false;
+    (void)app_synth_get_patch(m->synth, &m->synth_view.patch);
+    if (app_synth_get_status(m->synth, &m->synth_view.status)) {
+        const int preset = (int)m->synth_view.status.patch_id;
+        m->synth_view.preset = preset < APP_SYNTH_PATCH_COUNT ? preset : -1;
+    }
+    tracker_engine_get_status(m->engine, &m->view.status);
+    m->view.channel_count = m->view.status.channels;
+    m->view.speed_multiplier = tracker_engine_speed_multiplier(m->engine);
+    m->view.mix_scroll = 0;
+    for (int ch = 0; ch < TRACKER_MAX_CHANNELS; ++ch) {
+        const float gain = tracker_engine_channel_gain(m->engine, ch);
+        const int step = gain > 0.0f ? (int)lroundf(100.0f + 20.0f * log10f(gain) / 0.3f) : 0;
+        m->view.gain_steps[ch] = (uint8_t)clamp_int(step, 0, 120);
+        m->view.soloed[ch] = tracker_engine_channel_solo(m->engine, ch);
+        m->view.muted[ch] = tracker_engine_channel_mute(m->engine, ch);
+        m->user_mute[ch] = m->view.muted[ch];
+        m->auto_mute[ch] = false;
+        m->view.levels[ch] = 0;
+    }
+    if (solo_count(m) > 0) {
+        for (int ch = 0; ch < m->view.channel_count; ++ch) {
+            m->auto_mute[ch] = !m->view.soloed[ch];
+            if (m->auto_mute[ch]) m->user_mute[ch] = false;
+        }
     }
     m->dirty = true;
 }

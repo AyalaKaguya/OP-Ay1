@@ -26,6 +26,7 @@
 #define WORKSTATION_STATUS_METHOD 1U
 #define WORKSTATION_AUDITION_METHOD 2U
 #define WORKSTATION_SETTINGS_METHOD 3U
+#define WORKSTATION_WORKSPACE_METHOD 4U
 #define POINTER_QUEUE_CAPACITY 32
 
 typedef struct {
@@ -262,24 +263,64 @@ static esp_err_t status_rpc(const esp_iris_rpc_request_t *request,
     if (xSemaphoreTake(device->snapshot_lock, pdMS_TO_TICKS(50)) != pdTRUE) {
         return ESP_ERR_TIMEOUT;
     }
-    const app_tracker_snapshot_t s = device->snapshot;
-    (void)xSemaphoreGive(device->snapshot_lock);
+    const app_tracker_snapshot_t *s = &device->snapshot;
     const int count = snprintf((char *)response, capacity,
                                "{\"page\":%d,\"volume\":%d,\"scroll\":%d,\"note\":%d,\"tab\":%d,"
                                "\"preset\":%d,\"playing\":%d,\"launched\":%d,\"pending\":%d,"
                                "\"stop\":%d,\"voices\":%u,\"peak\":%.6f,\"frames\":%llu,"
                                "\"gain\":[%d,%d,%d,%d],\"mute\":[%d,%d,%d,%d],"
                                "\"solo\":[%d,%d,%d,%d],\"error\":%d}",
-                               s.page, s.volume, s.mix_scroll, s.held_note, s.synth_tab, s.preset,
-                               s.playing, s.launched_pattern, s.pending_pattern, s.stop_pending,
-                               (unsigned)s.active_voices, (double)s.synth_peak, (unsigned long long)s.rendered_frames,
-                               s.gain_steps[0], s.gain_steps[1], s.gain_steps[2], s.gain_steps[3],
-                               s.muted[0], s.muted[1], s.muted[2], s.muted[3],
-                               s.soloed[0], s.soloed[1], s.soloed[2], s.soloed[3], s.last_error);
+                               s->page, s->volume, s->mix_scroll, s->held_note, s->synth_tab, s->preset,
+                               s->playing, s->launched_pattern, s->pending_pattern, s->stop_pending,
+                               (unsigned)s->active_voices, (double)s->synth_peak, (unsigned long long)s->rendered_frames,
+                               s->gain_steps[0], s->gain_steps[1], s->gain_steps[2], s->gain_steps[3],
+                               s->muted[0], s->muted[1], s->muted[2], s->muted[3],
+                               s->soloed[0], s->soloed[1], s->soloed[2], s->soloed[3], s->last_error);
+    (void)xSemaphoreGive(device->snapshot_lock);
     if (count < 0 || (size_t)count >= capacity) {
         return ESP_ERR_INVALID_SIZE;
     }
     *response_size = (size_t)count;
+    return ESP_OK;
+}
+
+static esp_err_t workspace_rpc(const esp_iris_rpc_request_t *request,
+                               uint8_t *response, size_t capacity,
+                               size_t *response_size, void *context)
+{
+    tracker_device_t *device = context;
+    if (!request || !response || !response_size || request->payload_size) return ESP_ERR_INVALID_ARG;
+    if (!atomic_load_explicit(&device->active, memory_order_acquire) ||
+            !atomic_load_explicit(&device->snapshot_ready, memory_order_acquire)) return ESP_ERR_INVALID_STATE;
+    if (xSemaphoreTake(device->snapshot_lock, pdMS_TO_TICKS(50)) != pdTRUE) return ESP_ERR_TIMEOUT;
+    const app_tracker_snapshot_t *s = &device->snapshot;
+    const int count = snprintf((char *)response, capacity,
+                               "{\"workspace\":%d,\"home\":%d,\"opened\":%d,\"dirty\":%d,\"busy\":%d,\"generation\":%llu,\"name\":\"",
+                               s->workspace_screen, s->home_page, s->project_opened, s->project_dirty,
+                               s->project_busy, (unsigned long long)s->project_generation);
+    size_t used = count > 0 ? (size_t)count : capacity;
+    bool valid = used < capacity;
+    /* Encode straight into the bounded response. No large public snapshot or
+     * six-times-expanded name buffer is placed on the RPC task stack. */
+    static const char hex[] = "0123456789abcdef";
+    for (size_t i = 0; valid && i < sizeof(s->project_name) && s->project_name[i]; ++i) {
+        const uint8_t value = (uint8_t)s->project_name[i];
+        const size_t bytes = value < 32U ? 6U : value == '"' || value == '\\' ? 2U : 1U;
+        if (used + bytes + 3U >= capacity) { valid = false; break; }
+        if (value < 32U) {
+            response[used++] = '\\'; response[used++] = 'u';
+            response[used++] = '0'; response[used++] = '0';
+            response[used++] = (uint8_t)hex[value >> 4];
+            response[used++] = (uint8_t)hex[value & 15U];
+        } else {
+            if (bytes == 2U) response[used++] = '\\';
+            response[used++] = value;
+        }
+    }
+    (void)xSemaphoreGive(device->snapshot_lock);
+    if (!valid || used + 3U > capacity) return ESP_ERR_INVALID_SIZE;
+    response[used++] = '"'; response[used++] = '}'; response[used] = '\0';
+    *response_size = used;
     return ESP_OK;
 }
 
@@ -372,7 +413,8 @@ static void shutdown(void *context)
 esp_err_t app_tracker_start_workstation(esp_gsp_handle_t ui, tracker_engine_t *engine,
                                         app_synth_t *synth, app_audio_bus_t *bus,
                                         app_note_router_t *router, app_usb_midi_t *usb,
-                                        app_settings_t *settings, app_tracker_t **out_handle)
+                                        app_settings_t *settings, app_project_t *project,
+                                        app_sampler_t *sampler, app_tracker_t **out_handle)
 {
     if (device_started) {
         return ESP_ERR_INVALID_STATE;
@@ -405,7 +447,7 @@ esp_err_t app_tracker_start_workstation(esp_gsp_handle_t ui, tracker_engine_t *e
     }
     app_tracker_config_t config = {
         .tracker = engine, .synth = synth, .audio_bus = bus,
-        .note_router = router, .usb_midi = usb,
+        .note_router = router, .usb_midi = usb, .project = project, .sampler = sampler,
         .hooks = {
             .context = device, .allocate_frame = allocate_frame,
             .free_frame = free_frame, .time_ms = time_ms, .set_volume = set_volume,
@@ -436,9 +478,12 @@ esp_err_t app_tracker_start_workstation(esp_gsp_handle_t ui, tracker_engine_t *e
                                           WORKSTATION_STATUS_SERVICE, WORKSTATION_AUDITION_METHOD, audition_rpc, device);
     const esp_err_t settings_result = esp_iris_rpc_register(
                                           WORKSTATION_STATUS_SERVICE, WORKSTATION_SETTINGS_METHOD, settings_rpc, device);
-    if (pointer_result != ESP_OK || status_result != ESP_OK || audition_result != ESP_OK || settings_result != ESP_OK) {
-        ESP_LOGW(TAG, "Workstation RPC registration failed (%d/%d/%d)",
-                 pointer_result, status_result, audition_result);
+    const esp_err_t workspace_result = esp_iris_rpc_register(
+                                           WORKSTATION_STATUS_SERVICE, WORKSTATION_WORKSPACE_METHOD, workspace_rpc, device);
+    if (pointer_result != ESP_OK || status_result != ESP_OK || audition_result != ESP_OK ||
+            settings_result != ESP_OK || workspace_result != ESP_OK) {
+        ESP_LOGW(TAG, "Workstation RPC registration failed (%d/%d/%d/%d/%d)",
+                 pointer_result, status_result, audition_result, settings_result, workspace_result);
     }
     const esp_timer_create_args_t args = {
         .callback = stall_check, .arg = device, .name = "ui_stall",
@@ -466,7 +511,8 @@ esp_err_t app_tracker_start_bus(esp_gsp_handle_t ui, tracker_engine_t *engine,
                                 app_synth_t *synth, app_audio_bus_t *bus,
                                 app_tracker_t **out_handle)
 {
-    return app_tracker_start_workstation(ui, engine, synth, bus, NULL, NULL, NULL, out_handle);
+    return app_tracker_start_workstation(ui, engine, synth, bus, NULL, NULL, NULL,
+                                          NULL, NULL, out_handle);
 }
 
 esp_err_t app_tracker_start(esp_gsp_handle_t ui, tracker_engine_t *engine,

@@ -60,6 +60,7 @@ typedef struct {
     uint64_t last_pointer_time;
     uint64_t now_ms;
     unsigned clip_ticks;
+    uint32_t edit_revision;
     bool user_mute[TRACKER_MAX_CHANNELS];
     bool auto_mute[TRACKER_MAX_CHANNELS];
 } tracker_model_t;
@@ -71,6 +72,9 @@ void tracker_model_pointer(tracker_model_t *model, int x, int y,
                            bool pressed, uint64_t now_ms);
 void tracker_model_set_page(tracker_model_t *model, int page);
 void tracker_model_cancel_input(tracker_model_t *model);
+/* Refresh views after the project worker commits a complete source session.
+ * Reads public source controls; does not reset gains or mutate loaded content. */
+void tracker_model_sync_sources(tracker_model_t *model);
 void tracker_model_transport(tracker_model_t *model, bool restart,
                              bool song_mode);
 

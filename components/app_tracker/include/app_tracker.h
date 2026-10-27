@@ -4,6 +4,8 @@
 #include "esp_gsp.h"
 #include "app_audio_bus.h"
 #include "app_synth.h"
+#include "app_project.h"
+#include "app_sampler.h"
 #include "app_settings.h"
 #include "app_usb_midi.h"
 #include "app_note_router.h"
@@ -33,6 +35,8 @@ typedef struct {
     app_audio_bus_t *audio_bus;
     app_note_router_t *note_router;
     app_usb_midi_t *usb_midi;
+    app_project_t *project;
+    app_sampler_t *sampler;
     bool visualize_display_power; /* Native preview only; device uses panel power. */
     app_tracker_hooks_t hooks;
 } app_tracker_config_t;
@@ -57,6 +61,13 @@ typedef struct {
     uint16_t transition_progress;
     bool page_animating;
     bool menu_animating;
+    int workspace_screen;
+    int home_page;
+    bool project_opened;
+    char project_name[APP_PROJECT_NAME_BYTES];
+    bool project_busy;
+    bool project_dirty;
+    uint64_t project_generation;
     esp_gsp_err_t last_error;
 } app_tracker_snapshot_t;
 
@@ -96,6 +107,7 @@ esp_err_t app_tracker_start_workstation(esp_gsp_handle_t ui, tracker_engine_t *e
                                         app_synth_t *synth, app_audio_bus_t *bus,
                                         app_note_router_t *router, app_usb_midi_t *usb,
                                         struct app_settings *settings,
+                                        app_project_t *project, app_sampler_t *sampler,
                                         app_tracker_t **out_handle);
 /* Compatibility device entry point with tracker only. */
 esp_err_t app_tracker_start(esp_gsp_handle_t ui, tracker_engine_t *engine,

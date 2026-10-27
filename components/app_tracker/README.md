@@ -1,7 +1,8 @@
 # app_tracker: shared workstation UI
 
-This component owns the six pages, their RGB565 rendering and interaction
-state. Device and native simulator use the same `tracker_ui.c`,
+This component owns the project workspace, HOME, sampler and six tracker
+pages, their RGB565 rendering and interaction state. Device and native
+simulator use the same `tracker_ui.c`,
 `tracker_model.c`, `tracker_synth.c`, graphics and page renderers. GSP supplies
 one opaque 480x480 Canvas, mapped pointer samples and 50 ms timers. The authored
 entry is `ui/main.json`; generated bundles and bindings belong in the build
@@ -14,6 +15,11 @@ directory, not beside the source.
   It publishes only complete frames and allocates nothing during animation.
 - `tracker_model.c` owns transport, mixer mute/solo, pad selection, input
   capture, navigation, parameter retry and the render snapshots.
+- `tracker_workspace.c` owns HOME, project catalog and current-launch recent
+  shortcuts, async request completion, save/name/switch/error flows and global
+  project state. `tracker_workspace_render.c` draws those screens.
+- `tracker_sampler_ui.c` owns library browsing, audition, nondestructive edit
+  previews, explicit tracker-slot assignment and microphone record/review.
 - `tracker_graphics.c` contains the shared palette, exact 5x7 glyph drawing,
   status/order bars and clipped primitives. `tracker_render.c` retains the
   original pattern/waveform pages; `tracker_pages.c` draws Playback/Mixer/Pads.
@@ -26,7 +32,8 @@ directory, not beside the source.
   optionally writes a WAV/plays Windows audio and records read-only snapshots
   for input-based acceptance tests.
 
-Only public APIs from `app_tracker_engine` (`tracker_engine.h`), `app_synth` and `app_audio_bus` are used.
+Source boundaries use public APIs from `app_tracker_engine` (`tracker_engine.h`),
+`app_synth`, `app_audio_bus`, `app_sampler` and `app_project`.
 No component private structures or mutable globals cross their boundaries.
 
 ## Ownership, threads and lifetime
@@ -65,6 +72,59 @@ before closing the bridge on normal duration exit. After transport loss it
 preserves a context whose detach could not be confirmed until process exit.
 
 ## Interaction contracts
+
+Startup shows the approved three-page, 2x2 HOME grid. All modules borrow one
+active project and audio graph. The shared project strip shows its stored name,
+dirty star and save state; the bottom-left HOME entry returns without loading
+another song. Legacy page content is fitted from rows 40..431 into 78..431,
+with the inverse mapping applied to input. Existing page slides, drawer
+animation and screen-off wake consumption remain in the shared UI owner.
+
+OPEN PROJECT lists the backend's verified catalog; RECENT retains four IDs
+opened/saved during this launch. Each shortcut is checked against the current
+catalog, and unavailable entries cannot be opened. Recent history is not
+persisted across process/device restarts. Refresh queries the real catalog and
+owned inbox. Import offers the built-in ARYX source, inbox S3M modules and WAV
+sample copies. Nothing in this UI invents PC/USB upload success.
+
+Save As uses a 24-character ASCII touch keyboard and creates a fresh project
+ID. Stored UTF-8 names are preserved in service state and diagnostics; the
+existing ASCII pixel font shows unsupported characters as `?`. Dirty switching
+offers save+switch, discard+switch or cancel. Jobs publish completion/error;
+the displayed project changes only after the worker commits its prepared
+session. Failures retain the current session and expose retry.
+
+Project catalog/request storage, waveform scratch and snapshots live in the
+heap-allocated UI context. The project worker performs I/O, WAV decode, sample
+Apply/Undo, slot assignment and capture allocation. Every bounded UI musical
+mutation uses the project's try-begin/end edit guard, so a save cannot snapshot
+half an input update. Mixer/patch/speed edits mark dirty; touch notes,
+transport, meters, view selection and device preferences do not. UI creation
+reads loaded controls rather than resetting them.
+
+SAMPLER keeps original/empty S3M slots visible. LIBRARY auditions only the
+selected sample; EDIT previews trim, loop, C2 speed and gain without committing
+the bank. Tap the trim/loop row to choose which nearest waveform handle to
+drag. Cancel discards the draft, Apply commits on the project worker, and Undo
+restores the previous applied edit. ASSIGN confirms one 1-based tracker slot;
+it does not turn Section Pads into a sample launcher or rewrite pattern cells.
+
+RECORD displays service-provided microphone frames, time and peak. Gain uses
+the capture backend's 0..42 dB range in 6 dB steps; monitoring is explicit.
+STOP waits for capture completion before PREVIEW/KEEP/DISCARD. KEEP adds actual
+captured PCM to the project; an unavailable native microphone reports that
+state. A pending take must be kept/discarded before saving or replacing the
+project. No illustrative waveform or simulated successful recording is used.
+
+SETTINGS and the global drawer operate on the same `tracker_settings_t` and
+borrowed settings service. Project save/switch cannot change brightness,
+rotation or display timeouts. Storage usage is displayed only when the backend
+has measured it; unknown capacity remains unknown.
+
+This implementation pass intentionally does not run builds, tests, simulator
+or hardware validation, per the user's request. The shared production paths
+are implemented; native/device behavior and storage/capture acceptance remain
+unverified in this pass.
 
 Page order: WAVES, PATTERN, PLAYBACK, MIXER, SECTION PADS, SYNTH. Navigation dots
 have wider invisible touch zones. Horizontal drags outside captured controls
@@ -112,6 +172,12 @@ published at 50 ms UI cadence and unavailable before the first valid snapshot
 or after shutdown. Hardware-button state may appear one tick later. Pair this
 snapshot with live Iris Device ID/Boot ID and firmware SHA for acceptance;
 read-only fields alone do not establish identity or acoustic output.
+
+Read-only method `0x2101/4` returns workspace screen, HOME page, opened/dirty/busy,
+session generation and the full stored project name as escaped UTF-8 JSON.
+It writes directly from the protected published snapshot into the bounded RPC
+response; it does not put the project catalog or an expanded name buffer on
+the RPC stack. Separate methods keep the existing DSP status payload compact.
 
 Use only the product entry for these services:
 
