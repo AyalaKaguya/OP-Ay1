@@ -105,7 +105,14 @@ transport, meters, view selection and device preferences do not. UI creation
 reads loaded controls rather than resetting them.
 
 SAMPLER keeps original/empty S3M slots visible. LIBRARY auditions only the
-selected sample; EDIT previews trim, loop, C2 speed and gain without committing
+selected sample. Its vertically scrollable list uses 72-pixel row pitch and
+68-pixel cards in the original logical content coordinates, 1.6 times the former
+row pitch. Names and metadata use the 2x bitmap font; each card has its own
+real PCM waveform at the right. Visible thumbnails are cached by first row
+and sampler revision, including partially visible rows. Dragging changes only
+the scroll position, bounded to the bank and snapped on release; a short tap
+selects. There are no list paging buttons or separate lower waveform panel.
+EDIT previews trim, loop, C2 speed and gain without committing
 the bank. Tap the trim/loop row to choose which nearest waveform handle to
 drag. Cancel discards the draft, Apply commits on the project worker, and Undo
 restores the previous applied edit. ASSIGN confirms one 1-based tracker slot;
@@ -123,17 +130,17 @@ borrowed settings service. Project save/switch cannot change brightness,
 rotation or display timeouts. Storage usage is displayed only when the backend
 has measured it; unknown capacity remains unknown.
 
-Page order: WAVES, PATTERN, PLAYBACK, MIXER, SECTION PADS, SYNTH. Horizontal
-drags outside captured controls switch pages. The bottom 40 pixels reserve a
+Modules are WAVES, PATTERN, PLAYBACK, MIXER, SECTION PADS and SYNTH, selected
+from HOME. Horizontal drags do not switch modules. The bottom 40 pixels reserve a
 system gesture: an upward drag of at least 64 pixels, with vertical travel more
-than twice horizontal travel, returns HOME. A horizontal edge drag uses the
-same distance and directional threshold to switch adjacent pages. HOME wraps
-across its three pages; the six tracker pages retain their existing bounds.
+than twice horizontal travel, returns HOME. The outgoing module moves upward
+and HOME enters from below, including its complete header. A horizontal edge
+drag on HOME uses the same threshold to wrap across its three launcher pages.
 Content controls keep their entire pointer sequence, including a keyboard or
 waveform drag that later crosses the bottom edge. The drawer and a screen-off
 wake retain precedence and consume their complete gesture.
 
-Page indicators float for 1200 ms after a successful horizontal swipe and are
+HOME page indicators float for 1200 ms after a successful horizontal swipe and are
 drawn over the final composited frame. They have no tap action; programmatic
 module selection and upward HOME navigation do not show them. HOME buttons,
 footer arrows and persistent navigation dots are removed. SETTINGS exposes
